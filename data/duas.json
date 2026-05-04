@@ -1,0 +1,3653 @@
+[
+  {
+    "id": 1,
+    "title": "المقدمة",
+    "arabic": "بسم الله الرحمن الرحيم",
+    "translation": null,
+    "transliteration": null,
+    "reference": "حرر في شهر صفر 1409هـ",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 2,
+    "title": "المقدمة",
+    "arabic": "إن الحمد لله ، نحمده ونستعينهُ ، ونستغفرهُ ونعوذُ باللهِ من شرورِ أنفسنا ، وسيئاتِ أعمالنا ، من يهده الله فلا مضل لهُ، ومن يضلل فلا هادي له ، وأشهد أن لا إله إلا الله وحده لا شريك لهُ،وأشهدُ أن محمداً عبدهُ ورسولهُ صلى الله عليه وعلى أله وأصحابه ومن تبعهم بإحسان إلى يوم الدين وسلم تسليما كثيراً ،أما بعد .",
+    "translation": null,
+    "transliteration": null,
+    "reference": "حرر في شهر صفر 1409هـ",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 3,
+    "title": "المقدمة",
+    "arabic": "فهذا مختصر اختصرته من كتابي ) اختصرت فيه قسم الأذكار ؛ ليكون خفيف الحمل في الأسفار .",
+    "translation": null,
+    "transliteration": null,
+    "reference": "حرر في شهر صفر 1409هـ",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 4,
+    "title": "المقدمة",
+    "arabic": "وقد اقتصرت على متن الذكر ، واكتفيت في تخريجه بذكر مصدر أو مصدرين مما وجد في الأصل ،ومن أراد معرفة الصحابي أو زيادة في التخريج فعليه بالرجوع إلى الأصل.",
+    "translation": null,
+    "transliteration": null,
+    "reference": "حرر في شهر صفر 1409هـ",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 5,
+    "title": "المقدمة",
+    "arabic": "وأسأل الله عز وجل بأسمائه الحسنى ، وصفاته العُلى أن يجعله خالصا لوجهه الكريم ، وأن ينفعني به في حياتي وبعد مماتي وأن ينفع به من قرأه ، أو طبعه ، أو كان سبباً في نشره إنه سبحانه ولي ذلك والقادر عليه. وصلى الله على نبينا محمد وعلى آله وأصحابه ومن تبعهم بإحسان إلى يوم الدين.",
+    "translation": null,
+    "transliteration": null,
+    "reference": "حرر في شهر صفر 1409هـ",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 6,
+    "title": "فضل الذكر",
+    "arabic": "قال الله تعالى: فَاذْكُرُونِي أَذْكُرْكُمْ وَاشْكُرُواْ لِي وَلاَ تَكْفُرُونِ",
+    "translation": null,
+    "transliteration": null,
+    "reference": "سورة البقرة آية :152",
+    "category": "dhikr",
+    "tags": [
+      "dhikr"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 7,
+    "title": "فضل الذكر",
+    "arabic": "وَالذَّاكِرِينَ اللَّهَ كَثِيراً وَالذَّاكِرَاتِ أَعَدَّ اللَّهُ لَهُم مَّغْفِرَةً وَأَجْراً عَظِيماً",
+    "translation": null,
+    "transliteration": null,
+    "reference": "سورة البقرة آية :152",
+    "category": "dhikr",
+    "tags": [
+      "dhikr"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 8,
+    "title": "فضل الذكر",
+    "arabic": "وَاذْكُر رَّبَّكَ فِي نَفْسِكَ تَضَرُّعاً وَخِيفَةً وَدُونَ الْجَهْرِ مِنَ الْقَوْلِ بِالْغُدُوِّ وَالآصَالِ وَلاَ تَكُن مِّنَ الْغَافِلِينَ",
+    "translation": null,
+    "transliteration": null,
+    "reference": "سورة البقرة آية :152",
+    "category": "dhikr",
+    "tags": [
+      "dhikr"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 9,
+    "title": "فضل الذكر",
+    "arabic": "وقال صلى الله عليه وسلم : مثل الذي يذكر ربه والذي لا يذكر ربه مثل الحي والميت",
+    "translation": null,
+    "transliteration": null,
+    "reference": "سورة البقرة آية :152",
+    "category": "dhikr",
+    "tags": [
+      "dhikr"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 10,
+    "title": "فضل الذكر",
+    "arabic": "وقال صلى الله عليه وسلم : ألا أنبئكم بخير أعمالكم ،وأزكاها عند مليككم، وأرفعها في درجاتكم ، وخير لكم من إنفاق الذهب والورق ، وخير لكم من أن تلقوا عدوكم فتضربوا أعناقهم ويضربوا أعناقكم ؟ قالوا بلى .قال : ذكر الله تعالى",
+    "translation": null,
+    "transliteration": null,
+    "reference": "سورة البقرة آية :152",
+    "category": "dhikr",
+    "tags": [
+      "dhikr"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 11,
+    "title": "فضل الذكر",
+    "arabic": "وقال صلى الله عليه وسلم : يقول الله تعالى : أنا عند ظن عبدي بي ، وأنا معه إذا ذكرني ، فإن ذكرني في نفسه ذكرتهُ في نفسي ، وإن ذكرني في ملأ ذكرته في ملأ خير منهم ،وإن تقرب إلي شبراً تقربت إليه ذراعاً ،وإن تقرب إلي ذراعاً تقربت إليه باعاً ، وإن أتاني يمشي أتيتهُ هرولة",
+    "translation": null,
+    "transliteration": null,
+    "reference": "سورة البقرة آية :152",
+    "category": "dhikr",
+    "tags": [
+      "dhikr"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 12,
+    "title": "فضل الذكر",
+    "arabic": "وعن عبد الله بن بسرٍ رضي الله عنهُ أن رجلاً قال : يا رسول الله إن شرائع الإسلام قد كثرت علي فأخبرني بشيءٍ أتشبث به. قال صلى الله عليه وسلم : لا يزال لسانك رطباً من ذكر الله",
+    "translation": null,
+    "transliteration": null,
+    "reference": "سورة البقرة آية :152",
+    "category": "dhikr",
+    "tags": [
+      "dhikr"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 13,
+    "title": "فضل الذكر",
+    "arabic": "وقال صلى الله عليه وسلم: من قرأ حرفاً من كتاب الله فله به حسنة ،والحسنة بعشر أمثالها ، لا أقول : الم حرف؛ ولكن : ألف حرف ،ولام حرف ،وميم حرف",
+    "translation": null,
+    "transliteration": null,
+    "reference": "سورة البقرة آية :152",
+    "category": "dhikr",
+    "tags": [
+      "dhikr"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 14,
+    "title": "فضل الذكر",
+    "arabic": "وعن عقبة بن عامر رضي الله عنه قال : خرج رسول الله صلى الله عليه وسلم ونحن في الصفة فقال : أيكم يحب أن يغدو كل يوم إلى بطحان أو إلى العقيق فيأتي منه بناقتين كوماوين في غير إثم ولا قطيعة رحم ؟ فقلنا : يا رسول الله نحب ذلك . قال : أفلا يغدو أحدكم إلى المسجد فيعلم ، أو يقرأ آيتين من كتاب الله عز وجل خير له من ناقتين ، وثلاث خير لهُ من ثلاث ٍ، وأربع خير لهُ من أربع ، ومن أعدادهن من الإبل",
+    "translation": null,
+    "transliteration": null,
+    "reference": "سورة البقرة آية :152",
+    "category": "dhikr",
+    "tags": [
+      "dhikr"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 15,
+    "title": "فضل الذكر",
+    "arabic": "وقال صلى الله عليه وسلم: من قعد مقعداً لم يذكر الله فيه كانت عليه من الله ترة ومن اضطجع مضجعاً لم يذكر الله فيه كانت عليه من الله ترة",
+    "translation": null,
+    "transliteration": null,
+    "reference": "سورة البقرة آية :152",
+    "category": "dhikr",
+    "tags": [
+      "dhikr"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 16,
+    "title": "فضل الذكر",
+    "arabic": "وقال صلى الله عليه وسلم : ما جلس قوم مجلساً لم يذكروا الله فيه ، ولم يصلوا على نبيهم إلا كان عليهم ترة ، فإن شاء عذبهم وإن شاء غفر لهم",
+    "translation": null,
+    "transliteration": null,
+    "reference": "سورة البقرة آية :152",
+    "category": "dhikr",
+    "tags": [
+      "dhikr"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 17,
+    "title": "فضل الذكر",
+    "arabic": "وقال صلى الله عليه وسلم : ما من قوم يقومون من مجلس لا يذكرون الله فيه إلا قاموا عن مثل جيفة حمار وكان لهم حسرة",
+    "translation": null,
+    "transliteration": null,
+    "reference": "سورة البقرة آية :152",
+    "category": "dhikr",
+    "tags": [
+      "dhikr"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 18,
+    "title": "أذكار الاستيقاظ من النوم",
+    "arabic": "الحَمْدُ لله الذِي أحْيَانا بَعْدَ مَا أمَاتَنَا وإلَيْهِ النَشُور",
+    "translation": null,
+    "transliteration": null,
+    "reference": "* أي الموت المجازي وهو النوم، يقال النوم الموت الخفيف",
+    "category": "waking_up",
+    "tags": [
+      "waking_up"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 19,
+    "title": "أذكار الاستيقاظ من النوم",
+    "arabic": "الحَمْدُ لله الذِي عَافَانِي في جَسَدِي ورَدَّ عَلَيَّ رُوحِي، وأَذِنَ لي بِذِكْرهِ",
+    "translation": null,
+    "transliteration": null,
+    "reference": "* أي الموت المجازي وهو النوم، يقال النوم الموت الخفيف",
+    "category": "waking_up",
+    "tags": [
+      "waking_up"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 20,
+    "title": "دعاء لبس الثوب",
+    "arabic": "مَنْ لَبِسَ ثَوْباًً فقال: الحَمْدُ لله الذِي كَساني هذا ورَزَقَنِيه مِنْ غَيْرِ حَوْلٍ مِنّي ولا قُوةٍ",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أهل السنن إلا النسائي انظر إرواء الغليل 7/ 47",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 21,
+    "title": "دعاء لبس الثوب الجديد",
+    "arabic": "اللَّهُمَّ لَكَ الحَمْدُ أَنْتَ كَسَوتَنِيه،أسْألك مِنْ خَيرِهِ وخَيْرَ ما صُنع لَهُ،وأعُوذُ بِكَ مِنْ شرِّه وشَرَّ ما صُنِعَ لَهُ",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أبو داود والترمذي والبغوي وانظر مختصر شمائل الترمذي للألباني ص 47",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 22,
+    "title": "الدعاء لمن لبس ثوباً جديداً",
+    "arabic": "إلبِسْ جَدِيداً وعِشْ حميداً ومُتْ شهيداً",
+    "translation": null,
+    "transliteration": null,
+    "reference": "ابن ماجه 2/ 1178 والبغوي 12/ 41 وانظر صحيح ابن ماجة 2/ 275",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 23,
+    "title": "الدعاء لمن لبس ثوباً جديداً",
+    "arabic": "تُبْلي ويَخْلِفُ الله تعالى",
+    "translation": null,
+    "transliteration": null,
+    "reference": "ابن ماجه 2/ 1178 والبغوي 12/ 41 وانظر صحيح ابن ماجة 2/ 275",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 24,
+    "title": "ما يقول إذا وضع الثوب",
+    "arabic": "سِتْرُ ما بَيْنَ أعْيُن الجِنِّ وَعَوْرَاتِ بَني آدَمَ إذا وَضَعَ أحدُهُمْ ثَوْبَهُ أنْ يقول: بِسم الله",
+    "translation": null,
+    "transliteration": null,
+    "reference": "الترمذي 2/505 وغيره وانظر الإرواء برقم 49 صحيح الجامع 3/ 203",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 25,
+    "title": "دعاء دخول الخلاء",
+    "arabic": "بسم الله، اللهُمَّ إنّي أعُوذُ بِكَ مِنَ الخُبْثِ والخبائِثِ",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه البخاري 1/ 45 ومسلم 1/283 وزيادة بسم الله في أوله متفق عليه، أخرجها سعيد بن منصور أنظر فتح الباري 1/244",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 26,
+    "title": "دعاء الخروج من الخلاء",
+    "arabic": "غُفْرانَكَ",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أصحاب السنن إلا النسائي أخرجه في عمل اليوم والليلة انظر تخريج زاد المعاد 2/ 387",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 27,
+    "title": "الذكر قبل الوضوء",
+    "arabic": "بسم الله",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أبو داود وابن ماجه وأحمد وانظر إرواء الغليل 1/ 122",
+    "category": "dhikr",
+    "tags": [
+      "dhikr"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 28,
+    "title": "الذكر بعد الفراغ من الوضوء",
+    "arabic": "أشهد أن لا إله إلا الله وحده لا شريك له ، وأشهد أن محمداً عبده ورسوله",
+    "translation": null,
+    "transliteration": null,
+    "reference": "رواه مسلم 1/ 209",
+    "category": "dhikr",
+    "tags": [
+      "dhikr"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 29,
+    "title": "الذكر بعد الفراغ من الوضوء",
+    "arabic": "وزاد الترمذي بعد ذكر الشهادتين :اللهم اجعلني من التوابين واجعلني من المتطهرين",
+    "translation": null,
+    "transliteration": null,
+    "reference": "رواه مسلم 1/ 209",
+    "category": "dhikr",
+    "tags": [
+      "dhikr"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 30,
+    "title": "الذكر بعد الفراغ من الوضوء",
+    "arabic": "سبحانك اللهم وبحمدك أشهد أن لا إله إلا أنت أستغفرك وأتوب إليك",
+    "translation": null,
+    "transliteration": null,
+    "reference": "رواه مسلم 1/ 209",
+    "category": "dhikr",
+    "tags": [
+      "dhikr"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 31,
+    "title": "الذكر عند الخروج من المنزل",
+    "arabic": "بسم الله ، توكَّلْتُ على الله ، ولا حَوْلَ ولا قُوةَ إلا بالله",
+    "translation": null,
+    "transliteration": null,
+    "reference": " أبو داود 4/ 325 والترمذي 5/ 490 وانظر صحيح الترمذي 3/ 151",
+    "category": "entering_leaving_home",
+    "tags": [
+      "entering_leaving_home"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 32,
+    "title": "الذكر عند الخروج من المنزل",
+    "arabic": "اللهُمَ إني أعُوذُ بِكَ أن أَضِلَّ أوْ أُضَلَّ أَوْ أزِلَّ، أو أُزَلَّ، أوْ أظلِم أوْ أُظْلَم، أوْ أَجْهَلَ أوْ يُجْهَلَ عَلَيَّ",
+    "translation": null,
+    "transliteration": null,
+    "reference": " أبو داود 4/ 325 والترمذي 5/ 490 وانظر صحيح الترمذي 3/ 151",
+    "category": "entering_leaving_home",
+    "tags": [
+      "entering_leaving_home"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 33,
+    "title": "الذكر عند الدخول المنزل",
+    "arabic": "بسم الله ولجنا ،وبسم الله خرجنا ، وعلى ربنا توكلنا ، ثم ليسلم على أهله",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أبو داود 4/ 325 ، وحسن إسناده العلامة ابن باز في تحفة الأخيار ص28 ، وفي الصحيح  إذا دخل الرجل بيته فذكر بيته فذكر الله عند دخوله وعند طعامه قال الشيطان لا مبيت لكم ولا عشاء  مسلم برقم 2018",
+    "category": "entering_leaving_home",
+    "tags": [
+      "entering_leaving_home"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 34,
+    "title": "دعاء الذهاب إلى المسجد",
+    "arabic": "اللهم اجعل في قلبي نوراً ، وفي لساني نوراً ، وفي سمعي نوراً ، وفي بصري نوراً ، ومن فوقي نوراً ، ومن تحتي نوراً ، وعن يميني نوراً ، وعن شمالي نوراً ، ومن أمامي نوراً ، ومن خلفي نوراً ، و اجعل في نفسي نوراً ، وأعظم لي نوراً ، وعظم لي نوراً ، واجعل لي نوراً ، واجعلني نوراً ، اللهم أعطني نوراً ، واجعل في عصبي نوراً ، وفي لحمي نوراً ، وفي دمي نوراً ، وفي شعري نوراً ، وفي بشري نوراً",
+    "translation": null,
+    "transliteration": null,
+    "reference": "جميع هذه الخصال في البخاري 11/ 116 برقم 6316 ومسلم 1/ 526، 529 ، 530 برقم 763",
+    "category": "mosque",
+    "tags": [
+      "mosque"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 35,
+    "title": "دعاء الذهاب إلى المسجد",
+    "arabic": "اللهم اجعل لي نوراً في قبري .. ونوراً في عظامي",
+    "translation": null,
+    "transliteration": null,
+    "reference": "جميع هذه الخصال في البخاري 11/ 116 برقم 6316 ومسلم 1/ 526، 529 ، 530 برقم 763",
+    "category": "mosque",
+    "tags": [
+      "mosque"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 36,
+    "title": "دعاء الذهاب إلى المسجد",
+    "arabic": "وزدني نوراً ، وزدني نوراً ، وزدني نوراً",
+    "translation": null,
+    "transliteration": null,
+    "reference": "جميع هذه الخصال في البخاري 11/ 116 برقم 6316 ومسلم 1/ 526، 529 ، 530 برقم 763",
+    "category": "mosque",
+    "tags": [
+      "mosque"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 37,
+    "title": "دعاء الذهاب إلى المسجد",
+    "arabic": "وهب لي نوراً على نوراً",
+    "translation": null,
+    "transliteration": null,
+    "reference": "جميع هذه الخصال في البخاري 11/ 116 برقم 6316 ومسلم 1/ 526، 529 ، 530 برقم 763",
+    "category": "mosque",
+    "tags": [
+      "mosque"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 38,
+    "title": "دعاء دخول المسجد",
+    "arabic": "أعوذ بالله العظيم ،وبوجهه الكريم ،وسلطانه القديم ،من الشيطان الرجيم",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أبو داود وانظر صحيح الجامع برقم 4591",
+    "category": "mosque",
+    "tags": [
+      "mosque"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 39,
+    "title": "دعاء دخول المسجد",
+    "arabic": "، اللهم افتح لي أبواب رحمتك",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أبو داود وانظر صحيح الجامع برقم 4591",
+    "category": "mosque",
+    "tags": [
+      "mosque"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 40,
+    "title": "دعاء الخروج من المسجد",
+    "arabic": "بسم الله والصلاة والسلام على رسول الله ،اللهم إني أسألك من فضلك، اللهم اعصمني من الشيطان الرجيم",
+    "translation": null,
+    "transliteration": null,
+    "reference": "انظر تخريج روايات الحديث السابق رقم 20 وزيادة (( اللهم اعصمني من الشيطان الرجيم )) لابن ماجه . انظر صحيح ابن ماجه 1/ 288",
+    "category": "mosque",
+    "tags": [
+      "mosque"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 41,
+    "title": "أذكار الأذان",
+    "arabic": "يقول مثل ما يقول المؤذن إلا في حي على الصلاة ، وحي على الفلاح فيقول لا حول ولا قوة إلا بالله",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 1/ 152 ومسلم 1/ 288",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 42,
+    "title": "أذكار الأذان",
+    "arabic": "يقول وأنا أشهد أن لا إله إلا الله ، وحده لا شريك له ، وأن محمد عبده ورسوله ، رضيت بالله رباً ، وبمحمداً رسولاً وبالإسلام ديناً )",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 1/ 152 ومسلم 1/ 288",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 43,
+    "title": "أذكار الأذان",
+    "arabic": "يصلي على النبي صلى الله عليه وسلم بعد فراغه من إجابة المؤذن",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 1/ 152 ومسلم 1/ 288",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 44,
+    "title": "أذكار الأذان",
+    "arabic": "اللهم رب هذه الدعوة التامة ،والصلاة القائمة، آت محمداً الوسيلة والفضيلة، وأبعثه مقاماً محموداً الذي وعدته،",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 1/ 152 ومسلم 1/ 288",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 45,
+    "title": "أذكار الأذان",
+    "arabic": "يدعو لنفسه بين الأذان والإقامة فإن الدعاء حينئذٍ لا يرد",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 1/ 152 ومسلم 1/ 288",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 46,
+    "title": "دعاء الاستفتاح",
+    "arabic": "اللهم باعد بيني وبين خطاياي كما باعدت بين المشرق والمغرب ، اللهم نقني من خطاياي كما ينقى الثوب الأبيض من الدنس اللهم اغسلني من خطاياي بالماء والثلج والبرد",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 1/ 181 ومسلم 1/ 419",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 47,
+    "title": "دعاء الاستفتاح",
+    "arabic": "سبحانك اللهم وبحمد ك وتبارك اسمك وتعالى جدك، ولا أ له غيرك",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 1/ 181 ومسلم 1/ 419",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 48,
+    "title": "دعاء الاستفتاح",
+    "arabic": "اللهم رب جبرائيل وميكائيل وإسرافيل ، فاطر السموات والأرض ، عالم الغيب والشهادة ، أنت تحكم بين عبادك فيما كانوا فيه يختلفون اهدني لما اختلف فيه من الحق بإذنك إنك تهدي من تشاء إلى صراط مستقيم",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 1/ 181 ومسلم 1/ 419",
+    "category": "general",
+    "tags": [
+      "general",
+      "guidance"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 49,
+    "title": "دعاء الاستفتاح",
+    "arabic": "الله اكبر كبيرا، الله اكبر كبيرا، الله اكبر كبيرا، والحمد لله كثيرا، والحمد لله كثيرا، والحمد لله كثيرا، وسبحان الله بكرةً وأصيلا ـ ثلاثا ـ أعوذ بالله من الشيطان الرجيم : من نفخه، ونفثه ،و همزه",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 1/ 181 ومسلم 1/ 419",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 50,
+    "title": "دعاء الاستفتاح",
+    "arabic": "كان النبي صلى الله عليه وسلم إذا قام من الليل يتهجد قال: اللهم لك الحمد أنت نور السموات والأرض ومن فيهن ، ولك الحمد أنت قيمُ السموات والأرض ومن فيهن ، أنت الحق ، ووعدك الحق ، وقولك الحق ،ولقاؤك الحق ، والجنة حق ، والنار حق ، والنبيّون حق ومحمد صلى الله عليه وسلم حق والساعة حق ]",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 1/ 181 ومسلم 1/ 419",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 51,
+    "title": "دعاء الركوع",
+    "arabic": "سبحان ربي العظيم ثلاث مرات",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أهل السنن وأحمد وانظر صحيح الترمذي 1/83",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 52,
+    "title": "دعاء الركوع",
+    "arabic": "سبحانك اللهم ربنا وبحمدك ، اللهم اغفر لي",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أهل السنن وأحمد وانظر صحيح الترمذي 1/83",
+    "category": "general",
+    "tags": [
+      "general",
+      "forgiveness"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 53,
+    "title": "دعاء الركوع",
+    "arabic": "سبوح قدوس رب الملائكة والروح",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أهل السنن وأحمد وانظر صحيح الترمذي 1/83",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 54,
+    "title": "دعاء الركوع",
+    "arabic": "اللهم لك ركعت وبك آمنت ،ولك أسلمت خشع لك سمعي وبصري ودمي ولحمي وعظمي وعصبي،وما استقل به قدمي",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أهل السنن وأحمد وانظر صحيح الترمذي 1/83",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 55,
+    "title": "دعاء الركوع",
+    "arabic": "سبحان ذي الجبروت والملكوت والكبرياء والعظمة",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أهل السنن وأحمد وانظر صحيح الترمذي 1/83",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 56,
+    "title": "دعاء الرفع من الركوع",
+    "arabic": "سمع الله لمن حمده",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 2/ 282",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 57,
+    "title": "دعاء الرفع من الركوع",
+    "arabic": "ربنا ولك الحمد ، حمداً كثيراً طيباً مباركاً فيه",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 2/ 282",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 58,
+    "title": "دعاء الرفع من الركوع",
+    "arabic": "....ملء السموات وملء الأرض وما بينهما ، وملء ما شئت من شئ بعد .أهل الثناء والمجد،أحق ما قال العبد، وكلنا لك عبد ، اللهم لا مانع لما أعطيت ولا معطي لما منعت ولا ينفع ذا الجد منك الجد",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 2/ 282",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 59,
+    "title": "دعاء السجود",
+    "arabic": "سبحان ربي الأعلى ، ثلاث مرات .",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أهل السنن وأحمد وانظر صحيح الترمذي 1/83",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 62,
+    "title": "دعاء السجود",
+    "arabic": "اللهم لك سجدت وبك آمنت ولك أسلمت،سجد وجهي للذي خلقه وصوره وشق سمعه وبصره تبارك الله أحسن الخالقين",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أهل السنن وأحمد وانظر صحيح الترمذي 1/83",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 63,
+    "title": "دعاء السجود",
+    "arabic": "سبحان ذي الجبروت والملكوت ، والكبرياء والعظمة",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أهل السنن وأحمد وانظر صحيح الترمذي 1/83",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 64,
+    "title": "دعاء السجود",
+    "arabic": "اللهم اغفر لي ذنبي كله ، دقه وجله ،وأوله وآخره ،وعلانيته وسره",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أهل السنن وأحمد وانظر صحيح الترمذي 1/83",
+    "category": "general",
+    "tags": [
+      "general",
+      "forgiveness"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 65,
+    "title": "دعاء السجود",
+    "arabic": "اللهم إني أعوذ برضاك من سخطك وبمعافاتك من عقوبتك،وأعوذ بك منك لا أحصي ثناء عليك أنت كما أثنيت على نفسك",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أهل السنن وأحمد وانظر صحيح الترمذي 1/83",
+    "category": "general",
+    "tags": [
+      "general",
+      "protection"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 66,
+    "title": "دعاء الجلسة بين السجدتين",
+    "arabic": "رب اغفر لي ، رب اغفر لي",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أبو داود 1/ 231وانظر  صحيح ابن ماجة1/ 148",
+    "category": "general",
+    "tags": [
+      "general",
+      "forgiveness"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 67,
+    "title": "دعاء الجلسة بين السجدتين",
+    "arabic": "اللهم اغفر لي ، وارحمني ،واهدني ، واجبرني، وعافني،وارزقني ، وارفعني",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أبو داود 1/ 231وانظر  صحيح ابن ماجة1/ 148",
+    "category": "general",
+    "tags": [
+      "general",
+      "forgiveness",
+      "rizq_sustenance",
+      "guidance",
+      "protection",
+      "mercy"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 68,
+    "title": "دعاء سجود التلاوة",
+    "arabic": "سجد وجهي للذي خلقه ، وشق سمعه وبصره بحوله وقوته فتبارك الله أحسن الخالقين",
+    "translation": null,
+    "transliteration": null,
+    "reference": "الترمذي 2/474 وأحمد 6/30 والحاكم وصححه ووافقه الذهبي 1/ 220 والزيادة له",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 69,
+    "title": "دعاء سجود التلاوة",
+    "arabic": "اللهم أكتب لي بها عندك أجراً ، وضع عني بها وزراً ، واجعلها لي عندك ذخراً ، وتقبلها مني كما تقبلتها من عبدك داود",
+    "translation": null,
+    "transliteration": null,
+    "reference": "الترمذي 2/474 وأحمد 6/30 والحاكم وصححه ووافقه الذهبي 1/ 220 والزيادة له",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 70,
+    "title": "التشهد",
+    "arabic": "التحيات لله ، والصلوات ، والطيبات ، السلام عليك أيها النبي ورحمة الله وبركاته ، السلام علينا وعلى عباد الله الصالحين ،أشهد أن لا إله إلا الله ، وأشهد أن محمداً عبده ورسوله",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 1/13 ومسلم 1/ 301",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 71,
+    "title": "الصلاة على النبي صلى الله عليه وسلم بعد التشهد",
+    "arabic": "اللهم صل على محمد وعلى آل محمد ، كما صليت على إبراهيم ، وعلى آل إبراهيم ، إنك حميد مجيد ، اللهم بارك على محمد وعلى آل محمد كما باركت على إبراهيم ، وعلى آل إبراهيم إنك حميد مجيد",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 6/ 408",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 72,
+    "title": "الصلاة على النبي صلى الله عليه وسلم بعد التشهد",
+    "arabic": "اللهم صل على محمد وعلى أزواجه وذريته،كما صليت على آل إبراهيم، وبارك على محمد وعلى أزواجه وذريته كما باركت على آل إبراهيم إنك حميد مجيد",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 6/ 408",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 73,
+    "title": "الدعاء بعد التشهد الأخير وقبل السلام",
+    "arabic": "اللهم إني أعوذ بك من عذاب القبر،ومن عذاب جهنم،ومن فتنة المحيا والممات ،ومن شر فتنة المسيح الدجال",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 2/ 102 ومسلم 1/ 412 واللفظ لمسلم  ",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 74,
+    "title": "الدعاء بعد التشهد الأخير وقبل السلام",
+    "arabic": "اللهم إني أعوذ بك من عذاب القبر،وأعوذ بك من فتنة المسيح الدجال،وأعوذ بك من فتنة المحيا والممات، اللهم إني أعوذ بك من المأثم والمغرم",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 2/ 102 ومسلم 1/ 412 واللفظ لمسلم  ",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 75,
+    "title": "الدعاء بعد التشهد الأخير وقبل السلام",
+    "arabic": "اللهم إني ظلمت نفسي ظلماً كثيراً ، ولا يغفر الذنوب إلا أنت ، فاغفر لي مغفرة من عندك وارحمني إنك أنت الغفور الرحيم",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 2/ 102 ومسلم 1/ 412 واللفظ لمسلم  ",
+    "category": "after_salah",
+    "tags": [
+      "after_salah",
+      "forgiveness",
+      "mercy"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 76,
+    "title": "الدعاء بعد التشهد الأخير وقبل السلام",
+    "arabic": "اللهم اغفر لي ما قدمت وما أخرت وما أسررت وما أعلنت وما أسرفت وما أنت أعلم به مني أنت المقدم وأنت المؤخر لا إله إلا أنت",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 2/ 102 ومسلم 1/ 412 واللفظ لمسلم  ",
+    "category": "after_salah",
+    "tags": [
+      "after_salah",
+      "forgiveness"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 77,
+    "title": "الدعاء بعد التشهد الأخير وقبل السلام",
+    "arabic": "اللهم أعني على ذكرك ، وشكرك وحسن عبادتك",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 2/ 102 ومسلم 1/ 412 واللفظ لمسلم  ",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 78,
+    "title": "الدعاء بعد التشهد الأخير وقبل السلام",
+    "arabic": "اللهم إني أعوذ بك من البخل وأعوذ بك من الجبن ، وأعوذ بك من أن أرد إلى أرذل العمر ، وأعوذ بك من فتنة الدنيا وأعوذ بك من عذاب القبر",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 2/ 102 ومسلم 1/ 412 واللفظ لمسلم  ",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 79,
+    "title": "الدعاء بعد التشهد الأخير وقبل السلام",
+    "arabic": "اللهم إني أسألك الجنة وأعوذ بك من النار",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 2/ 102 ومسلم 1/ 412 واللفظ لمسلم  ",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 80,
+    "title": "الدعاء بعد التشهد الأخير وقبل السلام",
+    "arabic": "اللهم إني أسألك يا الله بأنك الواحد الأحد الصمد الذي لم يلد ولم يولد ولم يكن له كفواً أحد أن تغفر لي ذنوبي إنك أنت الغفور الرحيم",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 2/ 102 ومسلم 1/ 412 واللفظ لمسلم  ",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 81,
+    "title": "الدعاء بعد التشهد الأخير وقبل السلام",
+    "arabic": "اللهم إني أسألك بأن لك الحمد ، لا إله إلا أنت وحدك لا شريك لك ، المنان ، يا بديع السموات والأرض يا ذا الجلال والإكرام يا حي يا قيوم إني أسألك الجنة وأعوذ بك من النار",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 2/ 102 ومسلم 1/ 412 واللفظ لمسلم  ",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 82,
+    "title": "الدعاء بعد التشهد الأخير وقبل السلام",
+    "arabic": "اللهم إني أسألك بأني أشهد أنك أنت الله لا إله إلا أنت،الأحد الصمد الذي لم يلد ولم يولد ولم يكن له كفواً أحد",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 2/ 102 ومسلم 1/ 412 واللفظ لمسلم  ",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 83,
+    "title": "الأذكار بعد السلام من الصلاة",
+    "arabic": "أستغفر الله ثلاثاً .. اللهم أنت السلام ، ومنك السلام ، تباركت يا ذا الجلال والإكرام",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم1/ 414",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 84,
+    "title": "الأذكار بعد السلام من الصلاة",
+    "arabic": "لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ اللَّهُمَّ لَا مَانِعَ لِمَا أَعْطَيْتَ وَلَا مُعْطِيَ لِمَا مَنَعْتَ وَلَا يَنْفَعُ ذَا الْجَدِّ مِنْكَ الْجَدُّ",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم1/ 414",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 85,
+    "title": "الأذكار بعد السلام من الصلاة",
+    "arabic": "لا إله إلا الله وحده لا شريك له،له الملك وله الحمد وهو على كل شئ قدير،لا حول ولا قوة إلا بالله،لا إله إلا الله،ولا نعبد إلا إياه ، له النعمة وله الفضل ،وله الثناء الحسن،لا إله إلا الله مخلصين له الدين ولو كره الكافرون",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم1/ 414",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 86,
+    "title": "الأذكار بعد السلام من الصلاة",
+    "arabic": "سبحان الله ، والحمد لله ، والله أكبر لا إله إلا الله وحده لا شريك له ، له الملك وله الحمد وهو على كل شيء قدير",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم1/ 414",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 87,
+    "title": "الأذكار بعد السلام من الصلاة",
+    "arabic": "لا إله إلا الله وحده لا شريك له ، له الملك وله الحمد ، يحيي ويميت وهو على كل شئ قدير عشر مرات بعد صلاة المغرب والصبح",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم1/ 414",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 88,
+    "title": "الأذكار بعد السلام من الصلاة",
+    "arabic": "اللهم إني أسألك علماً نافعاً ، ورزقاً طيباً ، وعملاً متقبلاً بعد السلام من صلاة الفجر",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم1/ 414",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 89,
+    "title": "دعاء صلاة الاستخارة",
+    "arabic": "وما ندم من استخار الخالق ، وشاور المخلوقين المؤمنين وتثبت في أمره ، فقد قال سبحانه وَشَاوِرْهُمْ فِي الأَمْرِ فَإِذَا عَزَمْتَ فَتَوَكَّلْ عَلَى اللّهِ",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري7/ 162",
+    "category": "general",
+    "tags": [
+      "general",
+      "steadfastness"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 90,
+    "title": "أذكار الصباح والمساء",
+    "arabic": "الحمد لله وحده ، والصلاة والسلام على من لا نبي بعده",
+    "translation": null,
+    "transliteration": null,
+    "reference": "عن أنس يرفعه  لأن أقعد مع قوم يذكرون الله تعالى من صلاة الغداة حتى تطلع الشمس أحب إلي من أن أعتق أربعة من ولد إسماعيل ، ولأن أقعد مع قوم يذكرون الله من صلاة العصر إلى أن تغرب الشمس أحب إلي من أن أعتق أربعة  أبو داود برقم 3667، وحسنه الألباني ، صحيح أبو داود 2/ 698",
+    "category": "morning_evening",
+    "tags": [
+      "morning_evening"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 91,
+    "title": "أذكار الصباح والمساء",
+    "arabic": "أصبحنا وأصبح الملك لله ، والحمد لله، لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير، ربِّ أسألك خير ما في هذا اليوم وخير ما بعده وأعوذ بك من شر ما في هذا اليوم وشر ما بعده ربِّ أعوذ بك من الكسل وسوء الكبر، ربَّ أعوذ بك من عذابٍ في النار وعذاب في القبر وإذا أمسي قال ذلك أيضا : أمسينا وأمسي الملك لله .",
+    "translation": null,
+    "transliteration": null,
+    "reference": "عن أنس يرفعه  لأن أقعد مع قوم يذكرون الله تعالى من صلاة الغداة حتى تطلع الشمس أحب إلي من أن أعتق أربعة من ولد إسماعيل ، ولأن أقعد مع قوم يذكرون الله من صلاة العصر إلى أن تغرب الشمس أحب إلي من أن أعتق أربعة  أبو داود برقم 3667، وحسنه الألباني ، صحيح أبو داود 2/ 698",
+    "category": "morning_evening",
+    "tags": [
+      "morning_evening"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 92,
+    "title": "أذكار الصباح والمساء",
+    "arabic": "اللهم بك أصبحنا وبك أمسينا وبك نحيا وبك نموت وإليك النشور وإذا أمسي فليقل : اللهم بك أمسينا، وبك أصبحنا، وبك نحيا وبك نموت، وإليك المصير .",
+    "translation": null,
+    "transliteration": null,
+    "reference": "عن أنس يرفعه  لأن أقعد مع قوم يذكرون الله تعالى من صلاة الغداة حتى تطلع الشمس أحب إلي من أن أعتق أربعة من ولد إسماعيل ، ولأن أقعد مع قوم يذكرون الله من صلاة العصر إلى أن تغرب الشمس أحب إلي من أن أعتق أربعة  أبو داود برقم 3667، وحسنه الألباني ، صحيح أبو داود 2/ 698",
+    "category": "morning_evening",
+    "tags": [
+      "morning_evening"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 93,
+    "title": "أذكار الصباح والمساء",
+    "arabic": "اللهم أنت ربي لا إله إلا أنت خَلَقتني وأنا عَبْدُك وأنا على عهدك ووعدك ما استطعت أعوذ بك من شر ما صنعت أبوء لك بنعمتك علي وأبوء بذنبي فاغفر لي فإنه لا يغفر الذنوب إلا أنت",
+    "translation": null,
+    "transliteration": null,
+    "reference": "عن أنس يرفعه  لأن أقعد مع قوم يذكرون الله تعالى من صلاة الغداة حتى تطلع الشمس أحب إلي من أن أعتق أربعة من ولد إسماعيل ، ولأن أقعد مع قوم يذكرون الله من صلاة العصر إلى أن تغرب الشمس أحب إلي من أن أعتق أربعة  أبو داود برقم 3667، وحسنه الألباني ، صحيح أبو داود 2/ 698",
+    "category": "morning_evening",
+    "tags": [
+      "morning_evening",
+      "forgiveness"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 94,
+    "title": "أذكار الصباح والمساء",
+    "arabic": "اللهم إني أصبحت أشهدك وأشهد حملة عرشك ، وملائكتك وجميع خلقك ، أنك أنت الله لا إله إلا أنت وحدك لا شريك لك ، وأن محمداً عبدك ورسولك",
+    "translation": null,
+    "transliteration": null,
+    "reference": "عن أنس يرفعه  لأن أقعد مع قوم يذكرون الله تعالى من صلاة الغداة حتى تطلع الشمس أحب إلي من أن أعتق أربعة من ولد إسماعيل ، ولأن أقعد مع قوم يذكرون الله من صلاة العصر إلى أن تغرب الشمس أحب إلي من أن أعتق أربعة  أبو داود برقم 3667، وحسنه الألباني ، صحيح أبو داود 2/ 698",
+    "category": "morning_evening",
+    "tags": [
+      "morning_evening"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 95,
+    "title": "أذكار الصباح والمساء",
+    "arabic": "اللهم ما أصبح بي من نعمة أو بأحد من خلقك فمنك وحدك لا شريك لك ، فلك الحمد ولك الشكر",
+    "translation": null,
+    "transliteration": null,
+    "reference": "عن أنس يرفعه  لأن أقعد مع قوم يذكرون الله تعالى من صلاة الغداة حتى تطلع الشمس أحب إلي من أن أعتق أربعة من ولد إسماعيل ، ولأن أقعد مع قوم يذكرون الله من صلاة العصر إلى أن تغرب الشمس أحب إلي من أن أعتق أربعة  أبو داود برقم 3667، وحسنه الألباني ، صحيح أبو داود 2/ 698",
+    "category": "morning_evening",
+    "tags": [
+      "morning_evening"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 96,
+    "title": "أذكار الصباح والمساء",
+    "arabic": "اللهم عافني في بَدَني، اللهم عافني في سمعي، اللهم عافني في بصري، لا إله إلا أنت .اللهم إني أعوذ بك من الكفر، والفقر، اللهم إني أعوذ بك من عذاب القبر لا إله إلا أنت",
+    "translation": null,
+    "transliteration": null,
+    "reference": "عن أنس يرفعه  لأن أقعد مع قوم يذكرون الله تعالى من صلاة الغداة حتى تطلع الشمس أحب إلي من أن أعتق أربعة من ولد إسماعيل ، ولأن أقعد مع قوم يذكرون الله من صلاة العصر إلى أن تغرب الشمس أحب إلي من أن أعتق أربعة  أبو داود برقم 3667، وحسنه الألباني ، صحيح أبو داود 2/ 698",
+    "category": "morning_evening",
+    "tags": [
+      "morning_evening",
+      "protection"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 97,
+    "title": "أذكار الصباح والمساء",
+    "arabic": "حسبي الله لا إله إلا هو عليه توكلت وهو رب العرش العظيم",
+    "translation": null,
+    "transliteration": null,
+    "reference": "عن أنس يرفعه  لأن أقعد مع قوم يذكرون الله تعالى من صلاة الغداة حتى تطلع الشمس أحب إلي من أن أعتق أربعة من ولد إسماعيل ، ولأن أقعد مع قوم يذكرون الله من صلاة العصر إلى أن تغرب الشمس أحب إلي من أن أعتق أربعة  أبو داود برقم 3667، وحسنه الألباني ، صحيح أبو داود 2/ 698",
+    "category": "morning_evening",
+    "tags": [
+      "morning_evening"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 98,
+    "title": "أذكار الصباح والمساء",
+    "arabic": "اللهم إني أسألك العفو والعافية في الدنيا والآخرة، اللهم إني أسألك العفو والعافية في ديني ودنياي وأهلي ومالي،اللهم استر عوراتي وآمن روعاتي، اللهم احفظني من بين يديَّ ومن خلفي وعن يميني وعن شمالي ومن فوقي وأعوذ بعظمتك أن أغتال من تحتي",
+    "translation": null,
+    "transliteration": null,
+    "reference": "عن أنس يرفعه  لأن أقعد مع قوم يذكرون الله تعالى من صلاة الغداة حتى تطلع الشمس أحب إلي من أن أعتق أربعة من ولد إسماعيل ، ولأن أقعد مع قوم يذكرون الله من صلاة العصر إلى أن تغرب الشمس أحب إلي من أن أعتق أربعة  أبو داود برقم 3667، وحسنه الألباني ، صحيح أبو داود 2/ 698",
+    "category": "morning_evening",
+    "tags": [
+      "morning_evening",
+      "protection"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 99,
+    "title": "أذكار الصباح والمساء",
+    "arabic": "اللهم عَالِمَ الغيب والشَّهادة، فاطر السموات والأرض، رب كل شيء ومليكه، أشهد أن لا إله إلا أنت أعوذ بك من شر نفسي ومن شر الشيطان وشركه وأن اقترف على نفسي سوءًا أو أجُره إلى مسلم",
+    "translation": null,
+    "transliteration": null,
+    "reference": "عن أنس يرفعه  لأن أقعد مع قوم يذكرون الله تعالى من صلاة الغداة حتى تطلع الشمس أحب إلي من أن أعتق أربعة من ولد إسماعيل ، ولأن أقعد مع قوم يذكرون الله من صلاة العصر إلى أن تغرب الشمس أحب إلي من أن أعتق أربعة  أبو داود برقم 3667، وحسنه الألباني ، صحيح أبو داود 2/ 698",
+    "category": "morning_evening",
+    "tags": [
+      "morning_evening"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 100,
+    "title": "أذكار الصباح والمساء",
+    "arabic": "بسم الله الذي لا يضرُّ مع اسمه شيء في الأرض ولا في السماء وهو السميع العليم",
+    "translation": null,
+    "transliteration": null,
+    "reference": "عن أنس يرفعه  لأن أقعد مع قوم يذكرون الله تعالى من صلاة الغداة حتى تطلع الشمس أحب إلي من أن أعتق أربعة من ولد إسماعيل ، ولأن أقعد مع قوم يذكرون الله من صلاة العصر إلى أن تغرب الشمس أحب إلي من أن أعتق أربعة  أبو داود برقم 3667، وحسنه الألباني ، صحيح أبو داود 2/ 698",
+    "category": "morning_evening",
+    "tags": [
+      "morning_evening"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 101,
+    "title": "أذكار الصباح والمساء",
+    "arabic": "رضيت بالله رباً ، وبالإسلام ديناً وبمحمد صلى الله عليه وسلم نبياً",
+    "translation": null,
+    "transliteration": null,
+    "reference": "عن أنس يرفعه  لأن أقعد مع قوم يذكرون الله تعالى من صلاة الغداة حتى تطلع الشمس أحب إلي من أن أعتق أربعة من ولد إسماعيل ، ولأن أقعد مع قوم يذكرون الله من صلاة العصر إلى أن تغرب الشمس أحب إلي من أن أعتق أربعة  أبو داود برقم 3667، وحسنه الألباني ، صحيح أبو داود 2/ 698",
+    "category": "morning_evening",
+    "tags": [
+      "morning_evening"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 102,
+    "title": "أذكار الصباح والمساء",
+    "arabic": "يا حي يا قيوم برحمتك أستغيث أصلح لي شأني كُله ولا تَكِلْني إلى نفسي طرفة عين",
+    "translation": null,
+    "transliteration": null,
+    "reference": "عن أنس يرفعه  لأن أقعد مع قوم يذكرون الله تعالى من صلاة الغداة حتى تطلع الشمس أحب إلي من أن أعتق أربعة من ولد إسماعيل ، ولأن أقعد مع قوم يذكرون الله من صلاة العصر إلى أن تغرب الشمس أحب إلي من أن أعتق أربعة  أبو داود برقم 3667، وحسنه الألباني ، صحيح أبو داود 2/ 698",
+    "category": "morning_evening",
+    "tags": [
+      "morning_evening"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 103,
+    "title": "أذكار الصباح والمساء",
+    "arabic": "أصبحنا وأصبح الملك لله رب العالمين ، اللهم إني أسألك خير هذا اليوم : فتحه، ونصره ،ونوره ،وبركته، وهداه، وأعوذ بك من شر ما فيه وشر ما بعده",
+    "translation": null,
+    "transliteration": null,
+    "reference": "عن أنس يرفعه  لأن أقعد مع قوم يذكرون الله تعالى من صلاة الغداة حتى تطلع الشمس أحب إلي من أن أعتق أربعة من ولد إسماعيل ، ولأن أقعد مع قوم يذكرون الله من صلاة العصر إلى أن تغرب الشمس أحب إلي من أن أعتق أربعة  أبو داود برقم 3667، وحسنه الألباني ، صحيح أبو داود 2/ 698",
+    "category": "morning_evening",
+    "tags": [
+      "morning_evening"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 104,
+    "title": "أذكار الصباح والمساء",
+    "arabic": "أصبحنا على فطرة الإسلام وعلى كلمة الإخلاص، وعلى دين نبيَّنا محمد صلى الله عليه وسلم وعلى ملَّة أبينا إبراهيم حنيفاً مسلماً وما كان من المشركين",
+    "translation": null,
+    "transliteration": null,
+    "reference": "عن أنس يرفعه  لأن أقعد مع قوم يذكرون الله تعالى من صلاة الغداة حتى تطلع الشمس أحب إلي من أن أعتق أربعة من ولد إسماعيل ، ولأن أقعد مع قوم يذكرون الله من صلاة العصر إلى أن تغرب الشمس أحب إلي من أن أعتق أربعة  أبو داود برقم 3667، وحسنه الألباني ، صحيح أبو داود 2/ 698",
+    "category": "morning_evening",
+    "tags": [
+      "morning_evening"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 105,
+    "title": "أذكار الصباح والمساء",
+    "arabic": "من قال :سبحان الله وبحمده",
+    "translation": null,
+    "transliteration": null,
+    "reference": "عن أنس يرفعه  لأن أقعد مع قوم يذكرون الله تعالى من صلاة الغداة حتى تطلع الشمس أحب إلي من أن أعتق أربعة من ولد إسماعيل ، ولأن أقعد مع قوم يذكرون الله من صلاة العصر إلى أن تغرب الشمس أحب إلي من أن أعتق أربعة  أبو داود برقم 3667، وحسنه الألباني ، صحيح أبو داود 2/ 698",
+    "category": "morning_evening",
+    "tags": [
+      "morning_evening"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 106,
+    "title": "أذكار الصباح والمساء",
+    "arabic": "لا إله إلا الله وحده لا شريك له ،له الملك وله الحمد وهو على كل شيء قدير",
+    "translation": null,
+    "transliteration": null,
+    "reference": "عن أنس يرفعه  لأن أقعد مع قوم يذكرون الله تعالى من صلاة الغداة حتى تطلع الشمس أحب إلي من أن أعتق أربعة من ولد إسماعيل ، ولأن أقعد مع قوم يذكرون الله من صلاة العصر إلى أن تغرب الشمس أحب إلي من أن أعتق أربعة  أبو داود برقم 3667، وحسنه الألباني ، صحيح أبو داود 2/ 698",
+    "category": "morning_evening",
+    "tags": [
+      "morning_evening"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 108,
+    "title": "أذكار الصباح والمساء",
+    "arabic": "سبحان الله وبحمده عدد خلقهِ ورِضَا نفسِهِ وزِنُة عَرشِهِ ومِداد كلماته",
+    "translation": null,
+    "transliteration": null,
+    "reference": "عن أنس يرفعه  لأن أقعد مع قوم يذكرون الله تعالى من صلاة الغداة حتى تطلع الشمس أحب إلي من أن أعتق أربعة من ولد إسماعيل ، ولأن أقعد مع قوم يذكرون الله من صلاة العصر إلى أن تغرب الشمس أحب إلي من أن أعتق أربعة  أبو داود برقم 3667، وحسنه الألباني ، صحيح أبو داود 2/ 698",
+    "category": "morning_evening",
+    "tags": [
+      "morning_evening"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 109,
+    "title": "أذكار الصباح والمساء",
+    "arabic": "اللهم إني أسألك علماً نافعاً ، ورزقاً طيباً ، وعملاً متقبلاً",
+    "translation": null,
+    "transliteration": null,
+    "reference": "عن أنس يرفعه  لأن أقعد مع قوم يذكرون الله تعالى من صلاة الغداة حتى تطلع الشمس أحب إلي من أن أعتق أربعة من ولد إسماعيل ، ولأن أقعد مع قوم يذكرون الله من صلاة العصر إلى أن تغرب الشمس أحب إلي من أن أعتق أربعة  أبو داود برقم 3667، وحسنه الألباني ، صحيح أبو داود 2/ 698",
+    "category": "morning_evening",
+    "tags": [
+      "morning_evening"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 110,
+    "title": "أذكار الصباح والمساء",
+    "arabic": "أستغفر الله وأتوب إليه",
+    "translation": null,
+    "transliteration": null,
+    "reference": "عن أنس يرفعه  لأن أقعد مع قوم يذكرون الله تعالى من صلاة الغداة حتى تطلع الشمس أحب إلي من أن أعتق أربعة من ولد إسماعيل ، ولأن أقعد مع قوم يذكرون الله من صلاة العصر إلى أن تغرب الشمس أحب إلي من أن أعتق أربعة  أبو داود برقم 3667، وحسنه الألباني ، صحيح أبو داود 2/ 698",
+    "category": "morning_evening",
+    "tags": [
+      "morning_evening"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 111,
+    "title": "أذكار الصباح والمساء",
+    "arabic": "أعوذ بكلمات الله التامات من شر ما خلق",
+    "translation": null,
+    "transliteration": null,
+    "reference": "عن أنس يرفعه  لأن أقعد مع قوم يذكرون الله تعالى من صلاة الغداة حتى تطلع الشمس أحب إلي من أن أعتق أربعة من ولد إسماعيل ، ولأن أقعد مع قوم يذكرون الله من صلاة العصر إلى أن تغرب الشمس أحب إلي من أن أعتق أربعة  أبو داود برقم 3667، وحسنه الألباني ، صحيح أبو داود 2/ 698",
+    "category": "morning_evening",
+    "tags": [
+      "morning_evening"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 112,
+    "title": "أذكار الصباح والمساء",
+    "arabic": "اللهم صل وسلم على نبينا محمد",
+    "translation": null,
+    "transliteration": null,
+    "reference": "عن أنس يرفعه  لأن أقعد مع قوم يذكرون الله تعالى من صلاة الغداة حتى تطلع الشمس أحب إلي من أن أعتق أربعة من ولد إسماعيل ، ولأن أقعد مع قوم يذكرون الله من صلاة العصر إلى أن تغرب الشمس أحب إلي من أن أعتق أربعة  أبو داود برقم 3667، وحسنه الألباني ، صحيح أبو داود 2/ 698",
+    "category": "morning_evening",
+    "tags": [
+      "morning_evening"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 113,
+    "title": "أذكار النوم",
+    "arabic": "اللّهُ لاَ إِلَـهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ لاَ تَأْخُذُهُ سِنَةٌ وَلاَ نَوْمٌ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الأَرْضِ مَن ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلاَّ بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلاَ يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلاَّ بِمَا شَاء وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالأَرْضَ وَلاَ يَؤُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 9/62ومسلم 4/1723",
+    "category": "before_sleep",
+    "tags": [
+      "before_sleep"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 114,
+    "title": "أذكار النوم",
+    "arabic": "باسمك ربي وضعت جنبي وبك أرفعه إن أمسكت نفسي فارحمها، وإن أرسلتها فاحفظها بما تحفظ به عبادك الصالحين",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 9/62ومسلم 4/1723",
+    "category": "before_sleep",
+    "tags": [
+      "before_sleep",
+      "mercy"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 115,
+    "title": "أذكار النوم",
+    "arabic": "اللهم خَلَقْتَ نفسي وأنت توفَّاها لك مماتها ومَحْياها، إن أحييتها فاحفظها وإن أمتها فاغفر لها، اللهم إني أسألك العافية",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 9/62ومسلم 4/1723",
+    "category": "before_sleep",
+    "tags": [
+      "before_sleep",
+      "forgiveness",
+      "protection"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 116,
+    "title": "أذكار النوم",
+    "arabic": "اللهم قني عذابك يوم تبعث عبادك",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 9/62ومسلم 4/1723",
+    "category": "before_sleep",
+    "tags": [
+      "before_sleep"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 117,
+    "title": "أذكار النوم",
+    "arabic": "باسمِكَ اللهم أموت وأحيا",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 9/62ومسلم 4/1723",
+    "category": "before_sleep",
+    "tags": [
+      "before_sleep"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 118,
+    "title": "أذكار النوم",
+    "arabic": "سبحان الله والحمد لله والله أكبر",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 9/62ومسلم 4/1723",
+    "category": "before_sleep",
+    "tags": [
+      "before_sleep"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 119,
+    "title": "أذكار النوم",
+    "arabic": "اللهم ربَّ السموات السبع،ورب العرش العظيم،ربنا ورب كل شيء، فالق الحب والنوى، ومُنزل التوراة والإنجيل والفرقان، أعوذ بك من شر كل شيء أنت آخذٌ بناصيته،اللهم أنت الأول فليس قبلك شيء،وأنت الآخر فليس بعدك شيء، وأنت الظاهر فليس فوقك شيء، وأنت الباطن فليس دونك شيء، اقض عنا الدَّيْنَ واغننا من الفقر",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 9/62ومسلم 4/1723",
+    "category": "before_sleep",
+    "tags": [
+      "before_sleep"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 120,
+    "title": "أذكار النوم",
+    "arabic": "الحمد لله الذي أطعمنا وسقانا وكفانا وآوانا فكم ممن لا كافي له ولا مؤوي",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 9/62ومسلم 4/1723",
+    "category": "before_sleep",
+    "tags": [
+      "before_sleep"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 121,
+    "title": "أذكار النوم",
+    "arabic": "اللهم عالم الغيب والشهادة، فاطر السموات والأرض، رب كل شيء ومليكه أشهد أن لا إله إلا أنت أعوذ بك من شر نفسي، ومن شر الشيطان وشركه وأن أقترف على نفسي سوءًا أو أجرَّه إلى مسلم",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 9/62ومسلم 4/1723",
+    "category": "before_sleep",
+    "tags": [
+      "before_sleep"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 122,
+    "title": "أذكار النوم",
+    "arabic": "يقرأ ألم تنزيل السجدة، و تبارك الذي بيده الملك",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 9/62ومسلم 4/1723",
+    "category": "before_sleep",
+    "tags": [
+      "before_sleep"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 123,
+    "title": "أذكار النوم",
+    "arabic": "اللهم أسلمت نفسي إليك، وفوضت أمري إليك وألجأت ظهري إليك رهبةً ورغبةً إليك، لا ملجأ ولا منجا منك إلا إليك، آمنت بكتابك الذي أنزلت وبنبيك الذي أرسلت",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 9/62ومسلم 4/1723",
+    "category": "before_sleep",
+    "tags": [
+      "before_sleep"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 124,
+    "title": "الدعاء إذا تقلب ليلاً",
+    "arabic": "لا إله إلا الله الواحد القهار، ربُّ السموات والأرض وما بينهما العزيز الغفار",
+    "translation": null,
+    "transliteration": null,
+    "reference": "يقول ذلك إذا تقلب من جنب إلى جنب في الليل . أخرجه الحاكم وصححه ووفقه الذهبي 1/ 540 والنسائي في اليوم والليلة وابن السني وانظر صحيح الجامع 4/213",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 125,
+    "title": "دعاء القلق والفزع في النوم ومن بلي بالوحشة",
+    "arabic": "أعوذ بكلمات الله التَّامَّة من غضبه وعقابه، وشر عباده، ومن همزات الشياطين وأنْ يحضرون",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أبو داود 4/12 نظر صحيح الترمذي3/ 171",
+    "category": "before_sleep",
+    "tags": [
+      "before_sleep"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 126,
+    "title": "ما يفعل من رأى الرؤيا أو الحلم",
+    "arabic": "ينفث عن يساره",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم4/1772",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 127,
+    "title": "ما يفعل من رأى الرؤيا أو الحلم",
+    "arabic": "يستعيذ بالله من الشيطان ومن شر ما رأى",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم4/1772",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 128,
+    "title": "ما يفعل من رأى الرؤيا أو الحلم",
+    "arabic": "لا يحدث بها أحدا ً",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم4/1772",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 129,
+    "title": "ما يفعل من رأى الرؤيا أو الحلم",
+    "arabic": "يتحول عن جنبه الذي كان عليه",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم4/1772",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 130,
+    "title": "ما يفعل من رأى الرؤيا أو الحلم",
+    "arabic": "يقوم يصلي إن أراد ذلك",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم4/1772",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 131,
+    "title": "دعاء قنوت الوتر",
+    "arabic": "اللهم اهدني فيمن هديت ، وعافني فيمن عافيت ، وتولني فيمن توليت ، وبارك لي فيما أعطيت ، وقني شر ما قضيت ، فإنك تقضي ولا يقضى عليك ، إنه لا يذل من واليت ، تباركت ربنا وتعاليت",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أصحاب السنن الأربعة وأحمد والدرامي والحاكم والبيهقي وما بين المعكوفين للبيهقي وانظر صحيح الترمذي 1/144وصحيح ابن ماجه 1/194 وإرواء الغليل للألباني 2/172",
+    "category": "general",
+    "tags": [
+      "general",
+      "guidance",
+      "protection"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 132,
+    "title": "دعاء قنوت الوتر",
+    "arabic": "اللهم إني أعوذ برضاك من سخطك وأعوذ بمعافاتك من عقوبتك ، وأعوذ بك منك لا أحصي ثناء عليك ، أنت كما أثنيت على نفسك",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أصحاب السنن الأربعة وأحمد والدرامي والحاكم والبيهقي وما بين المعكوفين للبيهقي وانظر صحيح الترمذي 1/144وصحيح ابن ماجه 1/194 وإرواء الغليل للألباني 2/172",
+    "category": "general",
+    "tags": [
+      "general",
+      "protection"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 133,
+    "title": "دعاء قنوت الوتر",
+    "arabic": "اللهم إياك نعبد ، ولك نُصلي ونسجد ، وإليك نسعى ونحفدُ ، نرجُو رحمتك ، ونخشى عذابك ، إن عذابك بالكافرين ملحق ، اللهم إنا نستعينك ، ونستغفرك ، ونثني عليك الخير ، ولا نكفرك ، ونؤمن بك ونخضع لك ، ونخلع من يكفرك",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أصحاب السنن الأربعة وأحمد والدرامي والحاكم والبيهقي وما بين المعكوفين للبيهقي وانظر صحيح الترمذي 1/144وصحيح ابن ماجه 1/194 وإرواء الغليل للألباني 2/172",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 134,
+    "title": "الذكر عقب السلام من الوتر",
+    "arabic": "كان رسول الله صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ يقرأ في الوتر : و و . فإذا سلم قال سبحان الملك القدوس ثلاث مرات والثالثة يجهر بها ويمد بها صوته",
+    "translation": null,
+    "transliteration": null,
+    "reference": "رواه النسائي 3/244 والدار قطني وغيرهما وما بين المعكوفين زيادة للدار قطني 2/31 وإسناده صحيح .انظر زاد المعاد بتحقيق شعيب الأرناؤوط وعبد القادر الأرناؤوط 1/337",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 135,
+    "title": "دعاء الهم والحزن",
+    "arabic": "اللهم إني عبدك ابن عبدك ابن أمتك ناصيتي بيدك،ماضِ في حكمك ، عدل في قضاؤك ،أسألك بكل اسم هو لك سميت به نفسك أو أنزلته في كتابك ، أو علمته أحداً من خلقك أو استأثرت به في علم الغيب عندك أن تجعل القرآن ربيع قلبي ، ونور صدري ،وجلاء حزني وذهاب همي",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أحمد 1/391وصححه الألباني",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 136,
+    "title": "دعاء الهم والحزن",
+    "arabic": "اللهم إني أعوذ بك من الهم والحزن ، والعجز والكسل والبخل والجبن ، وضلع الدين وغلبة الرجال",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أحمد 1/391وصححه الألباني",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 137,
+    "title": "دعاء الكرب",
+    "arabic": "لا إله إلا الله العظيم الحليم ، لا إله إلا الله رب العرش العظيم ، لا إله إلا الله رب السموات ورب العرش الكريم",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 7/154ومسلم 4/ 2092",
+    "category": "distress_anxiety",
+    "tags": [
+      "distress_anxiety"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 138,
+    "title": "دعاء الكرب",
+    "arabic": "اللهم رحمتك أرجو فلا تكلني إلى نفسي طرفة عين ِ وأصلح لي شأني كله لا إله إلا أنت",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 7/154ومسلم 4/ 2092",
+    "category": "distress_anxiety",
+    "tags": [
+      "distress_anxiety"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 139,
+    "title": "دعاء الكرب",
+    "arabic": "لا إله إلا أنت سبحانك إني كنت من الظالمين",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 7/154ومسلم 4/ 2092",
+    "category": "distress_anxiety",
+    "tags": [
+      "distress_anxiety"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 140,
+    "title": "دعاء الكرب",
+    "arabic": "الله الله ربي لا أشرك به شيئاً",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 7/154ومسلم 4/ 2092",
+    "category": "distress_anxiety",
+    "tags": [
+      "distress_anxiety"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 141,
+    "title": "دعاء لقاء العدو وذي السلطان",
+    "arabic": "اللهم إنا نجعلك في نحورهم ونعوذ بك من شرورهم",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أبو داود 2/89 وصححه الحاكم ووافقه الذهبي 2/142",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 142,
+    "title": "دعاء لقاء العدو وذي السلطان",
+    "arabic": "اللهم أنت عضُدي وأنت نصيري ، بك أحولُ ،وبك أصولُ ، وبك أُقاتلُ",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أبو داود 2/89 وصححه الحاكم ووافقه الذهبي 2/142",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 143,
+    "title": "دعاء لقاء العدو وذي السلطان",
+    "arabic": "حسبنا الله ونعم الوكيل",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أبو داود 2/89 وصححه الحاكم ووافقه الذهبي 2/142",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 144,
+    "title": "دعاء من خاف ظلم السلطان",
+    "arabic": "اللهم رب السموات السبع ،ورب العرش العظيم ،كن لي جاراً من فلان بن فلان ، وأحزابه من خلائقك ؛ أن يفرط على أحد منهم أو يطغى ، عز جارك ،وجل ثناؤك ،ولا إله إلا أنت",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري في الأدب المفرد برقم 707 وصححه الألباني وفي صحيح الأدب المفرد برقم 545",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 145,
+    "title": "دعاء من خاف ظلم السلطان",
+    "arabic": "الله أكبر، الله أعز من خلقه جميعاً ، الله أعز مما أخاف وأحذر ،أعوذ بالله الذي لا إله إلا هو ، الممسك السموات السبع أن يقعن على الأرض إلا بإذنه ،من شر عبدك فلان ،وجنوده وأتباعه وأشياعه ، من الجن والأنس ، اللهم كن لي جاراً من شرهم ، جل ثناؤك وعز جارك ، وتبارك اسمك ، ولا إله غيرك",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري في الأدب المفرد برقم 707 وصححه الألباني وفي صحيح الأدب المفرد برقم 545",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 146,
+    "title": "الدعاء على العدو",
+    "arabic": "اللهم منزل الكتاب ، سريع الحساب ،اهزم الأحزاب ،اللهم اهزمهم وزلزلهم",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم 3/1362",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 147,
+    "title": "ما يقول من خاف قوماً",
+    "arabic": "اللهم اكفنيهم بما شئت",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم 4/2300",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 148,
+    "title": "دعاء من أصابه شك في الإيمان",
+    "arabic": "يستعيذ بالله",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 6/336 ومسلم 1/120",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 149,
+    "title": "دعاء من أصابه شك في الإيمان",
+    "arabic": "ينتهي عما شك فيه",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 6/336 ومسلم 1/120",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 150,
+    "title": "دعاء من أصابه شك في الإيمان",
+    "arabic": "يقول آمنت بالله ورسله",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 6/336 ومسلم 1/120",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 151,
+    "title": "دعاء من أصابه شك في الإيمان",
+    "arabic": "يقرأ قوله تعالى هُوَ الْأَوَّلُ وَالْآخِرُ وَالظَّاهِرُ وَالْبَاطِنُ وَهُوَ بِكُلِّ شَيْءٍ عَلِيمٌ",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 6/336 ومسلم 1/120",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 152,
+    "title": "الدعاء قضاء الدين",
+    "arabic": "اللهم اكفني بحلالك عن حرامك ، وأغنني بفضلك عمن سواك",
+    "translation": null,
+    "transliteration": null,
+    "reference": "الترمذي 5/560 وانظر صحيح الترمذي3/ 180",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 153,
+    "title": "الدعاء قضاء الدين",
+    "arabic": "اللهم إني أعوذ بك من الهم والحزن ، والعجز والكسل ،والبخل والجبن وضلع الدين وغلبة الرجال",
+    "translation": null,
+    "transliteration": null,
+    "reference": "الترمذي 5/560 وانظر صحيح الترمذي3/ 180",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 154,
+    "title": "دعاء الوسوسة في الصلاة والقراءة",
+    "arabic": "أعوذ بالله من الشيطان الرجيم واتفل على يسارك",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم 4/1729 من حديث عثمان بن العاص رضي الله عنه وفيه ففعلت ذلك فأذهبه الله عني",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 155,
+    "title": "دعاء من استصعب عليه أمر",
+    "arabic": "اللهم لا سهل إلا ما جعلته سهلاً وأنت تجعل الحزن إذا شئت سهلاً",
+    "translation": null,
+    "transliteration": null,
+    "reference": "رواة ابن حبان في صحيحه برقم 2427 (موارد) وابن السني برقم 351 وقال الحافظ هذا حديث صحيح وصححه عبد القادر الأرناؤوط في تخريج الأذكار للنووي ص106",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 156,
+    "title": "ما يقول ويفعل من أذنب ذنباً",
+    "arabic": "ما من عبدٍ يذنب ذنباً فيحسن الطهور ، ثم يقوم فيصلي ركعتين ، ثم يستغفر الله إلا غفر الله لهُ",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أبو داود 2/86 والترمذي 2/257 وصححه الألباني في صحيح أبي داود 1/ 283",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 157,
+    "title": "دعاء طرد الشيطان ووساوسه",
+    "arabic": "الاستعاذة بالله منه",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أبو داود 1/206 والترمذي وانظر صحيح الترمذي 1/77 وانظر سورة المؤمنون آية 98-99",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 158,
+    "title": "دعاء طرد الشيطان ووساوسه",
+    "arabic": "الأذان",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أبو داود 1/206 والترمذي وانظر صحيح الترمذي 1/77 وانظر سورة المؤمنون آية 98-99",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 159,
+    "title": "دعاء طرد الشيطان ووساوسه",
+    "arabic": "الأذكار وقراءة القرآن",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أبو داود 1/206 والترمذي وانظر صحيح الترمذي 1/77 وانظر سورة المؤمنون آية 98-99",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 160,
+    "title": "الدعاء حينما يقع مالا يرضاه أو غلب على أمره",
+    "arabic": "قدر الله وما شاء فعل",
+    "translation": null,
+    "transliteration": null,
+    "reference": "المؤمن القوي خير وأحب إلى الله من المؤمن الضعف وفي كل خير ،احرص على ما ينفعك واستعن بالله ولا تعجز وإن أصابك شيء فلا تقل لو أني فعلت كذا وكذا ولكن قل قدر الله وما شاء فعل فإن لو تفتح عمل الشيطان  .مسلم 4/2052",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 161,
+    "title": "الدعاء حينما يقع مالا يرضاه أو غلب على أمره",
+    "arabic": "إذا غلبك أمر فقل : حسبي الله ونعم الوكيل",
+    "translation": null,
+    "transliteration": null,
+    "reference": "المؤمن القوي خير وأحب إلى الله من المؤمن الضعف وفي كل خير ،احرص على ما ينفعك واستعن بالله ولا تعجز وإن أصابك شيء فلا تقل لو أني فعلت كذا وكذا ولكن قل قدر الله وما شاء فعل فإن لو تفتح عمل الشيطان  .مسلم 4/2052",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 162,
+    "title": "تهنئة المولود له وجوابه",
+    "arabic": "بارك الله لك في الموهوب لك ،وشكرت الواهب، وبلغ أشدهُ، ورزقت برهُ .ويردُ عليه المهنأ فيقول : بارك الله لك وبارك عليك ، وجزاك الله خيراً ، ورزقك الله مثله، وأجزل ثوابك",
+    "translation": null,
+    "transliteration": null,
+    "reference": "انظر الأذكار للنووي ص349 وصحيح الأذكار للنووي ، لسليم الهلالي 2/713",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 163,
+    "title": "ما يعوذ به الأولاد",
+    "arabic": "كان رسول الله صلى الله عليه وسلم يعوذ الحسن والحسين أعيذكما بكلمات الله التامة ، من كل شيطان وهامة ، ومن كل عينِ لامة",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 4/119 من حديث ابن عباس رضي الله عنهما",
+    "category": "children",
+    "tags": [
+      "children"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 164,
+    "title": "الدعاء للمريض في عيادته",
+    "arabic": "لا بأس طهور إن شاء الله",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 10/ 118",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 165,
+    "title": "الدعاء للمريض في عيادته",
+    "arabic": "أسأل الله العظيم رب العرش العظيم أن يشفيك",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 10/ 118",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 166,
+    "title": "فضل عيادة المريض",
+    "arabic": "قال صلى الله عليه وسلم : إذا عاد الرجل أخاه المسلم مشى في خرافة الجنة حتى يجلس فإذا جلس غمرته الرحمة ، فإن كان غدوة صلى عليه سبعون ألف ملك حتى يمسي ، وإن كان مساء صلى عليه سبعون ألف ملك حتى يصبح",
+    "translation": null,
+    "transliteration": null,
+    "reference": "رواه الترمذي وابن ماجه وأحمد وانظر صحيح ابن ماجه 1/244 وصحيح الترمذي 1/286 وصححه أيضاً أحمد شاكر",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 167,
+    "title": "دعاء المريض الذي يئس من حياته",
+    "arabic": "اللهم اغفر لي وارحمني والحقني بالرفيق الأعلى",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 7/10 ومسلم 4/1893",
+    "category": "general",
+    "tags": [
+      "general",
+      "forgiveness",
+      "mercy"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 168,
+    "title": "دعاء المريض الذي يئس من حياته",
+    "arabic": "جعل النبي صلى الله عليه وسلم يدخل يديه في الماء فيمسح بهما وجههُ ويقول : لا إله إلا الله إن للموت لسكرات",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 7/10 ومسلم 4/1893",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 169,
+    "title": "دعاء المريض الذي يئس من حياته",
+    "arabic": "لا إله إلا الله والله أكبر ، لا إله إلا الله وحده ، لا إله إلا الله وحده لا شريك لهُ ، لا إله إلا الله لهُ الملك ولهُ الحمد ، لا إله إلا الله ولا حول ولا قوة إلا بالله",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 7/10 ومسلم 4/1893",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 170,
+    "title": "تلقين المحتضر",
+    "arabic": "من كان آخر كلامه لا إله إلا الله دخل الجنة",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أبو داود 3/190 وانظر صحيح الجامع 5/432",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 171,
+    "title": "دعاء من أصيب بمصيبة",
+    "arabic": "إنا لله وإنا إليه راجعون اللهم أجرني في مصيبتي وأخلف لي خيراً منها",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم 2/632",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 172,
+    "title": "الدعاء عند إغماض الميت",
+    "arabic": "اللهم اغفر لفلان ورفع درجته في المهديين، واخلفه في عقبه في الغابرين، واغفر لنا وله يا رب العالمين ،وافسح له في قبره ونور له فيه",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم 2/634",
+    "category": "death_grave",
+    "tags": [
+      "death_grave",
+      "forgiveness"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 173,
+    "title": "الدعاء للميت في الصلاة عليه",
+    "arabic": "اللهم اغفر له وارحمه، وعافه ،واعف عنه ،وأكرم نُزُله ، ووسع مُدخلهُ ، واغسله بالماء والثلج والبرد ، ونقه من الخطايا كما ينقى الثوب الأبيض من الدنس ، وأبدله داراً خيراً من داره ، وأهلاً خيراً من أهله وزوجاً خيراً من زوجه، وأدخله الجنة ،وأعذه من عذاب القبر",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم 2/663",
+    "category": "after_salah",
+    "tags": [
+      "after_salah",
+      "forgiveness",
+      "protection",
+      "mercy"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 174,
+    "title": "الدعاء للميت في الصلاة عليه",
+    "arabic": "اللهم اغفر لحينا وميتنا ، وشاهدنا وغائبنا ، وصغيرنا وكبيرنا ، وذكرنا وأُنثانا ، اللهم من أحييته منا فأحيه على الإسلام ، ومن توفيته منا فتوفه على الإيمان ، اللهم لا تحرمنا أجره ولا تضلنا بعده",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم 2/663",
+    "category": "after_salah",
+    "tags": [
+      "after_salah",
+      "forgiveness",
+      "guidance"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 175,
+    "title": "الدعاء للميت في الصلاة عليه",
+    "arabic": "اللهم إن فلان بن فلان في ذمتك،وحبل جوارك،فقه من فتنة القبر وعذاب النار،وأنت أهل الوفاء والحق .فاغفر له وارحمهُ إنك أنت الغفور الرحيم",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم 2/663",
+    "category": "after_salah",
+    "tags": [
+      "after_salah",
+      "forgiveness",
+      "mercy"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 176,
+    "title": "الدعاء للميت في الصلاة عليه",
+    "arabic": "اللهم عبدك وابن عبدك وابن أمتك احتاج إلى رحمتك ،وأنت غني عن عذابه،إن كان مُحسناً فزده في حسناته، وإن كان مُسيئاً فتجاوز عنه",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم 2/663",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 177,
+    "title": "الدعاء للفرط في الصلاة عليه",
+    "arabic": "اللهم أعذه من عذاب القبر",
+    "translation": null,
+    "transliteration": null,
+    "reference": "قال سعيد بن المسيب صليت وراء أبي هريرة على صبي لم يعمل خطيئة قط فسمعته يقول ... الحديث .أخرجه مالك في الموطأ 1/288 وابن أبي شيبه في المصنف 3/ 217 والبيهقي 4/9، وصحح إسناده شعيب الأرناؤوط في تحقيقه لشرح السنة للبغوي 5/357",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 178,
+    "title": "الدعاء للفرط في الصلاة عليه",
+    "arabic": "أن قال : اللهم اجعله فرطاً وذخراً لوالديه ،وشفيعاً مجاباً .اللهم ثقل به موازينها وأعظم به أجورهما ، وألحقهُ بصالح المؤمنين ، واجعلهُ في كفالة إبراهيم ، وقه برحمتك عذاب الجحيم ، وأبدله داراً خيراً من داره ، وأهلاً خيراً من أهله ، اللهم اغفر لاسلافنا ، وأفراطنا ، ومن سبقنا بالإيمان فحسن",
+    "translation": null,
+    "transliteration": null,
+    "reference": "قال سعيد بن المسيب صليت وراء أبي هريرة على صبي لم يعمل خطيئة قط فسمعته يقول ... الحديث .أخرجه مالك في الموطأ 1/288 وابن أبي شيبه في المصنف 3/ 217 والبيهقي 4/9، وصحح إسناده شعيب الأرناؤوط في تحقيقه لشرح السنة للبغوي 5/357",
+    "category": "after_salah",
+    "tags": [
+      "after_salah",
+      "forgiveness"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 179,
+    "title": "الدعاء للفرط في الصلاة عليه",
+    "arabic": "اللهم اجعله لنا فرطاً ،وسلفاً وأجراً",
+    "translation": null,
+    "transliteration": null,
+    "reference": "قال سعيد بن المسيب صليت وراء أبي هريرة على صبي لم يعمل خطيئة قط فسمعته يقول ... الحديث .أخرجه مالك في الموطأ 1/288 وابن أبي شيبه في المصنف 3/ 217 والبيهقي 4/9، وصحح إسناده شعيب الأرناؤوط في تحقيقه لشرح السنة للبغوي 5/357",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 180,
+    "title": "دعاء التعزية",
+    "arabic": "إن لله ما أخذ وله ما أعطى . وكل شيء عنده بأجل مُسمى ...فلتصبر ولتحتسب",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 2/80 ومسلم 2/636",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 181,
+    "title": "دعاء التعزية",
+    "arabic": "وإن قال : أعظم الله أجرك ،وأحسن عزاءك وغفر لميتك فحسن",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 2/80 ومسلم 2/636",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 182,
+    "title": "الدعاء عند إدخال الميت القبر",
+    "arabic": "بسم الله وعلى سُنة رسول الله",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أبو داود 3/314بسند صحيح وأحمد بلفظ بسم الله وعلى ملة رسول الله وسنده صحيح",
+    "category": "death_grave",
+    "tags": [
+      "death_grave"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 183,
+    "title": "الدعاء بعد دفن الميت",
+    "arabic": "اللهم اغفر له اللهم ثبته",
+    "translation": null,
+    "transliteration": null,
+    "reference": "كان النبي صلى الله عليه وسلم إذا فرغ من دفن الميت وقف عليه فقال : استغفروا لأخيكم وسلوا له التثبيت فإنه الآن يُسأل .أبو داود 3/315 والحاكم وصححه ووافقه الذهبي 1/370",
+    "category": "death_grave",
+    "tags": [
+      "death_grave",
+      "forgiveness",
+      "steadfastness"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 184,
+    "title": "دعاء زيارة القبور",
+    "arabic": "السلام عليكم أهل الديار ، من المؤمنين والمسلمين، وإنا إن شاء الله بكم لاحقون أسأل الله لنا ولكم العافية",
+    "translation": null,
+    "transliteration": null,
+    "reference": "سلمم2/671 ،وابن ماجه واللفظ له 1/494 عن بريدة رضي الله عنه ، وما بين المعكوفين من حديث عائشة رضي الله عنها عند مسلم 2/671",
+    "category": "general",
+    "tags": [
+      "general",
+      "protection"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 185,
+    "title": "دعاء الريح",
+    "arabic": "اللهم إني أسألك خيرها ، وأعوذ بك من شرها",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أبو داود 4/326وابن ماجه 2/1228 وانظر  صحيح ابن ماجة2/ 305",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 186,
+    "title": "دعاء الريح",
+    "arabic": "اللهم إني أسألك خيرها ، وخير ما فيها ، وخير ما أُرسلت به ، وأعوذ بك من شرها وشر ما فيها وشر ما أرسلت به",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أبو داود 4/326وابن ماجه 2/1228 وانظر  صحيح ابن ماجة2/ 305",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 187,
+    "title": "دعاء الرعد",
+    "arabic": "سبحان الذي يُسبح الرعد بحمده والملائكة من خيفته",
+    "translation": null,
+    "transliteration": null,
+    "reference": "كان عبد الله بن الزبير رضي الله عنهما إذا سمع الرعد ترك الحديث وقال :.... الموطأ 2/992 وقال الألباني صحيح الإسناد موقوفاً",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 188,
+    "title": "من أدعية الاستسقاء",
+    "arabic": "اللهم اسقنا غيثاً مغيثاً مريئاً مَريعاً نافعاً غير ضار ، عاجلاً غير آجل",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أبو داود 1/303 وصححه الألباني في صحيح أبي داود1/ 216",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 189,
+    "title": "من أدعية الاستسقاء",
+    "arabic": "اللهم أغثنا ، اللهم أغثنا ، اللهم أغثنا",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أبو داود 1/303 وصححه الألباني في صحيح أبي داود1/ 216",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 190,
+    "title": "من أدعية الاستسقاء",
+    "arabic": "اللهم اسق عبادك وبهائمك ، وانشر رحمتك وأحيي بلدك الميت",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أبو داود 1/303 وصححه الألباني في صحيح أبي داود1/ 216",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 191,
+    "title": "الدعاء إذا نزل المطر",
+    "arabic": "اللهم صيباً نافعاً",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 2/518",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 192,
+    "title": "الذكر بعد نزول المطر",
+    "arabic": "مُطرنا بفضل الله ورحمته",
+    "translation": null,
+    "transliteration": null,
+    "reference": "والبخاري 1/205 ،مسلم 1/83",
+    "category": "dhikr",
+    "tags": [
+      "dhikr"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 193,
+    "title": "من أدعية الاستصحاء",
+    "arabic": "اللهم حوالينا ولا علينا ، اللهم على الآكامِ والظرابِ وبُطون الأودية ، ومنابت الشجر",
+    "translation": null,
+    "transliteration": null,
+    "reference": "والبخاري 1/224 ،مسلم 2/614",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 194,
+    "title": "دعاء رؤية الهلال",
+    "arabic": "الله أكبر ،اللهم أهلِه علينا بالأمن والإيمان ، والسلامة والإسلام ،والتوفيق لما تحب ربنا وترضى ، ربنا وربك الله",
+    "translation": null,
+    "transliteration": null,
+    "reference": "الترمذي 5/504 والدارمي بلفظه 1/336 وانظر صحيح الترمذي3/ 157",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 195,
+    "title": "الدعاء عند إفطار الصائم",
+    "arabic": "ذَهبَ الظَّمأُ، وابتلَّت العروقُ وثَبَتَ الأجرُ إنْ شاء الله",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أبي داود 2/306 وغيره وانظر صحيح الجامع 4/209",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 196,
+    "title": "الدعاء عند إفطار الصائم",
+    "arabic": "اللهم إني أسألك برحمتك التي وسعت كل شيءٍ أن تغفر لي",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أبي داود 2/306 وغيره وانظر صحيح الجامع 4/209",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 197,
+    "title": "الدعاء قبل الطعام",
+    "arabic": "إذا أكل أحدكم الطعام فليقل: بِسم الله، فإن نسي في أوله فليقل: بِسمِ الله في أوله وآخره",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أبو داود 3/347 والترمذي 4/288 وانظر صحيح الترمذي2/ 167",
+    "category": "eating_drinking",
+    "tags": [
+      "eating_drinking"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 198,
+    "title": "الدعاء قبل الطعام",
+    "arabic": "من أطعمه الله الطعام فليقل: اللهم بارك لنا فيه وأطعمنا خيراً منه. ومن سقاه الله لبناً فليقل: اللهم بارك لنا فيه وزدنا منه",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أبو داود 3/347 والترمذي 4/288 وانظر صحيح الترمذي2/ 167",
+    "category": "eating_drinking",
+    "tags": [
+      "eating_drinking"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 199,
+    "title": "الدعاء عند الفراغ من الطعام",
+    "arabic": "الحمد لله الذي أطعمني هذا ،وزرقنيه ،من غير حول مني ولا قوة",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أصحاب السنن إلا النسائي وانظر صحيح الترمذي 3/159",
+    "category": "eating_drinking",
+    "tags": [
+      "eating_drinking"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 200,
+    "title": "الدعاء عند الفراغ من الطعام",
+    "arabic": "الحمدُ لله حمداً كثيراً طيباً مباركاً فيهِ، غيْرَ مُوَدَّع، ولا مُستَغنَى عَنْهُ ربّنا",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أصحاب السنن إلا النسائي وانظر صحيح الترمذي 3/159",
+    "category": "eating_drinking",
+    "tags": [
+      "eating_drinking"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 201,
+    "title": "دعاء الضيف لصاحب الطعام",
+    "arabic": "اللهُمَّ بَارِكْ لَهُم فيما رَزَقتهْمْ، واغْفِر لهم وارحَمْهُم",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم3/ 1626",
+    "category": "eating_drinking",
+    "tags": [
+      "eating_drinking"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 202,
+    "title": "الدعاء لمن سقاه أو إذا أراد ذلك",
+    "arabic": "اللهُمَّ أَطْعِمْ مَنْ أطْعَمَني وأَسْقِ مَنْ سْقَاني",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم3/ 26",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 203,
+    "title": "الدعاء إذا أفطر عند أهل بيت",
+    "arabic": "أَفطَر عِنْدَكُم الصائِمونَ ، وأكل طعامَكُمُ الأبْرارُ ، وصلت عليكُمُ الملائِكَةُ",
+    "translation": null,
+    "transliteration": null,
+    "reference": "سنن أبي داود 3/367، وابن ماجه 1/556 ،والنسائي في عمل اليوم والليلة برقم 298 ،ونص على أنه صلى الله عليه وسلم يقوله إذا أفطر عند أهل بيت ،وصححه الألباني في صحيح أبي داود 2/730",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 204,
+    "title": "دعاء الصائم إذا حضر الطعام ولم يفطر",
+    "arabic": "إذا دُعي أحدكم فليجب ، فإن كان صائماً فليصل وإن كان مفطراً فليطعم ومعنى فليصل أي فليدع",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم 2/1054",
+    "category": "eating_drinking",
+    "tags": [
+      "eating_drinking"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 205,
+    "title": "ما يقول الصائم إذا سابه أحد",
+    "arabic": "إني صائم ، إني صائم",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 4/103 ،ومسلم 2/ 806",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 206,
+    "title": "الدعاء عند رؤية باكورة الثمر",
+    "arabic": "اللهم بارك لنا في ثمرنا ، وبارك لنا في مدينتنا وبارك لنا في صاعنا ، وبارك لنا في مدنا",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم 2/1000",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 207,
+    "title": "دعاء العطاس",
+    "arabic": "إذا عطس أحدكم فليقل الحمد لله ،وليقل له أخوهُ أو صاحبهُ : يرحمك الله ،فإذا قال لهُ :يرحمك الله ،فليقل :يهديكم الله ويصلح بالكم",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 7/125",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 208,
+    "title": "ما يقالُ للكافر إذا عطس فحمد الله",
+    "arabic": "يهديكم الله ويصلح بالكم",
+    "translation": null,
+    "transliteration": null,
+    "reference": "الترمذي 5/82 وأحمد 4/400 وأبو داود 4/308، وانظر صحيح الترمذي 2/354",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 209,
+    "title": "الدعاء للمتزوج",
+    "arabic": "بارك الله لك ، وبارك عليك ، وجمع بينكما في خير",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أصحاب السنن إلا النسائي وانظر صحيح الترمذي 1/316",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 210,
+    "title": "دعاء المتزوج لنفسه ودعاء شراء الدابة",
+    "arabic": "إذا تزوج أحدكم امرأة ،أو إذا اشترى خادماً فليقل : اللهم إني أسألك خيرها وخير ما جبلتها عليه وأعوذ بك من شرها وشر ما جبلتها عليه ، وإذا اشترى بعيراً فليأخذ بذروة سنامه وليقل مثل ذلك",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أبو داود 2/248 وابن ماجه 1/617 وانظر صحيح ابن ماجه 1/324",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 211,
+    "title": "الدعاء قبل إتيان الزوجة",
+    "arabic": "بسم الله ، اللهم جنبنا الشيطان وجنب الشيطان ما رزقتنا",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 6/141 ومسلم 2/1028",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 212,
+    "title": "دعاء الغضب",
+    "arabic": "أعوذ بالله من الشيطان الرجيم",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 6/99 ومسلم4/2015",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 213,
+    "title": "دعاء من رأى مبتلى",
+    "arabic": "الحمد لله الذي عافاني مما ابتلاك به ، وفضلني على كثير ممن خلق تفضيلاً",
+    "translation": null,
+    "transliteration": null,
+    "reference": "الترمذي 5/494 و5/493 وانظر  صحيح الترمذي3/ 153",
+    "category": "general",
+    "tags": [
+      "general",
+      "protection"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 214,
+    "title": "ما يقال في المجلس",
+    "arabic": "عن ابن عمر قال : كان يعد لرسول الله صلى الله عليه وسلم في المجلس الواحد مائة مرة من قبل أن يقوم رب اغفر لي وتب علي إنك أنت التواب الغفور",
+    "translation": null,
+    "transliteration": null,
+    "reference": "الترمذي وغيره وانظر صحيح الترمذي 3/153 وصحيح ابن ماجه 2/321 ولفظه للترمذي",
+    "category": "general",
+    "tags": [
+      "general",
+      "forgiveness"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 215,
+    "title": "كفارة المجلس ومايختم به المجالس",
+    "arabic": "سبحانك اللهم وبحمدك ، أشهد أن لا إله إلا أنت أستغفرك وأتوب إليك",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أصحاب السنن وانظر صحيح الترمذي 3/153، وقد ثبت عن عائشة رضي الله عنها قالت :ما جلس رسول الله صلى الله عليه وسلم مجلساً ، ولاتلى قرآناً ، ولا صلاة إلا ختم ذلك بكلمات.... الحديث أخرجه النسائي في عمل اليوم والليلة برقم 308 ، وأحمد 6/77 وصححه الدكتور فاروق حمادة في تحقيقه لعمل اليوم والليلة للنسائي ص273",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 216,
+    "title": "الدعاء لمن قال غفر الله لك",
+    "arabic": "ولك",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أحمد 5/28 والنسائي في عمل اليوم والليلة ص218برقم 421 تحقيق الدكتور فاروق حمادة",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 217,
+    "title": "الدعاء لمن صنع إليك معروفاً",
+    "arabic": "جَزَاكَ الله خيراً",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه الترمذي رقم 2035 وانظر صحيح الجامع 6244 وصحيح الترمذي2/ 200",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 218,
+    "title": "ما يعصم به من الدجال",
+    "arabic": "من حفظ عشر آيات من أول سورة الكهف عصم من الدجال والاستعاذة بالله من فتنتة عقب التشهد الأخير من كل صلاة",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم 1/555 وفي رواية من آخر الكهف 1/556",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 219,
+    "title": "الدعاء لمن قال إني أحبك في الله",
+    "arabic": "أحبك الذي أحببتني له ُ",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أبو داود 4/333، وحسنه الألباني في صحيح سنن أبي داود 3/965",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 220,
+    "title": "الدعاء لمن عرض عليك ماله",
+    "arabic": "بارك الله لك في أهلك ومالك",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري الفتح4/ 88",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 221,
+    "title": "الدعاء لمن أقرض عند القضاء",
+    "arabic": "بارك الله لك في أهلك ومالك إنما جزاء السلف الحمد والأداء",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه النسائي في عمل اليوم والليلة ص 300 وابن ماجه 2/ 809 وانظر صحيح ابن ماجه 2/809 وانظر صحيح ابن ماجه 2/55",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 222,
+    "title": "دعاء الخوف من الشرك",
+    "arabic": "اللهم إني أعوذ بك أن أشرك بك وأنا أعلم ، وأستغفرك لما لا أعلم",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أحمد 4/403 وغيره وانظر صحيح الجامع 3/333 وصحيح الترغيب والترهيب للألباني",
+    "category": "distress_anxiety",
+    "tags": [
+      "distress_anxiety"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 223,
+    "title": "الدعاء لمن قال بارك الله فيك",
+    "arabic": "وفيك بارك الله",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه ابن السني ص138 برقم 278 وانظر الوابل الصيب لابن القيم 304 تحقيق بشير محمد عيون",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 224,
+    "title": "دعاء كراهية الطيرة",
+    "arabic": "اللهم لا طير إلا طيرك ، ولا خير إلا خيرك ،ولا إله غيرك",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أحمد 2/220 وابن السني برقم 292 وصححه الألباني في الأحاديث الصحيحة 3/54 رقم 1065 ، أما الفأل فكان يعجب النبي صلى الله عليه وسلم ؛ ولهذا سمع من رجل كلمة طيبة فأعجبته فقال : أخذنا فألك من فيك  أبو داود وأحمد ،وصححه الألباني في الصحيحة2/363 عند أبي الشيخ في أخلاق النبي",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 225,
+    "title": "دعاء ركوب الدابة",
+    "arabic": "بسم الله. الحمد لله. سُبْحانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ وَإِنَّا إِلَى رَبِّنَا لَمُنقَلِبُونَ الحمد لله ، الحمد لله ، الحمد لله ، الله اكبر ، الله اكبر ، الله اكبر ، سبحانك اللهم إني ظلمت نفسي فاغفر لي ، فإنه لا يغفر الذنوب إلا أنت",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أبو داود 3/34 والترمذي 5/501 وانظر صحيح الترمذي3/ 156",
+    "category": "general",
+    "tags": [
+      "general",
+      "forgiveness"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 226,
+    "title": "دعاء دخول القرية أو البلدة",
+    "arabic": "اللهم رب السموات السبع وما أظللن ، ورب الأرضين السبع وما أقللن ،ورب الشياطين وما أضللن ، ورب الرياح وما ذرين.أسألك خير هذه القرية وخير أهلها ، وخير ما فيها،وأعوذ بك من شرها،وشر أهلها ، وشر ما فيها",
+    "translation": null,
+    "transliteration": null,
+    "reference": "الحاكم وصححه ووافقه الذهبي 2/100 وابن السني برقم 524وحسنه الحافظ في تخريج الأذكار 5/154 قال ابن باز:ورواه النسائي بإسناد حسن . انظر تحفة الأخيار ص 37",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 227,
+    "title": "دعاء دخول السوق",
+    "arabic": "لا إله إلا الله وحده لا شريك له ، له الملك وله الحمد ، يُحيي ويُميت ، وهو حي لا يموت ، بيده الخير وهو على كل شئ قدير",
+    "translation": null,
+    "transliteration": null,
+    "reference": "الترمذي 5/491 والحاكم 1/538 وحسنه الألباني في صحيح ابن ماجه 2/21 وفي صحيح الترمذي3/ 152",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 229,
+    "title": "دعاء المسافر للمقيم",
+    "arabic": "أستودعُكَ الله الذي لا تضيع ودائعه",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أحمد 2/403 وابن ماجه 2/943 وانظر صحيح ابن ماجة2/ 133",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 230,
+    "title": "دعاء المقيم للمسافر",
+    "arabic": "أستودع الله دينك وأمانتك ،وخواتيم عملك",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أحمد 2/7 الترمذي5/499  وانظر صحيح الترمذي3/ 155",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 231,
+    "title": "دعاء المقيم للمسافر",
+    "arabic": "زوَّدك الله التقوى، وغفر ذْنبك ويسَّر لك الخير حيث ما كنت",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أحمد 2/7 الترمذي5/499  وانظر صحيح الترمذي3/ 155",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 232,
+    "title": "التكبير والتسبيح في سير السفر",
+    "arabic": "قال جابر رضي الله عنه : كنا إذا صعدنا كبرنا ، وإذا نزلنا سبحنا",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري الفتح6/ 135",
+    "category": "travel",
+    "tags": [
+      "travel"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 233,
+    "title": "دعاء المسافر إذا أسحر",
+    "arabic": "سَمعَ سَامعً بحمد الله وحُسنِ بلائه علينا، ربنا صاحبنا ، وأفضِل علينا عائذا بالله من النار",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم4/ 2086 ومعني سمع سامع : أي شهد شاهد على حمدنا لله تعالى على نعمه وحسن بلائه . ومعني سمع سامع : بلغ سامع قولي هذا لغيره وقال مثله تنبيهاً على الذكر في السحر والدعاء . وقوله : ربنا صاحبنا وأفضل علينا : أي احفظنا وحطنا واكلأنا وأفضل علينا بجزيل نعمك واصرف عنا كل مكروه ، شرح النووي 17/39",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 235,
+    "title": "ذكر الرجوع من السفر",
+    "arabic": "يكبر على كل شرف ثلاث تكبيرات ثم يقول : لا إله إلا الله وحده لا شريك لهُ ،لهُ الملك ، ولهُ الحمدُ وهو على كل شيءٍ قدير ، آيبون ،تائبون ، عابدون ، لربنا حامدون ،صدق الله وعده،ونصر عبده،وهزم الأحزاب وحده",
+    "translation": null,
+    "transliteration": null,
+    "reference": "كان النبي صلى الله عليه وسلم يقوله إذا قفل من غزو أو حج ، البخاري 7/163 ومسلم 2/ 980",
+    "category": "travel",
+    "tags": [
+      "travel"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 236,
+    "title": "ما يقول ويفعل من أتاه أمر يسره أو يكرهه",
+    "arabic": "كان صلى الله عليه وسلم إذا أتاه الأمر يسره قال : الحمد لله الذي بنعمته تتم الصالحات و إذا أتاه أمر يكرهه قال : الحمد لله على كل حال",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه ابن السني في عمل اليوم والليلة والحاكم وصححه 1/499 وصححه الألباني في صحيح الجامع 4/ 201",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 237,
+    "title": "فضل الصلاة على النبي صلى الله عليه وسلم",
+    "arabic": "قال صلى الله عليه وسلم من صلى علي صلاة صلى الله عليه بها عشراً",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه مسلم 1/288",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 238,
+    "title": "فضل الصلاة على النبي صلى الله عليه وسلم",
+    "arabic": "وقال صلى الله عليه وسلم : لا تجعلوا قبري عيداً وصلوا علي ؛ فإن صلاتكم تبلغني حيث كنتم",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه مسلم 1/288",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 239,
+    "title": "فضل الصلاة على النبي صلى الله عليه وسلم",
+    "arabic": "وقال صلى الله عليه وسلم : البخيل من ذكرت عندهُ فلم يصل علي",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه مسلم 1/288",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 240,
+    "title": "فضل الصلاة على النبي صلى الله عليه وسلم",
+    "arabic": "وقال صلى الله عليه وسلم إن لله ملائكة سياحين في الأرض يبلغوني من أمتي السلام",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه مسلم 1/288",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 241,
+    "title": "فضل الصلاة على النبي صلى الله عليه وسلم",
+    "arabic": "وقال صلى الله عليه وسلم ما من أحدٍ يسلِّمُ عليَّ إلَّا ردَّ اللَّهُ عليَّ روحي حتَّى أردَّ عليْهِ السَّلامَ",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه مسلم 1/288",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 242,
+    "title": "إفشاء السلام",
+    "arabic": "ثلاث من جمعهن فقد جمع الإيمان : الإنصاف من نفسك ، وبذل السلام للعالم ،والإنفاق من الإقتار",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم 1/74 وغيره",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 243,
+    "title": "إفشاء السلام",
+    "arabic": "وعن عبد الله بن عمر رضي الله عنهما : أن رجلاً سأل النبي صلى الله عليه وسلم أي الإسلام خير قال : تطعم الطعام وتقرأ السلام على من عرفت ومن لم تعرف",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم 1/74 وغيره",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 244,
+    "title": "كيف يرد السلام على الكافر إذا سلم",
+    "arabic": "إذا سلم عليكم أهل الكتاب فقولوا : وعليكم",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح11/42 ،ومسلم 4/1705",
+    "category": "after_salah",
+    "tags": [
+      "after_salah"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 245,
+    "title": "دعاء صياح الديك ونهيق الحمار",
+    "arabic": "إذا سمعتم صياح الديكة ، فاسألوا الله من فضله فإنها رأت ملكاً وإذا سمعتم نهيق الحمار ، فتعوذوا بالله من الشيطان فإنه رأى شيطاناً",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح6/350 ،ومسلم 4/2092",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 246,
+    "title": "دعاء نباح الكلاب بالليل",
+    "arabic": "إذا سمعتم نُباح الكلاب ونهيق الحمير بالليل فتعوذوا بالله منهن فإنهن يرين ما لا ترون",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أبو داود 4/ 327 وأحمد 3/ 306 وصححه الألباني في صحيح أبي داود3/ 961",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 247,
+    "title": "الدعاء لمن سببته",
+    "arabic": "قال صلى الله عليه وسلم: اللَّهُم فأيما مؤمن سببته فاجعل ذلك له قربة إليك يوم القيامة",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 11/ 171 و مسلم4/ 2007 ولفظه فاجعلها له زكاة ورحمة",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 248,
+    "title": "ما يقول المسلم إذا مدح المسلم",
+    "arabic": "قال صلى الله عليه وسلم : إذا كان أحدكم مادحاً صاحبه لا محالة فليقل : أحسبُ فلاناً والله حسيبهُ ولا أزكي على الله أحداً ، أحسبهُ – إن كان يعلم ذاك – كذا وكذا",
+    "translation": null,
+    "transliteration": null,
+    "reference": "رواه مسلم 4/2296",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 249,
+    "title": "ما يقول المسلم إذا زكي",
+    "arabic": "اللهم لا تؤاخذني بما يقولون ، واغفر لي مالا يعلمون",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري في الأدب المفرد برقم 761 ، وصحح إسناده الألباني في صحيح الأدب المفرد برقم 585 ، وما بين المعكوفين زيادة للبيهقي في شعب الإيمان 4/ 228 من طريق آخر",
+    "category": "general",
+    "tags": [
+      "general",
+      "forgiveness"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 250,
+    "title": "كيف يلبي المحرم في الحج أو العمرة",
+    "arabic": "لبيك اللهم لبيك ، لبيك لا شريك لك لبيك ، إن الحمد والنعمة لك والملك ، لا شريك لك",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 3/ 408 ، ومسلم 2/841",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 251,
+    "title": "التكبيرة إذا أتي الركن الأسود",
+    "arabic": "طاف النبي صلى الله عليه وسلم بالبيت على بعير كلما أتي الركن أشار إليه بشيء عنده وكبر",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 3/476 ،والمراد بالشيء المحجن انظر : البخاري مع الفتح 3/472",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 252,
+    "title": "الدعاء بين الركن اليماني والحجر الأسود",
+    "arabic": "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أبو داود 2/ 179 وأحمد 3/411 والبغوي في شرح السنة 7/128 ،وحسنه الألباني في صحيح أبي داود 1/ 354 ، والآية من سورة البقرة ، 201",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 253,
+    "title": "الدعاء يوم عرفة",
+    "arabic": "خير الدعاء دعاء يوم عرفة ، وخيرُ ما قلت أنا والنبيُّون من قبلي : لا إله إلا الله وحدهُ لا شريك لهُ ، لهُ الملكُ ولهُ الحمدُ وهو على كل شيء قدير",
+    "translation": null,
+    "transliteration": null,
+    "reference": "الترمذي وحسنه الألباني في صحيح الترمذي 3/184، وفي الحديث الصحيحة 4/6",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 254,
+    "title": "الذكر عند المشعر الحرام",
+    "arabic": "ركب صلى الله عليه وسلم القصواء حتى أتى المشعر الحرام فاستقبل القبلة فلم يزل واقفاً حتى أسفر جداً فدفع قبل أن تطلع الشمس",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم 2/891",
+    "category": "dhikr",
+    "tags": [
+      "dhikr"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 255,
+    "title": "التكبيرة عند رمي الجمار مع كل حصاة",
+    "arabic": "يكبر كلما رمى بحصاة عند الجمار الثلاث ثم يتقدم، ويقف يدعو مستقبل القبلة، رافعاً يديه بعد الجمرة الأولى والثانية، أما جمرة العقبة فيرميها ويكبر عند كل حصاة وينصرف ولا يقف عندها",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 3/583 و3/584 وانظر لفظه هناك . والبخاري مع الفتح 3/581 ورواه مسلم أيضاً",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 256,
+    "title": "ما يقول عند التعجب والأمر السار",
+    "arabic": "سبحان الله",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 1/210 و390 و414 ومسلم 4/ 1857",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 257,
+    "title": "ما يقول عند التعجب والأمر السار",
+    "arabic": "الله أكبر",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 1/210 و390 و414 ومسلم 4/ 1857",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 258,
+    "title": "ما يفعل من أتاه أمر يسره",
+    "arabic": "كان النبي صلى الله عليه وسلم إذا أتاه أمر يسرهُ أو يسرُّ به خر ساجداً شكراً لله تبارك وتعالى",
+    "translation": null,
+    "transliteration": null,
+    "reference": "رواه أهل السنن إلا النسائي . انظر صحيح ابن ماجه 1/ 233 وإرواء الغليل 2/226",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 259,
+    "title": "ما يقول من أحس وجعاً في جسده",
+    "arabic": "ضع يدك على الذي تألم من جسدك وقل: بسم الله ، ثلاثاً وقل سبع مرات : أعوذ بالله وقدرته من شر ما أجد وأحاذر",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم 4/1728",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 260,
+    "title": "دعاء من خشي أن يصيب شيئاً بعينه",
+    "arabic": "إذا رأى أحدكم من أخيه ، أو من نفسه ، أومن ماله ما يعجبهُ فإن العين حقٌّ",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسند أحمد 4/447 وابن ماجه ومالك ، وصححه الألباني في صحيح الجامع 1/212 وانظر تحقيق زاد المعاد للأرناؤوط 4/170",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 261,
+    "title": "ما يقال عند الفزع",
+    "arabic": "لا إله إلا الله",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 6/ 181 ، ومسلم 4/ 2208",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 262,
+    "title": "ما يقول عند الذبح أو النحر",
+    "arabic": "بسم الله والله أكبر اللهم تقبل مني",
+    "translation": null,
+    "transliteration": null,
+    "reference": "مسلم 3/1557 والبيهقي 9/287 وما بين المعكوفين للبيهقي 9/287 وغيره والجملة الأخيرة سقتها بالمعنى من رواية مسلم",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 263,
+    "title": "ما يقول لرد كيد مردة الشياطين",
+    "arabic": "أعوذ بكلمات الله التامات التي لا يجاوزهن بر ولا فاجر من شر ما خلق ، وبرأ وذرأ ومن شر ما ينزل من السماء ، ومن شر ما يعرج فيها ، ومن شر ما ذرأ في الأرض ، ومن شر ما يخرج منها ، ومن شر فتن الليل والنهار ، ومن شر كل طارق إلا طارقاً يطرق بخير يا رحمن",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أحمد 3/419 بإسناد صحيح وابن السني برقم 637 وصحح إسناده الأرناؤوط في تخريجه للطحاوية ص 133 وانظر مجمع الزوائد 10/ 127",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 264,
+    "title": "الاستغفار والتوبة",
+    "arabic": "وقال صلى الله عيه وسلم : يا أيها الناس توبوا إلى الله فإني أتوب في اليوم إليه مائة مرةً",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 11/101",
+    "category": "repentance",
+    "tags": [
+      "repentance"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 265,
+    "title": "الاستغفار والتوبة",
+    "arabic": "وقال صلى الله عيه وسلم : من قال أستغفر الله العظيم الذي لا إله إلا هو الحي القيوم وأتوب إليه ، غفر الله لهُ وإن كان فر من الزحف",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 11/101",
+    "category": "repentance",
+    "tags": [
+      "repentance"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 266,
+    "title": "الاستغفار والتوبة",
+    "arabic": "وقال صلى الله عيه وسلم : أقرب ما يكون الربُّ من العبد في جوف الليل الآخر فإن استطعت أن تكون ممن يذكر الله في تلك الساعة فكن",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 11/101",
+    "category": "repentance",
+    "tags": [
+      "repentance"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 267,
+    "title": "الاستغفار والتوبة",
+    "arabic": "وقال صلى الله عيه وسلم : أقرب ما يكون العبد من ربه وهو ساجد فأكثروا الدعاء",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 11/101",
+    "category": "repentance",
+    "tags": [
+      "repentance"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 268,
+    "title": "الاستغفار والتوبة",
+    "arabic": "وقال صلى الله عيه وسلم : إنه ليغان على قلبي وإني لاستغفرُ الله في اليوم مائة مرة",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 11/101",
+    "category": "repentance",
+    "tags": [
+      "repentance"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 269,
+    "title": "فضل التسبيح والتحميد ، والتهليل ، والتكبير",
+    "arabic": "قال صلى الله عيه وسلم من قال سبحان الله وبحمده في يوم مائة مرة حطت خطاياه ولو كانت مثل زبد البحر",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 7/168 ومسلم 4/ 2071 ، وانظر :فضل من قالها مائة مرة إذا أصبح وإذا أمسى",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 270,
+    "title": "فضل التسبيح والتحميد ، والتهليل ، والتكبير",
+    "arabic": "وقال صلى الله عيه وسلم : من قال لا إله إلا وحده لا شريك لهُ ، لهُ الملك ، ولهُ الحمدُ ، وهو على كل شيء قدير عشر مرات . كان كمن أعتق أربعة أنفس من ولد إسماعيل",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 7/168 ومسلم 4/ 2071 ، وانظر :فضل من قالها مائة مرة إذا أصبح وإذا أمسى",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 271,
+    "title": "فضل التسبيح والتحميد ، والتهليل ، والتكبير",
+    "arabic": "وقال صلى الله عيه وسلم : كلمتان خفيفتان على اللسان ، ثقيلتان في الميزان حبيبتان إلى الرحمن : سبحان الله وبحمده سبحان الله العظيم",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 7/168 ومسلم 4/ 2071 ، وانظر :فضل من قالها مائة مرة إذا أصبح وإذا أمسى",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 272,
+    "title": "فضل التسبيح والتحميد ، والتهليل ، والتكبير",
+    "arabic": "وقال صلى الله عيه وسلم : لأن أقول سبحان الله ، والحمد لله ،ولا إله إلا الله ، والله أكبر ،أحب إلى مما طلعت عليه الشمس",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 7/168 ومسلم 4/ 2071 ، وانظر :فضل من قالها مائة مرة إذا أصبح وإذا أمسى",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 273,
+    "title": "فضل التسبيح والتحميد ، والتهليل ، والتكبير",
+    "arabic": "وقال صلى الله عيه وسلم: أيعجز أحدكم أن يكسب كل يوم ألف حسنةفسأله سائل من جلسائه كيف يكسب أحدنا ألف حسنة ؟ قال : يسبح مائة تسبيحة ، فيكتب له ألف حسنة أو يحط عنه ُ ألف خطيئة",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 7/168 ومسلم 4/ 2071 ، وانظر :فضل من قالها مائة مرة إذا أصبح وإذا أمسى",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 274,
+    "title": "فضل التسبيح والتحميد ، والتهليل ، والتكبير",
+    "arabic": "من قال سبحان الله العظيم وبحمده غرست له نخلة في الجنة",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 7/168 ومسلم 4/ 2071 ، وانظر :فضل من قالها مائة مرة إذا أصبح وإذا أمسى",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 275,
+    "title": "فضل التسبيح والتحميد ، والتهليل ، والتكبير",
+    "arabic": "وقال صلى الله عيه وسلم: يا عبد الله بن قيس ألا أدلك على كنز من كنوز الجنة ؟ فقلت:بلى يا رسول الله ، قال : قل لا حول ولا قوة إلا بالله",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 7/168 ومسلم 4/ 2071 ، وانظر :فضل من قالها مائة مرة إذا أصبح وإذا أمسى",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 276,
+    "title": "فضل التسبيح والتحميد ، والتهليل ، والتكبير",
+    "arabic": "وقال صلى الله عيه وسلم: أحب الكلام إلى الله أربعٌ : سبحان الله ، والحمد لله ، ولا إله إلا الله ، والله أكبر ، لا يضرك بأيهنَّ بدأت",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 7/168 ومسلم 4/ 2071 ، وانظر :فضل من قالها مائة مرة إذا أصبح وإذا أمسى",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 277,
+    "title": "فضل التسبيح والتحميد ، والتهليل ، والتكبير",
+    "arabic": "جاء أعرابي إلى رسول الله صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ فقال: علمني كلاماً أقوله : قال قل لا إله إلا الله وحده لا شريك لهً ،الله أكبرُ كبيراً ، والحمد لله كثيراً ، سبحان الله رب العالمين ،لا حول ولا قوة إلا بالله العزيز الحكيم قال فهؤلاء لربي فما لي ؟ قال : قل: اللهم اغفر لي ،وارحمني ،واهدني وارزقني",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 7/168 ومسلم 4/ 2071 ، وانظر :فضل من قالها مائة مرة إذا أصبح وإذا أمسى",
+    "category": "general",
+    "tags": [
+      "general",
+      "forgiveness",
+      "rizq_sustenance",
+      "guidance",
+      "mercy"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 278,
+    "title": "فضل التسبيح والتحميد ، والتهليل ، والتكبير",
+    "arabic": "كان الرجل إذا أسلم علمه النبي صلى الله عليه وسلم الصلاة ثم أمره أن يدعو بهؤلاء الكلمات : اللهم اغفر لي، وارحمني ،واهدني ، وعافني وارزقني",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 7/168 ومسلم 4/ 2071 ، وانظر :فضل من قالها مائة مرة إذا أصبح وإذا أمسى",
+    "category": "general",
+    "tags": [
+      "general",
+      "forgiveness",
+      "rizq_sustenance",
+      "guidance",
+      "protection",
+      "mercy"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 279,
+    "title": "فضل التسبيح والتحميد ، والتهليل ، والتكبير",
+    "arabic": "إن أفضل الذكر لا إله إلا الله",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 7/168 ومسلم 4/ 2071 ، وانظر :فضل من قالها مائة مرة إذا أصبح وإذا أمسى",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 280,
+    "title": "فضل التسبيح والتحميد ، والتهليل ، والتكبير",
+    "arabic": "الباقيات الصالحات : سبحان الله والحمد لله ، ولا إله إلا الله ،والله أكبر ،و لا حول ولا قوة إلا بالله",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري 7/168 ومسلم 4/ 2071 ، وانظر :فضل من قالها مائة مرة إذا أصبح وإذا أمسى",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 281,
+    "title": "كيف كان النبي صلى الله عليه وسلم يسبح ؟",
+    "arabic": "عن عبد الله بن عمرو رضي الله عنهما قال : رأيت النبي صلى الله عليه وسلم يعقد التسبيح بيمينه",
+    "translation": null,
+    "transliteration": null,
+    "reference": "أخرجه أبو داود بلفظه 2/81 والترمذي 5/521 وانظر صحيح الجامع 4/271 برقم 4865",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  },
+  {
+    "id": 282,
+    "title": "من أنواع الخير والآداب الجامعة",
+    "arabic": "إذا كان جنح الليل – أو أمسيتم – فكفوا صبيانكم ؛ فإن الشياطين تنتشر حينئذ ، فإذا ذهب ساعة من الليل فخلوهم ،وأغلقوا الأبواب واذكروا اسم الله ؛ فإن الشيطان لا يفتح باباً مغلقاً ، وأوكوا قربكم واذكروا اسم الله ، وخمروا آنيتكم واذكروا اسم الله ، ولو أن تعرضوا عليها شيئاً ، وأطفئوا مصابيحكم",
+    "translation": null,
+    "transliteration": null,
+    "reference": "البخاري مع الفتح 10/ 88 ومسلم 3/1595",
+    "category": "general",
+    "tags": [
+      "general"
+    ],
+    "source": "hisn_almuslim"
+  }
+]

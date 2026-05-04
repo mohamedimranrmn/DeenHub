@@ -1,0 +1,51 @@
+export const HADITH_CATEGORIES = [
+    {
+        key:     'Sahih al-Bukhari',
+        title:   'Sahih al-Bukhari',
+        arabic:  'صحيح البخاري',
+        color:   '#C9A84C',
+        bgColor: 'rgba(201,168,76,0.10)',
+    },
+    {
+        key:     'Sahih Muslim',
+        title:   'Sahih Muslim',
+        arabic:  'صحيح مسلم',
+        color:   '#7B9ED9',
+        bgColor: 'rgba(123,158,217,0.10)',
+    },
+    {
+        key:     'Sunan Abu Dawud',
+        title:   'Sunan Abu Dawud',
+        arabic:  'سنن أبي داود',
+        color:   '#9B8EC4',
+        bgColor: 'rgba(155,142,196,0.10)',
+    },
+    {
+        key:     'Jami at-Tirmidhi',
+        title:   'Jami at-Tirmidhi',
+        arabic:  'جامع الترمذي',
+        color:   '#6BAE8E',
+        bgColor: 'rgba(107,174,142,0.10)',
+    },
+    {
+        key:     'Sunan an-Nasa\'i',
+        title:   "Sunan an-Nasa'i",
+        arabic:  'سنن النسائي',
+        color:   '#D4956A',
+        bgColor: 'rgba(212,149,106,0.10)',
+    },
+    {
+        key:     'Sunan Ibn Majah',
+        title:   'Sunan Ibn Majah',
+        arabic:  'سنن ابن ماجه',
+        color:   '#5FB8C9',
+        bgColor: 'rgba(95,184,201,0.10)',
+    },
+    {
+        key:     'Muwatta Malik',
+        title:   'Muwatta Malik',
+        arabic:  'موطأ مالك',
+        color:   '#C47B8E',
+        bgColor: 'rgba(196,123,142,0.10)',
+    },
+];

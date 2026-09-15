@@ -6,16 +6,16 @@ import {
 import { useLocalSearchParams, router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import supabase from "../../../src/services/supabase";
-import { HADITH_CATEGORIES } from "../../../src/constants/hadithCategories";
+import supabase from "../../../../../src/services/supabase";
+import { HADITH_CATEGORIES } from "../../../../../src/constants/hadithCategories";
 
 const PAGE_SIZE   = 30;
 const CARD_HEIGHT = 110;
+const UNCATEGORIZED_KEY = 'uncategorized';
 
 const C = {
     bg:        '#0C1520',
     card:      '#111D2B',
-    cardHover: '#162435',
     text:      '#F0EAD6',
     textDim:   '#B8A88A',
     gold:      '#C9A84C',
@@ -27,39 +27,46 @@ const C = {
     borderGold:'rgba(201,168,76,0.10)',
 };
 
-function HadithCard({ item, onPress, index }) {
-    const preview = item.full_text ? item.full_text.slice(0, 150) : '—';
+function HadithCard({ item, onPress }) {
+    const preview = item.full_text ? item.full_text.slice(0, 160) : '—';
+    const numLabel = item.hadith_number ? `Hadith ${item.hadith_number}` : `#${item.id}`;
 
     return (
-        <TouchableOpacity onPress={onPress} style={s.card} activeOpacity={0.72}>
-            {/* Top row: number + grade */}
-            <View style={s.cardMeta}>
-                <Text style={s.cardNumber}>
-                    {item.hadith_number ? `Hadith ${item.hadith_number}` : `#${item.id}`}
-                </Text>
-                {item.grade ? (
-                    <View style={s.gradePill}>
-                        <Text style={s.gradeText}>{item.grade}</Text>
+        <TouchableOpacity onPress={onPress} style={s.card} activeOpacity={0.75}>
+            <View style={s.cardAccent} />
+            <View style={s.cardInner}>
+                <View style={s.cardTopRow}>
+                    <View style={s.numPill}>
+                        <Text style={s.numPillText}>{numLabel}</Text>
+                    </View>
+                    {item.grade ? (
+                        <View style={s.gradePill}>
+                            <Text style={s.gradeText}>{item.grade}</Text>
+                        </View>
+                    ) : null}
+                    <Ionicons name="chevron-forward" size={13} color={C.muted} style={s.chevron} />
+                </View>
+
+                <Text style={s.preview} numberOfLines={3}>{preview}</Text>
+
+                {item.book ? (
+                    <View style={s.cardFooter}>
+                        <Ionicons name="library-outline" size={11} color={C.muted} />
+                        <Text style={s.bookTag} numberOfLines={1}>{item.book}</Text>
                     </View>
                 ) : null}
-                <Ionicons name="chevron-forward" size={12} color={C.muted} style={{ marginLeft: 'auto' }} />
             </View>
-
-            {/* Preview text */}
-            <Text style={s.preview} numberOfLines={3}>{preview}</Text>
-
-            {/* Book tag */}
-            {item.book ? (
-                <Text style={s.bookTag} numberOfLines={1}>{item.book}</Text>
-            ) : null}
         </TouchableOpacity>
     );
 }
 
-export default function HadithCategoryScreen() {
-    const insets       = useSafeAreaInsets();
-    const { category } = useLocalSearchParams();
-    const source       = decodeURIComponent(category);
+export default function HadithChapterScreen() {
+    const insets = useSafeAreaInsets();
+    const { category, chapterNumber, title } = useLocalSearchParams();
+
+    const source           = decodeURIComponent(category);
+    const isUncategorized  = chapterNumber === UNCATEGORIZED_KEY;
+    const chapterNum       = isUncategorized ? null : Number(chapterNumber);
 
     const [hadiths,     setHadiths]     = useState([]);
     const [loading,     setLoading]     = useState(true);
@@ -72,18 +79,23 @@ export default function HadithCategoryScreen() {
     const isLoadingRef = useRef(false);
 
     const categoryMeta = HADITH_CATEGORIES.find(c => c.key === source);
-    const accentColor  = categoryMeta?.color ?? C.gold;
+    const chapterTitle = title ? decodeURIComponent(title) : (isUncategorized ? 'Uncategorized' : `Chapter ${chapterNumber}`);
+
+    const applyChapterFilter = (query) =>
+        isUncategorized ? query.is('chapter_number', null) : query.eq('chapter_number', chapterNum);
 
     useEffect(() => {
         const fetchCount = async () => {
-            const { count } = await supabase
+            let q = supabase
                 .from('hadiths')
                 .select('*', { count: 'exact', head: true })
                 .eq('source', source);
+            q = applyChapterFilter(q);
+            const { count } = await q;
             if (count !== null) setTotalCount(count);
         };
         fetchCount();
-    }, [source]);
+    }, [source, chapterNumber]);
 
     const loadPage = useCallback(async (reset = false) => {
         if (isLoadingRef.current) return;
@@ -105,6 +117,8 @@ export default function HadithCategoryScreen() {
                 .order('id', { ascending: true })
                 .limit(PAGE_SIZE);
 
+            query = applyChapterFilter(query);
+
             if (!reset && lastIdRef.current > 0) {
                 query = query.gt('id', lastIdRef.current);
             }
@@ -120,16 +134,16 @@ export default function HadithCategoryScreen() {
             setHadiths(prev => reset ? incoming : [...prev, ...incoming]);
             setHasMore(incoming.length === PAGE_SIZE);
         } catch (err) {
-            console.error('HadithCategory:', err.message);
+            console.error('HadithChapter:', err.message);
             setError('Could not load hadiths. Please try again.');
         } finally {
             setLoading(false);
             setLoadingMore(false);
             isLoadingRef.current = false;
         }
-    }, [source]);
+    }, [source, chapterNumber]);
 
-    useEffect(() => { loadPage(true); }, [source]);
+    useEffect(() => { loadPage(true); }, [source, chapterNumber]);
 
     const handleLoadMore = () => {
         if (!loadingMore && hasMore && !loading) loadPage(false);
@@ -141,10 +155,9 @@ export default function HadithCategoryScreen() {
         index,
     }), []);
 
-    const renderItem = useCallback(({ item, index }) => (
+    const renderItem = useCallback(({ item }) => (
         <HadithCard
             item={item}
-            index={index}
             onPress={() => router.push(`/hadith/${item.id}`)}
         />
     ), []);
@@ -191,15 +204,12 @@ export default function HadithCategoryScreen() {
                 </TouchableOpacity>
 
                 <View style={s.navCenter}>
-                    {categoryMeta?.arabic ? (
-                        <Text style={s.arabicAccent}>{categoryMeta.arabic}</Text>
-                    ) : null}
-                    <Text style={s.navTitle} numberOfLines={1}>
+                    <Text style={s.navSuper} numberOfLines={1}>
                         {categoryMeta?.title ?? source}
                     </Text>
+                    <Text style={s.navTitle} numberOfLines={1}>{chapterTitle}</Text>
                 </View>
 
-                {/* Search button */}
                 <TouchableOpacity
                     style={s.navBtn}
                     onPress={() => router.push(`/hadith/search?source=${encodeURIComponent(source)}`)}
@@ -245,7 +255,6 @@ export default function HadithCategoryScreen() {
                     windowSize={10}
                     initialNumToRender={15}
                     updateCellsBatchingPeriod={50}
-                    ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: C.border, marginHorizontal: 4 }} />}
                 />
             )}
         </View>
@@ -263,53 +272,88 @@ const s = StyleSheet.create({
     },
     navBtn:      { width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
     navCenter:   { alignItems: 'center', flex: 1, paddingHorizontal: 8 },
-    arabicAccent:{ fontSize: 12, color: C.gold, opacity: 0.65, letterSpacing: 0.8, lineHeight: 16, marginBottom: 1 },
+    navSuper:    { fontSize: 11, color: C.gold, opacity: 0.65, letterSpacing: 0.6, lineHeight: 15, marginBottom: 1, textTransform: 'uppercase' },
     navTitle:    { color: C.text, fontSize: 15, fontWeight: '600', letterSpacing: 0.3 },
 
-    list:            { paddingHorizontal: 0 },
-    listHeader:      { paddingHorizontal: 20, paddingVertical: 12 },
+    list:            { paddingHorizontal: 14, paddingTop: 4, gap: 10 },
+    listHeader:      { paddingHorizontal: 6, paddingVertical: 10 },
     listHeaderText:  { fontSize: 11, color: C.muted, letterSpacing: 0.6, textTransform: 'uppercase' },
 
-    // ── Premium card — full width, no left bar ──
     card: {
         backgroundColor: C.card,
-        paddingHorizontal: 20,
-        paddingVertical: 16,
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: C.borderGold,
+        flexDirection: 'row',
+        overflow: 'hidden',
     },
-    cardMeta: {
+    cardAccent: {
+        width: 3,
+        backgroundColor: C.gold,
+        opacity: 0.55,
+        borderTopLeftRadius: 16,
+        borderBottomLeftRadius: 16,
+    },
+    cardInner: {
+        flex: 1,
+        paddingHorizontal: 16,
+        paddingVertical: 15,
+    },
+    cardTopRow: {
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 10,
         gap: 8,
     },
-    cardNumber: {
-        fontSize: 10,
-        color: C.gold,
-        fontWeight: '700',
-        letterSpacing: 0.8,
-        textTransform: 'uppercase',
-    },
-    gradePill: {
+    numPill: {
         backgroundColor: C.goldLight,
-        borderRadius: 4,
-        paddingHorizontal: 6,
-        paddingVertical: 2,
+        borderRadius: 6,
+        paddingHorizontal: 8,
+        paddingVertical: 3,
         borderWidth: 1,
         borderColor: C.goldMed,
     },
-    gradeText: { fontSize: 9, color: C.gold, fontWeight: '700', letterSpacing: 0.2 },
+    numPillText: {
+        fontSize: 10,
+        color: C.gold,
+        fontWeight: '700',
+        letterSpacing: 0.6,
+        textTransform: 'uppercase',
+    },
+    gradePill: {
+        backgroundColor: 'rgba(255,255,255,0.04)',
+        borderRadius: 6,
+        paddingHorizontal: 7,
+        paddingVertical: 3,
+        borderWidth: 1,
+        borderColor: C.border,
+    },
+    gradeText: {
+        fontSize: 9,
+        color: C.mutedMid,
+        fontWeight: '600',
+        letterSpacing: 0.3,
+    },
+    chevron: { marginLeft: 'auto' },
 
     preview: {
         color: C.textDim,
         fontSize: 14,
-        lineHeight: 22,
+        lineHeight: 23,
         letterSpacing: 0.1,
-        marginBottom: 10,
+        marginBottom: 12,
+    },
+
+    cardFooter: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 5,
     },
     bookTag: {
-        fontSize: 10,
+        fontSize: 11,
         color: C.muted,
-        letterSpacing: 0.3,
+        letterSpacing: 0.2,
+        flex: 1,
     },
 
     footerLoader:     { paddingVertical: 24, alignItems: 'center' },

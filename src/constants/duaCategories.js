@@ -27,4 +27,5 @@ export const DUA_CATEGORIES = [
     { key: 'hope', title: 'Hope', arabic: 'الرجاء' },
     { key: 'love_of_allah', title: 'Love of Allah', arabic: 'محبة الله' },
     { key: 'dhikr', title: 'Dhikr', arabic: 'الذكر' },
+    { key: 'governance', title: 'Governance & Justice', arabic: 'الحكم والعدل' },
 ];

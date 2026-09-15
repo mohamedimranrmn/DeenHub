@@ -155,7 +155,12 @@ export default function DuaSearchScreen() {
                 .limit(RESULTS_LIMIT)
                 .order("id", { ascending: true });
 
-            if (categoryFilter) q = q.eq("category", categoryFilter);
+            // Category filter matches either the dua's primary category
+            // or its tags (a dua can belong to more than one category —
+            // see [category].jsx for the same matching logic).
+            if (categoryFilter) {
+                q = q.or(`category.eq.${categoryFilter},tags.cs.{${categoryFilter}}`);
+            }
 
             const { data: fallback, error: fbErr } = await q;
             if (fbErr) throw fbErr;

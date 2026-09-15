@@ -6,9 +6,10 @@ import {
 import { useState, useRef, useCallback } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import { useNavigation } from '@react-navigation/native';
+
+import { createCustomDhikr } from '../src/services/dhikr';
 
 // ── Design tokens (matches DhikrCounter palette) ─────────────────────────────
 const GOLD       = '#C9A84C';
@@ -167,6 +168,7 @@ export default function AddDhikrScreen() {
 
     // ── Save ──────────────────────────────────────────────────────────────
     const handleSave = useCallback(async () => {
+        setErrors(prev => ({ ...prev, save: null }));
         if (!validate()) return;
         setSaving(true);
 
@@ -180,27 +182,25 @@ export default function AddDhikrScreen() {
                 ? parseInt(customTarget, 10)
                 : target;
 
-            const newDhikr = {
-                // Use a negative id so it never collides with Supabase rows
-                id:          -(Date.now()),
+            await createCustomDhikr({
                 title:       title.trim(),
                 arabic:      arabic.trim(),
                 translation: translation.trim(),
-                target:      finalTarget,
                 target_count: finalTarget,
-                category:    'custom',
-                isCustom:    true,
-            };
-
-            const existing = await AsyncStorage.getItem('customDhikr');
-            const list     = existing ? JSON.parse(existing) : [];
-            list.push(newDhikr);
-            await AsyncStorage.setItem('customDhikr', JSON.stringify(list));
+            });
 
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             navigation.goBack();
         } catch (e) {
             console.error('AddDhikr save:', e);
+            setErrors(prev => ({ ...prev, save: 'Could not save. Check your connection and try again.' }));
+            Animated.sequence([
+                Animated.timing(errorAnim, { toValue: 1, duration: 100, useNativeDriver: true }),
+                Animated.timing(errorAnim, { toValue: 0, duration: 100, useNativeDriver: true }),
+                Animated.timing(errorAnim, { toValue: 1, duration: 100, useNativeDriver: true }),
+                Animated.timing(errorAnim, { toValue: 0, duration: 100, useNativeDriver: true }),
+            ]).start();
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         } finally {
             setSaving(false);
         }
@@ -216,30 +216,41 @@ export default function AddDhikrScreen() {
 
             {/* ── Top bar ── */}
             <View style={styles.topBar}>
-                <TouchableOpacity
-                    onPress={() => navigation.goBack()}
-                    style={styles.backBtn}
-                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                >
-                    <Ionicons name="chevron-back" size={22} color={TEXT_DIM} />
-                </TouchableOpacity>
+                <View style={styles.topSide}>
+                    <TouchableOpacity
+                        onPress={() => navigation.goBack()}
+                        style={styles.backBtn}
+                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    >
+                        <Ionicons name="chevron-back" size={22} color={TEXT_DIM} />
+                    </TouchableOpacity>
+                </View>
                 <View style={styles.topCenter}>
                     <Text style={styles.topLabel}>ADD DHIKR</Text>
                     <Text style={styles.topSub}>أضف ذكرًا</Text>
                 </View>
-                <Animated.View style={{ transform: [{ scale: saveAnim }] }}>
-                    <TouchableOpacity
-                        style={[styles.saveBtn, saving && styles.saveBtnDisabled]}
-                        onPress={handleSave}
-                        disabled={saving}
-                        activeOpacity={0.8}
-                    >
-                        <Text style={styles.saveBtnText}>
-                            {saving ? 'Saving…' : 'Save'}
-                        </Text>
-                    </TouchableOpacity>
-                </Animated.View>
+                <View style={[styles.topSide, styles.topSideRight]}>
+                    <Animated.View style={{ transform: [{ scale: saveAnim }] }}>
+                        <TouchableOpacity
+                            style={[styles.saveBtn, saving && styles.saveBtnDisabled]}
+                            onPress={handleSave}
+                            disabled={saving}
+                            activeOpacity={0.8}
+                        >
+                            <Text style={styles.saveBtnText}>
+                                {saving ? 'Saving…' : 'Save'}
+                            </Text>
+                        </TouchableOpacity>
+                    </Animated.View>
+                </View>
             </View>
+
+            {errors.save ? (
+                <View style={styles.saveErrorBanner}>
+                    <Ionicons name="alert-circle-outline" size={14} color={ERROR} />
+                    <Text style={styles.saveErrorText}>{errors.save}</Text>
+                </View>
+            ) : null}
 
             <ScrollView
                 style={styles.scroll}
@@ -468,6 +479,8 @@ const styles = StyleSheet.create({
         borderBottomColor: BORDER,
     },
     backBtn: { padding: 4 },
+    topSide: { flex: 1, alignItems: 'flex-start', justifyContent: 'center' },
+    topSideRight: { alignItems: 'flex-end' },
     topCenter: { alignItems: 'center' },
     topLabel: {
         fontSize: 11,
@@ -494,6 +507,26 @@ const styles = StyleSheet.create({
         letterSpacing: 0.5,
     },
 
+    saveErrorBanner: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        marginHorizontal: 20,
+        marginTop: 12,
+        paddingHorizontal: 14,
+        paddingVertical: 10,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: ERROR,
+        backgroundColor: ERROR_BG,
+    },
+    saveErrorText: {
+        flex: 1,
+        fontSize: 12,
+        color: ERROR,
+        letterSpacing: 0.2,
+    },
+
     // ── Scroll ──
     scroll: { flex: 1 },
     scrollContent: {
@@ -502,9 +535,9 @@ const styles = StyleSheet.create({
     },
 
     sectionLabel: {
-        fontSize: 10,
+        fontSize: 11,
         color: GOLD,
-        letterSpacing: 3,
+        letterSpacing: 2.5,
         marginBottom: 6,
         fontWeight: '600',
     },
@@ -538,11 +571,11 @@ const styles = StyleSheet.create({
     },
     presetArabic: {
         fontFamily: 'Uthmanic',
-        fontSize: 18,
+        fontSize: 17,
         color: TEXT_DIM,
         textAlign: 'right',
         writingDirection: 'rtl',
-        lineHeight: 30,
+        lineHeight: 32,
     },
     presetArabicSelected: { color: TEXT },
     presetTitle: {
@@ -590,18 +623,18 @@ const styles = StyleSheet.create({
         backgroundColor: BORDER,
     },
     orText: {
-        fontSize: 10,
+        fontSize: 11,
         color: MUTED,
-        letterSpacing: 2.5,
+        letterSpacing: 2,
         fontWeight: '600',
     },
 
     // ── Form fields ──
     fieldWrap: { marginBottom: 20 },
     fieldLabel: {
-        fontSize: 10,
+        fontSize: 11,
         color: GOLD,
-        letterSpacing: 2.5,
+        letterSpacing: 2,
         marginBottom: 8,
         fontWeight: '600',
     },
@@ -629,9 +662,9 @@ const styles = StyleSheet.create({
     arabicInput: {
         fontFamily: 'Uthmanic',
         fontSize: 22,
-        lineHeight: 36,
+        lineHeight: 40,
         textAlignVertical: 'top',
-        minHeight: 72,
+        minHeight: 76,
     },
     errorRow: {
         flexDirection: 'row',
@@ -679,9 +712,9 @@ const styles = StyleSheet.create({
         marginTop: 8,
     },
     previewLabel: {
-        fontSize: 10,
+        fontSize: 11,
         color: MUTED,
-        letterSpacing: 2.5,
+        letterSpacing: 2,
         marginBottom: 10,
         fontWeight: '600',
     },
@@ -700,7 +733,7 @@ const styles = StyleSheet.create({
         color: TEXT,
         textAlign: 'center',
         writingDirection: 'rtl',
-        lineHeight: 40,
+        lineHeight: 44,
     },
     previewTitle: {
         fontSize: 13,

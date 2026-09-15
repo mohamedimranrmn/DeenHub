@@ -1,8 +1,8 @@
 import {
     View, Text, TouchableOpacity, StyleSheet,
-    Dimensions, StatusBar, Animated,
+    Dimensions, StatusBar, Animated, Modal,
 } from 'react-native';
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
@@ -21,6 +21,7 @@ const BORDER     = 'rgba(201,168,76,0.15)';
 const GREEN      = '#4CAF7D';
 const GREEN_BG   = 'rgba(76,175,125,0.12)';
 const GREEN_MED  = 'rgba(76,175,125,0.28)';
+const RED        = '#E05C5C';
 
 const CIRCLE_SIZE = Math.min(width * 0.58, 230);
 
@@ -29,6 +30,7 @@ export default function DhikrCounter({
                                          isCompleted, allCompleted, streak,
                                          totalDhikr, currentIndex, onDotPress,
                                          completedFlags, allCounts, onAddDhikr,
+                                         onDeleteDhikr,
                                      }) {
     const insets = useSafeAreaInsets();
 
@@ -125,12 +127,28 @@ export default function DhikrCounter({
         onReset();
     };
 
+    const [confirmVisible, setConfirmVisible] = useState(false);
+
+    const isCustom = dhikr?.category === 'custom';
+
+    const handleDelete = () => {
+        if (!onDeleteDhikr) return;
+        setConfirmVisible(true);
+    };
+
+    const cancelDelete = () => setConfirmVisible(false);
+
+    const confirmDelete = () => {
+        setConfirmVisible(false);
+        onDeleteDhikr(dhikr);
+    };
+
     const borderColor = tapGlow.interpolate({
         inputRange: [0, 1],
         outputRange: [isCompleted ? GREEN_MED : BORDER, isCompleted ? GREEN_MED : GOLD_MED],
     });
 
-    const target = dhikr?.target || 1;
+    const target = dhikr?.target_count || 1;
     const progressRatio = Math.min(count / target, 1);
 
     const ARC_SIZE  = CIRCLE_SIZE + 28;
@@ -151,14 +169,26 @@ export default function DhikrCounter({
                         <Text style={styles.progressLabel}>
                             {(currentIndex ?? 0) + 1} of {totalDhikr}
                         </Text>
-                        {/* Add custom dhikr button */}
-                        <TouchableOpacity
-                            style={styles.addBtn}
-                            onPress={onAddDhikr}
-                            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                        >
-                            <Ionicons name="add-circle-outline" size={22} color={GOLD} />
-                        </TouchableOpacity>
+                        <View style={styles.headerActions}>
+                            {/* Delete/remove current dhikr */}
+                            {onDeleteDhikr && (
+                                <TouchableOpacity
+                                    style={styles.iconBtn}
+                                    onPress={handleDelete}
+                                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                                >
+                                    <Ionicons name="trash-outline" size={19} color={RED} />
+                                </TouchableOpacity>
+                            )}
+                            {/* Add custom dhikr button */}
+                            <TouchableOpacity
+                                style={styles.iconBtn}
+                                onPress={onAddDhikr}
+                                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                            >
+                                <Ionicons name="add-circle-outline" size={22} color={GOLD} />
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
 
@@ -343,6 +373,53 @@ export default function DhikrCounter({
                 </View>
 
             </View>
+
+            {/* ── Delete/remove confirmation modal ── */}
+            <Modal
+                visible={confirmVisible}
+                transparent
+                animationType="fade"
+                onRequestClose={cancelDelete}
+            >
+                <View style={styles.modalOverlay}>
+                    <TouchableOpacity
+                        style={StyleSheet.absoluteFill}
+                        activeOpacity={1}
+                        onPress={cancelDelete}
+                    />
+                    <View style={styles.modalCard}>
+                        <View style={styles.modalIconWrap}>
+                            <Ionicons name="warning-outline" size={26} color={RED} />
+                        </View>
+                        <Text style={styles.modalTitle}>
+                            {isCustom ? 'Delete this dhikr?' : 'Remove this dhikr?'}
+                        </Text>
+                        <Text style={styles.modalMessage}>
+                            {isCustom
+                                ? `"${dhikr?.title}" and its saved progress will be permanently deleted.`
+                                : `"${dhikr?.title}" will be removed from your list. You can still find it again if you re-add it later.`}
+                        </Text>
+                        <View style={styles.modalActions}>
+                            <TouchableOpacity
+                                style={styles.modalCancelBtn}
+                                onPress={cancelDelete}
+                                activeOpacity={0.75}
+                            >
+                                <Text style={styles.modalCancelText}>Cancel</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.modalDeleteBtn}
+                                onPress={confirmDelete}
+                                activeOpacity={0.85}
+                            >
+                                <Text style={styles.modalDeleteText}>
+                                    {isCustom ? 'Delete' : 'Remove'}
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 }
@@ -411,9 +488,10 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         paddingHorizontal: 24,
-        paddingVertical: 16,
+        paddingTop: 4,
+        paddingBottom: 16,
     },
 
     // ── Header ──
@@ -421,17 +499,23 @@ const styles = StyleSheet.create({
     headerRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
     },
-    headerLeft: { alignItems: 'flex-start' },
+    headerLeft: { flex: 1, alignItems: 'flex-start' },
     screenLabel:   { fontSize: 10, color: MUTED, letterSpacing: 3, marginBottom: 2 },
-    arabicDecor:   { fontSize: 22, color: GOLD, opacity: 0.7 },
+    arabicDecor:   { fontFamily: 'Uthmanic', fontSize: 22, color: GOLD, opacity: 0.7, lineHeight: 44 },
     progressLabel: { fontSize: 11, color: MUTED, letterSpacing: 1 },
-    addBtn: {
+    headerActions: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        gap: 14,
+    },
+    iconBtn: {
         padding: 4,
     },
 
-    dotsRow: { flexDirection: 'row', gap: 8, marginBottom: 26 },
+    dotsRow: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginBottom: 26 },
     dot: {
         width: 6, height: 6, borderRadius: 3,
         backgroundColor: MUTED, opacity: 0.35,
@@ -451,7 +535,7 @@ const styles = StyleSheet.create({
         color: TEXT,
         textAlign: 'center',
         writingDirection: 'rtl',
-        lineHeight: 38,
+        lineHeight: 48,
     },
     title:       { fontSize: 14, color: GOLD, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 },
     translation: { fontSize: 14, color: TEXT_DIM, fontStyle: 'italic', letterSpacing: 0.3 },
@@ -555,4 +639,73 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
     },
     resetText: { color: TEXT_DIM, fontSize: 14, fontWeight: '500', letterSpacing: 0.5 },
+
+    // ── Delete confirmation modal ──
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(6,10,16,0.72)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 32,
+    },
+    modalCard: {
+        width: '100%',
+        maxWidth: 340,
+        backgroundColor: CARD,
+        borderRadius: 20,
+        padding: 24,
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: BORDER,
+    },
+    modalIconWrap: {
+        width: 52,
+        height: 52,
+        borderRadius: 26,
+        backgroundColor: 'rgba(224,92,92,0.12)',
+        borderWidth: 1,
+        borderColor: 'rgba(224,92,92,0.3)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 14,
+    },
+    modalTitle: {
+        fontSize: 17,
+        fontWeight: '700',
+        color: TEXT,
+        textAlign: 'center',
+        marginBottom: 8,
+    },
+    modalMessage: {
+        fontSize: 13,
+        color: TEXT_DIM,
+        textAlign: 'center',
+        lineHeight: 20,
+        marginBottom: 22,
+    },
+    modalActions: {
+        flexDirection: 'row',
+        width: '100%',
+        gap: 12,
+    },
+    modalCancelBtn: {
+        flex: 1,
+        paddingVertical: 13,
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: GOLD_LIGHT,
+        borderWidth: 1,
+        borderColor: BORDER,
+    },
+    modalCancelText: { color: TEXT_DIM, fontSize: 14, fontWeight: '600' },
+    modalDeleteBtn: {
+        flex: 1,
+        paddingVertical: 13,
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: RED,
+    },
+    modalDeleteText: { color: '#FFF', fontSize: 14, fontWeight: '700' },
 });

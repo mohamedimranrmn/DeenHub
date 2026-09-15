@@ -82,24 +82,32 @@ export default function HadithScreen() {
         outputRange: ['rgba(255,255,255,0.06)', 'rgba(201,168,76,0.30)'],
     });
 
-    const renderCategory = ({ item, index }) => {
+    const renderCategory = ({ item }) => {
+        const count = categoryCounts[item.key];
         return (
             <TouchableOpacity
-                style={s.row}
+                style={s.card}
                 onPress={() => router.push(`/hadith/category/${encodeURIComponent(item.key)}`)}
                 activeOpacity={0.72}
             >
-                {/* Color dot */}
-                <View style={[s.dot, { backgroundColor: item.color }]} />
+                {/* Accent bar along the top — reads better on a squarer grid tile */}
+                <View style={[s.cardAccent, { backgroundColor: item.color }]} />
 
-                {/* Text block */}
-                <View style={s.rowText}>
-                    <Text style={s.rowArabic}>{item.arabic}</Text>
-                    <Text style={s.rowTitle}>{item.title}</Text>
+                <View style={s.cardInner}>
+                    {/* Arabic title */}
+                    <Text style={s.cardArabic} numberOfLines={1}>{item.arabic}</Text>
+
+                    {/* English title */}
+                    <Text style={s.cardTitle} numberOfLines={2}>{item.title}</Text>
+
+                    {/* Footer: color dot + accurate count, or a loading dash while counts resolve */}
+                    <View style={s.cardFooter}>
+                        <View style={[s.cardDot, { backgroundColor: item.color }]} />
+                        <Text style={s.cardCount} numberOfLines={1}>
+                            {count != null ? `${count.toLocaleString()} hadiths` : '—'}
+                        </Text>
+                    </View>
                 </View>
-
-                {/* Chevron — properly aligned */}
-                <Ionicons name="chevron-forward" size={16} color={MUTED} />
             </TouchableOpacity>
         );
     };
@@ -160,7 +168,7 @@ export default function HadithScreen() {
             {/* ── Collections label ── */}
             <Text style={s.sectionLabel}>Collections</Text>
 
-            {/* ── List ── */}
+            {/* ── Grid ── */}
             {countsLoading ? (
                 <View style={s.loader}>
                     <ActivityIndicator color={GOLD} size="large" />
@@ -171,11 +179,10 @@ export default function HadithScreen() {
                     data={visibleCategories}
                     keyExtractor={item => item.key}
                     renderItem={renderCategory}
+                    numColumns={2}
+                    columnWrapperStyle={s.gridRow}
                     contentContainerStyle={[s.listContent, { paddingBottom: insets.bottom + 32 }]}
                     showsVerticalScrollIndicator={false}
-                    ItemSeparatorComponent={() => (
-                        <View style={{ height: 1, backgroundColor: BORDER, marginLeft: 52 }} />
-                    )}
                 />
             )}
         </View>
@@ -190,7 +197,7 @@ const s = StyleSheet.create({
         alignItems: 'flex-end', marginTop: 16, marginBottom: 20,
         paddingHorizontal: 20,
     },
-    headerSuper: { fontSize: 11, color: GOLD, opacity: 0.55, marginBottom: 3, letterSpacing: 1 },
+    headerSuper: { fontFamily: 'Uthmanic', fontSize: 14, color: GOLD, opacity: 0.7, marginBottom: 3, letterSpacing: 1, lineHeight: 28 },
     headerTitle: { fontSize: 28, fontWeight: '800', color: TEXT, letterSpacing: -0.5 },
     headerSub:   { fontSize: 12, color: MUTED_MID, marginTop: 3 },
     headerBtn: {
@@ -217,37 +224,71 @@ const s = StyleSheet.create({
         marginBottom: 4,
     },
 
-    listContent: { paddingHorizontal: 0 },
+    listContent: { paddingHorizontal: 14, paddingTop: 6 },
+    gridRow:     { gap: 10, marginBottom: 10 },
 
-    // ── Simple row — no card, full bleed ──
-    row: {
+    // ── Grid tile (2 per row) ────────────────────────────────
+    card: {
+        flex: 1,
+        backgroundColor: CARD,
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: 'rgba(201,168,76,0.10)',
+        overflow: 'hidden',
+        minHeight: 128,
+    },
+    cardAccent: {
+        height: 3,
+        width: '100%',
+        opacity: 0.7,
+    },
+    cardInner: {
+        flex: 1,
+        paddingHorizontal: 14,
+        paddingVertical: 14,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+
+    cardArabic: {
+        fontFamily: 'Uthmanic',
+        fontSize: 17,
+        color: TEXT,
+        lineHeight: 30,
+        marginBottom: 6,
+        textAlign: 'center',
+    },
+
+    cardTitle: {
+        fontSize: 12.5,
+        color: TEXT_DIM,
+        fontWeight: '500',
+        letterSpacing: 0.1,
+        lineHeight: 17,
+        marginBottom: 10,
+        textAlign: 'center',
+    },
+
+    cardFooter: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 20,
-        paddingVertical: 18,
-        backgroundColor: CARD,
+        justifyContent: 'center',
+        gap: 6,
+        width: '100%',
     },
-    dot: {
-        width: 8,
-        height: 8,
-        borderRadius: 4,
-        marginRight: 16,
-    },
-    rowText: {
-        flex: 1,
-    },
-    rowArabic: {
-        fontSize: 16,
-        color: TEXT,
-        lineHeight: 22,
-        marginBottom: 2,
-    },
-    rowTitle: {
-        fontSize: 12,
+    cardCount: {
+        fontSize: 10.5,
         color: MUTED_MID,
-        letterSpacing: 0.2,
+        letterSpacing: 0.1,
+        flexShrink: 1,
+        textAlign: 'center',
     },
-
+    cardDot: {
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+        opacity: 0.8,
+    },
     loader:     { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12 },
     loaderText: { color: MUTED_MID, fontSize: 13 },
 });

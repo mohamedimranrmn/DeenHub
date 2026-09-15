@@ -8,34 +8,34 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "icon": "./assets/icons/icon.png",
-    "splash": {
-      "image": "./assets/icons/icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#0F1923"
-    },
-    "assetBundlePatterns": ["**/*"],
-
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "updates": {
       "url": "https://u.expo.dev/8aebf80b-6f58-48b0-b856-845632220058",
       "checkAutomatically": "ON_LOAD",
       "enabled": true
     },
-
     "runtimeVersion": {
       "policy": "appVersion"
     },
-
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.mohamedimranrmn.deenhub"
+      "bundleIdentifier": "com.mohamedimranrmn.deenhub",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "audio"
+        ]
+      }
     },
     "android": {
       "package": "com.mohamedimranrmn.deenhub",
-      "versionCode": 1,
       "permissions": [
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
-        "INTERNET"
+        "INTERNET",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
       ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/icons/icon.png",
@@ -44,24 +44,43 @@
       "intentFilters": [
         {
           "action": "VIEW",
-          "data": [{ "scheme": "deenhub" }],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "data": [
+            {
+              "scheme": "deenhub"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
-    "web": { "output": "static" },
-
+    "web": {
+      "output": "static"
+    },
     "plugins": [
       "expo-router",
       "expo-web-browser",
       "expo-font",
-      "expo-updates"
+      "expo-updates",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/icons/icon.png",
+          "backgroundColor": "#0F1923",
+          "imageWidth": 200
+        }
+      ],
+      "expo-audio"
     ],
-
-    "experiments": { "typedRoutes": true },
-
+    "experiments": {
+      "typedRoutes": true
+    },
     "extra": {
-      "router": { "origin": "https://deenhub.app" },
+      "router": {
+        "origin": "https://deenhub.app"
+      },
       "eas": {
         "projectId": "8aebf80b-6f58-48b0-b856-845632220058"
       }

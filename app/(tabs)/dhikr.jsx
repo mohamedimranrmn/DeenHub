@@ -1,7 +1,7 @@
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { View, StyleSheet, Dimensions, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useState, useEffect, useCallback } from 'react';
 import * as Haptics from 'expo-haptics';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
@@ -14,114 +14,92 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 import DhikrCounter from '../../src/components/DhikrCounter';
 import ConfettiLayer from '../../src/components/ConfettiLayer';
-import supabase from '../../src/services/supabase';
+import {
+    getDhikrDefinitions,
+    getCustomDhikr,
+    getTodayDhikrLogs,
+    saveDhikrProgress,
+    resetDhikrProgress,
+    getDhikrActiveDates,
+    deleteDhikr,
+} from '../../src/services/dhikr';
+import { computeCurrentStreak } from '../../src/utils/streaks';
 
 const DARK            = '#0F1923';
-const { width }       = Dimensions.get('window');
-const SWIPE_THRESHOLD = 80;
-const SPRING_CFG      = { damping: 20, stiffness: 180, mass: 0.8 };
+const { width }        = Dimensions.get('window');
+const SWIPE_THRESHOLD  = 80;
+const SPRING_CFG       = { damping: 20, stiffness: 180, mass: 0.8 };
 
 export default function DhikrScreen() {
     const navigation = useNavigation();
 
-    const [dhikrData,      setDhikrData]      = useState([]);
-    const [loading,        setLoading]         = useState(true);
-    const [index,          setIndex]           = useState(0);
-    // FIX: confetti trigger — set to Date.now() whenever a dhikr is completed
+    const [dhikrData,       setDhikrData]       = useState([]);
+    const [loading,         setLoading]         = useState(true);
+    const [error,           setError]           = useState(null);
+    const [index,           setIndex]           = useState(0);
     const [confettiTrigger, setConfettiTrigger] = useState(null);
-    const [progress,       setProgress]        = useState({
-        counts: [], completed: [], lastUpdated: null, streak: 0,
-    });
+
+    // Keyed by dhikr.id, NOT array position — a dhikr's position can
+    // change (custom dhikr added, list re-sorted) but its id can't.
+    // Shape: { [dhikrId]: { count, completed } }
+    const [progress, setProgress] = useState({});
+    const [streak,   setStreak]   = useState(0);
 
     const translateX  = useSharedValue(0);
-    const opacity     = useSharedValue(1);
-    const svIndex     = useSharedValue(0);
-    const svTotal     = useSharedValue(0);
-    const isAnimating = useSharedValue(false);
+    const opacity      = useSharedValue(1);
+    const svIndex      = useSharedValue(0);
+    const svTotal       = useSharedValue(0);
+    const isAnimating  = useSharedValue(false);
 
     useEffect(() => { svIndex.value = index; },            [index]);
     useEffect(() => { svTotal.value = dhikrData.length; }, [dhikrData.length]);
 
-    // ── Reload on focus (picks up newly added custom dhikr) ──────────────
+    // ── Reload on focus (picks up newly added custom dhikr + today's logs) ──
     useFocusEffect(
         useCallback(() => {
             fetchDhikr();
         }, [])
     );
 
-    // ── Fetch ─────────────────────────────────────────────────────────────
+    // ── Fetch catalogue (preset + custom) and today's progress ──────────────
     const fetchDhikr = async () => {
         try {
-            const { data, error } = await supabase
-                .from('dhikr')
-                .select('id, title, arabic, translation, target_count, category')
-                .order('id', { ascending: true });
+            setError(null);
+            const [presetDhikr, customDhikr, logs] = await Promise.all([
+                getDhikrDefinitions(),
+                getCustomDhikr(),
+                getTodayDhikrLogs(),
+            ]);
 
-            if (error) throw error;
-
-            const formatted = (data || []).map(d => ({ ...d, target: d.target_count }));
-
-            // Merge with user-created custom dhikr from AsyncStorage
-            const customRaw  = await AsyncStorage.getItem('customDhikr');
-            const customList = customRaw ? JSON.parse(customRaw) : [];
-
-            const all = [...formatted, ...customList];
+            const all = [...presetDhikr, ...customDhikr];
             setDhikrData(all);
             svTotal.value = all.length;
 
-            // Only reset progress when list length changes (new item added)
-            setProgress(prev => {
-                if (prev.counts.length === all.length) return prev;
-                return {
-                    counts:      all.map((_, i) => prev.counts[i]    ?? 0),
-                    completed:   all.map((_, i) => prev.completed[i] ?? false),
-                    lastUpdated: prev.lastUpdated,
-                    streak:      prev.streak,
+            const progressMap = {};
+            for (const log of logs) {
+                progressMap[log.dhikr_id] = {
+                    count: log.count,
+                    completed: log.completed,
                 };
-            });
+            }
+            setProgress(progressMap);
+
+            refreshStreak();
         } catch (err) {
             console.error('Dhikr fetch:', err.message);
+            setError('Could not load your dhikr. Check your connection and try again.');
         } finally {
             setLoading(false);
         }
     };
 
-    useEffect(() => {
-        if (dhikrData.length > 0) loadProgress();
-    }, [dhikrData.length]);
-
-    // ── Storage ───────────────────────────────────────────────────────────
-    const loadProgress = async () => {
+    const refreshStreak = async () => {
         try {
-            const saved = await AsyncStorage.getItem('dhikrProgress');
-            if (!saved) return;
-            const parsed = JSON.parse(saved);
-            const today  = new Date().toDateString();
-
-            if (parsed.lastUpdated !== today) {
-                const reset = {
-                    counts:      dhikrData.map(() => 0),
-                    completed:   dhikrData.map(() => false),
-                    lastUpdated: today,
-                    streak:      parsed.streak || 0,
-                };
-                setProgress(reset);
-                await AsyncStorage.setItem('dhikrProgress', JSON.stringify(reset));
-                return;
-            }
-
-            setProgress({
-                ...parsed,
-                counts:    dhikrData.map((_, i) => parsed.counts?.[i]    ?? 0),
-                completed: dhikrData.map((_, i) => parsed.completed?.[i] ?? false),
-            });
-        } catch (e) { console.error('loadProgress:', e); }
-    };
-
-    const saveProgress = async (data) => {
-        try {
-            await AsyncStorage.setItem('dhikrProgress', JSON.stringify(data));
-        } catch (e) { console.error('saveProgress:', e); }
+            const activeDates = await getDhikrActiveDates();
+            setStreak(computeCurrentStreak(activeDates));
+        } catch (err) {
+            console.error('Dhikr streak:', err.message);
+        }
     };
 
     // ── Transition ────────────────────────────────────────────────────────
@@ -189,58 +167,57 @@ export default function DhikrScreen() {
 
     // ── Counter tap ───────────────────────────────────────────────────────
     const handleIncrement = useCallback((i) => {
-        setProgress(prev => {
-            const currentCount = prev.counts[i] ?? 0;
-            const target       = dhikrData[i]?.target ?? 33;
-            if (currentCount >= target) return prev;
+        const dhikr = dhikrData[i];
+        if (!dhikr) return;
 
-            const newCounts    = [...prev.counts];
-            newCounts[i]       = currentCount + 1;
-            const newCompleted = [...prev.completed];
-            const justDone     = newCounts[i] === target;
-            if (justDone) newCompleted[i] = true;
+        const current = progress[dhikr.id]?.count ?? 0;
+        const target  = dhikr.target_count ?? 33;
+        if (current >= target) return;
 
-            const allDone = newCompleted.every(Boolean);
-            const updated = {
-                ...prev,
-                counts:      newCounts,
-                completed:   newCompleted,
-                lastUpdated: new Date().toDateString(),
-                streak: allDone && !prev.completed.every(Boolean)
-                    ? prev.streak + 1
-                    : prev.streak,
-            };
+        const newCount   = current + 1;
+        const justDone   = newCount === target;
+        const wasDone    = progress[dhikr.id]?.completed ?? false;
 
-            saveProgress(updated);
+        // Optimistic UI update.
+        setProgress(prev => ({
+            ...prev,
+            [dhikr.id]: { count: newCount, completed: justDone },
+        }));
 
-            if (justDone) {
-                // FIX: fire confetti on dhikr completion
-                setConfettiTrigger(Date.now());
-                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-                if (i < dhikrData.length - 1) {
-                    setTimeout(() => goToIndex(i + 1, 1), 700);
-                }
-            } else {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        saveDhikrProgress({ dhikrId: dhikr.id, count: newCount, completed: justDone })
+            .then(() => {
+                if (justDone && !wasDone) refreshStreak();
+            })
+            .catch(err => console.error('saveDhikrProgress:', err.message));
+
+        if (justDone) {
+            setConfettiTrigger(Date.now());
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            if (i < dhikrData.length - 1) {
+                setTimeout(() => goToIndex(i + 1, 1), 700);
             }
+        } else {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        }
+    }, [dhikrData, progress, goToIndex]);
 
-            return updated;
-        });
-    }, [dhikrData, goToIndex]);
-
-    // ── Reset ─────────────────────────────────────────────────────────────
+    // ── Reset (today only) ───────────────────────────────────────────────
     const handleReset = useCallback(() => {
-        const reset = {
-            counts:      dhikrData.map(() => 0),
-            completed:   dhikrData.map(() => false),
-            lastUpdated: new Date().toDateString(),
-            streak:      progress.streak,
-        };
-        setProgress(reset);
-        saveProgress(reset);
+        const ids = dhikrData.map(d => d.id);
+
+        setProgress(prev => {
+            const cleared = { ...prev };
+            for (const id of ids) cleared[id] = { count: 0, completed: false };
+            return cleared;
+        });
+
+        resetDhikrProgress(ids)
+            .then(refreshStreak)
+            .catch(err => console.error('resetDhikrProgress:', err.message));
+
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
         if (index !== 0) goToIndex(0, -1);
-    }, [dhikrData, progress.streak, index, goToIndex]);
+    }, [dhikrData, index, goToIndex]);
 
     // ── Dot press ─────────────────────────────────────────────────────────
     const handleDotPress = useCallback((i) => {
@@ -249,21 +226,99 @@ export default function DhikrScreen() {
         goToIndex(i, i > index ? 1 : -1);
     }, [index, goToIndex]);
 
+    // ── Delete a preset (hide) or custom (hard-delete) dhikr ─────────────
+    const handleDeleteDhikr = useCallback((dhikr) => {
+        const deletedIdx = dhikrData.findIndex(d => d.id === dhikr.id);
+        if (deletedIdx === -1) return;
+
+        const newList = dhikrData.filter(d => d.id !== dhikr.id);
+
+        setDhikrData(newList);
+        svTotal.value = newList.length;
+        setProgress(prev => {
+            const next = { ...prev };
+            delete next[dhikr.id];
+            return next;
+        });
+        setIndex(prev => {
+            const shifted = deletedIdx < prev ? prev - 1 : prev;
+            return Math.max(0, Math.min(shifted, newList.length - 1));
+        });
+
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+
+        deleteDhikr(dhikr)
+            .then(refreshStreak)
+            .catch(err => {
+                console.error('deleteDhikr:', err.message);
+                // Something went wrong server-side — resync from the source
+                // of truth instead of leaving the UI showing a deletion that
+                // didn't actually happen.
+                fetchDhikr();
+            });
+    }, [dhikrData]);
+
     // ── Navigate to add custom dhikr screen ──────────────────────────────
     const handleAddDhikr = useCallback(() => {
         navigation.navigate('AddDhikr');
     }, [navigation]);
 
+    const handleRetry = useCallback(() => {
+        setLoading(true);
+        fetchDhikr();
+    }, []);
+
     // ── Loading ───────────────────────────────────────────────────────────
-    if (loading || dhikrData.length === 0) {
+    if (loading) {
         return (
             <View style={styles.loader}>
-                <Animated.Text style={styles.loadingText}>Loading Dhikr…</Animated.Text>
+                <ActivityIndicator size="large" color="#C9A84C" />
+                <Text style={styles.loadingText}>Loading Dhikr…</Text>
             </View>
         );
     }
 
-    const currentDhikr = dhikrData[index] ?? dhikrData[0];
+    // ── Error (fetch failed — distinct from a genuinely empty list) ──────
+    if (error) {
+        return (
+            <View style={styles.loader}>
+                <Ionicons name="cloud-offline-outline" size={44} color="#5A6A7A" />
+                <Text style={styles.emptyTitle}>Something went wrong</Text>
+                <Text style={styles.emptySubtitle}>{error}</Text>
+                <TouchableOpacity style={styles.emptyAddBtn} onPress={handleRetry}>
+                    <Text style={styles.emptyAddBtnText}>Try Again</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
+
+    // ── Empty (everything hidden/deleted, or no dhikr added yet) ─────────
+    if (dhikrData.length === 0) {
+        return (
+            <View style={styles.loader}>
+                <View style={styles.emptyIconWrap}>
+                    <Ionicons name="moon-outline" size={34} color="#C9A84C" />
+                </View>
+                <Text style={styles.emptyTitle}>No Dhikr Yet</Text>
+                <Text style={styles.emptySubtitle}>
+                    Add your first dhikr to start building your daily practice.
+                </Text>
+                <TouchableOpacity
+                    style={styles.emptyAddBtn}
+                    onPress={handleAddDhikr}
+                    activeOpacity={0.85}
+                >
+                    <Ionicons name="add" size={18} color="#0F1923" style={{ marginRight: 4 }} />
+                    <Text style={styles.emptyAddBtnText}>Add Dhikr</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
+
+    const currentDhikr    = dhikrData[index] ?? dhikrData[0];
+    const completedFlags  = dhikrData.map(d => progress[d.id]?.completed ?? false);
+    const allCounts       = dhikrData.map(d => progress[d.id]?.count ?? 0);
+    const allCompleted    = completedFlags.every(Boolean);
 
     return (
         <View style={styles.container}>
@@ -271,23 +326,23 @@ export default function DhikrScreen() {
                 <Animated.View style={[styles.fill, animStyle]}>
                     <DhikrCounter
                         dhikr={currentDhikr}
-                        count={progress.counts[index] ?? 0}
-                        isCompleted={progress.completed[index] ?? false}
-                        allCompleted={progress.completed.every(Boolean)}
-                        streak={progress.streak}
+                        count={progress[currentDhikr.id]?.count ?? 0}
+                        isCompleted={progress[currentDhikr.id]?.completed ?? false}
+                        allCompleted={allCompleted}
+                        streak={streak}
                         onIncrement={() => handleIncrement(index)}
                         onReset={handleReset}
                         totalDhikr={dhikrData.length}
                         currentIndex={index}
                         onDotPress={handleDotPress}
-                        completedFlags={progress.completed}
-                        allCounts={progress.counts}
+                        completedFlags={completedFlags}
+                        allCounts={allCounts}
                         onAddDhikr={handleAddDhikr}
+                        onDeleteDhikr={handleDeleteDhikr}
                     />
                 </Animated.View>
             </GestureDetector>
 
-            {/* FIX: ConfettiLayer now rendered and wired to confettiTrigger state */}
             <ConfettiLayer trigger={confettiTrigger} />
         </View>
     );
@@ -299,6 +354,28 @@ const styles = StyleSheet.create({
     loader: {
         flex: 1, justifyContent: 'center',
         alignItems: 'center', backgroundColor: DARK,
+        paddingHorizontal: 40, gap: 4,
     },
-    loadingText: { color: '#C9A84C', fontSize: 16 },
+    loadingText: { color: '#C9A84C', fontSize: 16, marginTop: 14 },
+    emptyIconWrap: {
+        width: 72, height: 72, borderRadius: 36,
+        backgroundColor: 'rgba(201,168,76,0.10)',
+        borderWidth: 1, borderColor: 'rgba(201,168,76,0.25)',
+        alignItems: 'center', justifyContent: 'center',
+        marginBottom: 18,
+    },
+    emptyTitle: { color: '#F0EAD6', fontSize: 18, fontWeight: '700', marginBottom: 8 },
+    emptySubtitle: {
+        color: '#8A99A8', fontSize: 13, textAlign: 'center',
+        lineHeight: 19, marginBottom: 8,
+    },
+    emptyAddBtn: {
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+        marginTop: 16,
+        backgroundColor: '#C9A84C',
+        paddingHorizontal: 24,
+        paddingVertical: 13,
+        borderRadius: 12,
+    },
+    emptyAddBtnText: { color: '#0F1923', fontSize: 14, fontWeight: '700' },
 });

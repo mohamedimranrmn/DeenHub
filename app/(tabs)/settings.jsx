@@ -1,9 +1,10 @@
 import {
     View, Text, TouchableOpacity, StyleSheet,
     Alert, ActivityIndicator, ScrollView, StatusBar,
-    Switch, Linking, Share,
+    Switch, Linking, Share, Platform, Modal,
 } from 'react-native';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
@@ -11,14 +12,22 @@ import supabase from '../../src/services/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { getDeviceId } from '../../src/utils/device';
 import Constants from 'expo-constants';
+import * as Notifications from 'expo-notifications';
+import {
+    NOTIFICATION_TYPES,
+    NOTIFICATION_CHANNELS,
+    getNotificationPermission,
+    requestNotificationPermission,
+    scheduleQuranReminder,
+    scheduleHadithReminder,
+    scheduleLessonReminder,
+    scheduleDuaReminder,
+} from '../../src/utils/notifications';
+import { refreshPrayerNotifications } from '../../src/utils/prayerTimes';
+import { getReciters } from '../../src/services/quranApi';
+import AudioStore from '../../src/services/audioStore';
 
-const IS_EXPO_GO = Constants.appOwnership === 'expo';
 const APP_VERSION = Constants.expoConfig?.version ?? '1.0.0';
-
-let Notifications = null;
-if (!IS_EXPO_GO) {
-    Notifications = require('expo-notifications');
-}
 
 // ── Design tokens ─────────────────────────────────────────────────────────────
 const C = {
@@ -44,6 +53,7 @@ const C = {
     muted:        '#4A6070',
     mutedMid:     '#6B8090',
     blue:         '#7EB8D4',
+    purple:       '#B39DDB',
 };
 
 const CALC_METHODS = [
@@ -72,7 +82,103 @@ const DEFAULT_SETTINGS = {
     notification_offset: 0,
     calculation_method:  '3',
     madhab:              'Shafi',
+
+    // Daily content reminders — fixed default times for v1. Each is
+    // independently toggleable; times aren't user-configurable yet.
+    quran_reminder_enabled:  false,
+    hadith_reminder_enabled: false,
+    lesson_reminder_enabled: false,
+    dua_reminder_enabled:    false,
 };
+
+// Quran Foundation chapter-reciter default.
+// QF chapter-reciter ID 7 is Mishary Rashid Alafasy (Murattal).
+const DEFAULT_RECITER_ID = 7;
+
+// Fixed schedule for the v1 daily content reminders (see notifications.js
+// scheduleQuranReminder/scheduleHadithReminder/scheduleLessonReminder/scheduleDuaReminder).
+const DAILY_REMINDERS = [
+    {
+        key:      'quran_reminder_enabled',
+        type:     NOTIFICATION_TYPES.QURAN,
+        schedule: scheduleQuranReminder,
+        icon:     'reader-outline',
+        color:    C.purple,
+        label:    'Quran',
+        hour: 20, minute: 0, timeLabel: '8:00 PM',
+    },
+    {
+        key:      'hadith_reminder_enabled',
+        type:     NOTIFICATION_TYPES.HADITH,
+        schedule: scheduleHadithReminder,
+        icon:     'book-outline',
+        color:    C.gold,
+        label:    'Hadith',
+        hour: 9, minute: 0, timeLabel: '9:00 AM',
+    },
+    {
+        key:      'lesson_reminder_enabled',
+        type:     NOTIFICATION_TYPES.LESSON,
+        schedule: scheduleLessonReminder,
+        icon:     'school-outline',
+        color:    C.green,
+        label:    'Lesson',
+        hour: 19, minute: 0, timeLabel: '7:00 PM',
+    },
+    {
+        key:      'dua_reminder_enabled',
+        type:     NOTIFICATION_TYPES.DUA,
+        schedule: scheduleDuaReminder,
+        icon:     'hand-right-outline',
+        color:    C.blue,
+        label:    'Dua',
+        hour: 6, minute: 30, timeLabel: '6:30 AM',
+    },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TEMP — dev-only test notifications. Fires each notification type on demand
+// with the same title/body/data shape as the real scheduled ones, so tapping
+// a test notification also exercises deep-link routing. Remove this block
+// (and the "TEST NOTIFICATIONS" section below) before shipping.
+// ─────────────────────────────────────────────────────────────────────────────
+const TEST_NOTIFICATIONS = [
+    {
+        key: 'prayer', label: 'Prayer (Fajr)', icon: 'moon-outline', color: C.gold,
+        title: '🌅 Fajr · الفَجْر',
+        body: "It is time for Fajr. 2 rak'at.",
+        channel: NOTIFICATION_CHANNELS.PRAYER,
+        data: { type: NOTIFICATION_TYPES.PRAYER, prayer: 'fajr', route: '/prayer-tracker' },
+    },
+    {
+        key: 'quran', label: 'Quran', icon: 'reader-outline', color: C.purple,
+        title: '📖 Daily Quran',
+        body: 'Take a few moments today to listen to the Quran.',
+        channel: NOTIFICATION_CHANNELS.QURAN,
+        data: { type: NOTIFICATION_TYPES.QURAN, route: '/quran' },
+    },
+    {
+        key: 'hadith', label: 'Hadith', icon: 'book-outline', color: C.gold,
+        title: '📜 Daily Hadith',
+        body: 'Take a moment to read today’s Hadith.',
+        channel: NOTIFICATION_CHANNELS.HADITH,
+        data: { type: NOTIFICATION_TYPES.HADITH, route: '/(tabs)/hadith' },
+    },
+    {
+        key: 'lesson', label: 'Lesson', icon: 'school-outline', color: C.green,
+        title: '🎓 Daily Lesson',
+        body: 'Continue learning about your deen today.',
+        channel: NOTIFICATION_CHANNELS.LESSON,
+        data: { type: NOTIFICATION_TYPES.LESSON, route: '/(tabs)/learn' },
+    },
+    {
+        key: 'dua', label: 'Dua', icon: 'hand-right-outline', color: C.blue,
+        title: '🤲 Daily Dua',
+        body: 'Take a moment to remember Allah with today’s dua.',
+        channel: NOTIFICATION_CHANNELS.DUA,
+        data: { type: NOTIFICATION_TYPES.DUA, route: '/explore' },
+    },
+];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Reusable primitives
@@ -161,6 +267,129 @@ function BookmarkGroup({ icon, label, count, color, onPress }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Quran reciter selector
+// ─────────────────────────────────────────────────────────────────────────────
+function ReciterModal({ visible, reciters, selected, loading, onSelect, onClose }) {
+    return (
+        <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+            <View style={reciterModal.overlay}>
+                <TouchableOpacity style={StyleSheet.absoluteFill} activeOpacity={1} onPress={onClose} />
+                <View style={reciterModal.sheet}>
+                    <View style={reciterModal.handle} />
+
+                    <View style={reciterModal.header}>
+                        <View>
+                            <Text style={reciterModal.title}>Default Reciter</Text>
+                            <Text style={reciterModal.subtitle}>
+                                Used whenever Quran audio starts
+                            </Text>
+                        </View>
+                        <TouchableOpacity style={reciterModal.close} onPress={onClose}>
+                            <Ionicons name="close" size={20} color={C.textDim} />
+                        </TouchableOpacity>
+                    </View>
+
+                    {loading ? (
+                        <View style={reciterModal.center}>
+                            <ActivityIndicator color={C.gold} size="small" />
+                            <Text style={reciterModal.loadingText}>Loading reciters…</Text>
+                        </View>
+                    ) : reciters.length === 0 ? (
+                        <View style={reciterModal.center}>
+                            <Ionicons name="cloud-offline-outline" size={25} color={C.mutedMid} />
+                            <Text style={reciterModal.emptyTitle}>Unable to load reciters</Text>
+                            <Text style={reciterModal.emptyText}>
+                                Check your connection and try again.
+                            </Text>
+                        </View>
+                    ) : (
+                        <ScrollView
+                            showsVerticalScrollIndicator={false}
+                            contentContainerStyle={{ paddingBottom: 12 }}
+                        >
+                            {reciters.map((r, i) => {
+                                const isSelected =
+                                    Number(selected?.id) === Number(r?.id);
+
+                                const styleName =
+                                    r?.style?.name ??
+                                    r?.style?.translated_name?.name ??
+                                    (typeof r?.style === 'string' ? r.style : null);
+
+                                const qiratName =
+                                    r?.qirat?.name ??
+                                    (typeof r?.qirat === 'string' ? r.qirat : null);
+
+                                return (
+                                    <TouchableOpacity
+                                        key={r?.id ?? i}
+                                        style={[
+                                            reciterModal.row,
+                                            isSelected && reciterModal.rowActive,
+                                        ]}
+                                        onPress={() => onSelect(r)}
+                                        activeOpacity={0.75}
+                                    >
+                                        <View
+                                            style={[
+                                                reciterModal.iconWrap,
+                                                isSelected && reciterModal.iconWrapActive,
+                                            ]}
+                                        >
+                                            <Ionicons
+                                                name={isSelected ? 'mic' : 'mic-outline'}
+                                                size={17}
+                                                color={isSelected ? C.bg : C.gold}
+                                            />
+                                        </View>
+
+                                        <View style={{ flex: 1 }}>
+                                            <Text
+                                                style={[
+                                                    reciterModal.rowName,
+                                                    isSelected && reciterModal.rowNameActive,
+                                                ]}
+                                                numberOfLines={1}
+                                            >
+                                                {r?.name ??
+                                                    r?.translated_name?.name ??
+                                                    `Reciter ${r?.id}`}
+                                            </Text>
+
+                                            {(styleName || qiratName) ? (
+                                                <Text
+                                                    style={[
+                                                        reciterModal.rowMeta,
+                                                        isSelected && reciterModal.rowMetaActive,
+                                                    ]}
+                                                    numberOfLines={1}
+                                                >
+                                                    {[styleName, qiratName]
+                                                        .filter(Boolean)
+                                                        .join(' · ')}
+                                                </Text>
+                                            ) : null}
+                                        </View>
+
+                                        {isSelected && (
+                                            <Ionicons
+                                                name="checkmark-circle"
+                                                size={21}
+                                                color={C.bg}
+                                            />
+                                        )}
+                                    </TouchableOpacity>
+                                );
+                            })}
+                        </ScrollView>
+                    )}
+                </View>
+            </View>
+        </Modal>
+    );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Main
 // ─────────────────────────────────────────────────────────────────────────────
 export default function SettingsScreen() {
@@ -172,25 +401,173 @@ export default function SettingsScreen() {
     const [savedPulse,       setSavedPulse]       = useState(false);
     const [notifPermGranted, setNotifPermGranted] = useState(true);
 
+    const [defaultReciter, setDefaultReciter] = useState(null);
+    const [reciters, setReciters] = useState([]);
+    const [recitersLoading, setRecitersLoading] = useState(false);
+    const [showReciterModal, setShowReciterModal] = useState(false);
+
+    const [savedQuran,   setSavedQuran]   = useState(0);
     const [savedHadiths, setSavedHadiths] = useState(0);
     const [savedDuas,    setSavedDuas]    = useState(0);
     const [savedLessons, setSavedLessons] = useState(0);
     const [doneLessons,  setDoneLessons]  = useState(0);
 
-    const [committed, setCommitted] = useState({ ...DEFAULT_SETTINGS });
-    const [draft,     setDraft]     = useState({ ...DEFAULT_SETTINGS });
-
-    const isDirty = JSON.stringify(draft) !== JSON.stringify(committed);
+    // Settings now save immediately on selection — no draft/commit step.
+    const [settings, setSettings] = useState({ ...DEFAULT_SETTINGS });
+    const pulseTimer = useRef(null);
 
     useFocusEffect(useCallback(() => {
         loadAll();
+        loadDefaultReciter();
         checkNotifPerm();
     }, []));
 
     const checkNotifPerm = async () => {
-        if (IS_EXPO_GO || !Notifications) { setNotifPermGranted(false); return; }
-        const { status } = await Notifications.getPermissionsAsync();
-        setNotifPermGranted(status === 'granted');
+        const granted = await getNotificationPermission();
+        setNotifPermGranted(granted);
+    };
+
+    const loadDefaultReciter = async () => {
+        try {
+            const saved = await AsyncStorage.getItem('selected_reciter');
+
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (parsed?.id) {
+                    setDefaultReciter(parsed);
+                    return;
+                }
+            }
+
+            // First install: use the known QF default (Mishary Alafasy)
+            // and persist the full chapter-reciter object once the API list loads.
+            setDefaultReciter({
+                id: DEFAULT_RECITER_ID,
+                name: 'Mishary Rashid Alafasy',
+                style: null,
+                language: null,
+                qirat: null,
+                source: 'quran-foundation',
+            });
+        } catch (e) {
+            console.warn('[Settings] Default reciter load:', e?.message);
+        }
+    };
+
+    const fetchReciters = async () => {
+        setRecitersLoading(true);
+
+        try {
+            const json = await getReciters();
+
+            const list =
+                json?.reciters ??
+                json?.data?.reciters ??
+                (Array.isArray(json?.data) ? json.data : []);
+
+            const clean = Array.isArray(list) ? list : [];
+            setReciters(clean);
+
+            // If there is no saved selection, resolve the default from the
+            // actual QF response instead of relying on a hand-built object.
+            const saved = await AsyncStorage.getItem('selected_reciter');
+
+            if (!saved && clean.length > 0) {
+                const preferred =
+                    clean.find(r => Number(r?.id) === DEFAULT_RECITER_ID) ??
+                    clean[0];
+
+                if (preferred?.id) {
+                    const normalized = {
+                        id: Number(preferred.id),
+                        name:
+                            preferred.name ??
+                            preferred.translated_name?.name ??
+                            `Reciter ${preferred.id}`,
+                        style: preferred.style ?? null,
+                        language: preferred.language ?? null,
+                        qirat: preferred.qirat ?? null,
+                        source: 'quran-foundation',
+                    };
+
+                    await AsyncStorage.setItem(
+                        'selected_reciter',
+                        JSON.stringify(normalized)
+                    );
+
+                    setDefaultReciter(normalized);
+                }
+            }
+        } catch (e) {
+            console.error('[Settings] Failed to load reciters:', e);
+        } finally {
+            setRecitersLoading(false);
+        }
+    };
+
+    const openReciterModal = async () => {
+        setShowReciterModal(true);
+
+        if (reciters.length === 0) {
+            await fetchReciters();
+        }
+    };
+
+    const selectDefaultReciter = async (r) => {
+        if (!r?.id) return;
+
+        const normalized = {
+            id: Number(r.id),
+            name:
+                r.name ??
+                r.translated_name?.name ??
+                `Reciter ${r.id}`,
+            style: r.style ?? null,
+            language: r.language ?? null,
+            qirat: r.qirat ?? null,
+            source: 'quran-foundation',
+        };
+
+        const previous = defaultReciter;
+        setDefaultReciter(normalized);
+
+        try {
+            await AsyncStorage.setItem(
+                'selected_reciter',
+                JSON.stringify(normalized)
+            );
+
+            // If audio is already active, switch the source immediately
+            // while preserving the current Surah/Ayah/play state.
+            if (AudioStore.getState().surahId) {
+                await AudioStore.changeReciter(normalized);
+            }
+
+            setShowReciterModal(false);
+            setSavedPulse(true);
+            clearTimeout(pulseTimer.current);
+            pulseTimer.current = setTimeout(
+                () => setSavedPulse(false),
+                1800
+            );
+        } catch (e) {
+            console.error('[Settings] Default reciter save:', e);
+
+            try {
+                if (previous) {
+                    await AsyncStorage.setItem(
+                        'selected_reciter',
+                        JSON.stringify(previous)
+                    );
+                }
+            } catch (_) {}
+
+            setDefaultReciter(previous);
+            Alert.alert(
+                'Error',
+                e?.message || 'Failed to save default reciter'
+            );
+        }
     };
 
     const loadAll = async () => {
@@ -200,68 +577,91 @@ export default function SettingsScreen() {
         catch { setDataLoading(false); return; }
         try {
             const [
-                { count: hc }, { count: duac }, { count: lc },
+                { count: qc }, { count: hc }, { count: duac }, { count: lc },
                 { count: dc }, { data: sd },
             ] = await Promise.all([
+                supabase.from('quran_bookmarks').select('id', { count: 'exact', head: true }).eq('device_id', device_id),
                 supabase.from('bookmarks').select('id', { count: 'exact', head: true }).eq('device_id', device_id).eq('content_type', 'hadith'),
                 supabase.from('bookmarks').select('id', { count: 'exact', head: true }).eq('device_id', device_id).eq('content_type', 'dua'),
                 supabase.from('bookmarks').select('id', { count: 'exact', head: true }).eq('device_id', device_id).eq('content_type', 'lesson'),
                 supabase.from('lesson_progress').select('id', { count: 'exact', head: true }).eq('device_id', device_id).eq('completed', true),
                 supabase.from('user_settings').select('*').eq('device_id', device_id).maybeSingle(),
             ]);
+            setSavedQuran(qc     ?? 0);
             setSavedHadiths(hc   ?? 0);
             setSavedDuas(duac    ?? 0);
             setSavedLessons(lc   ?? 0);
             setDoneLessons(dc    ?? 0);
             if (sd) {
-                const loaded = {
+                setSettings({
                     reminder_enabled:    sd.reminder_enabled    ?? DEFAULT_SETTINGS.reminder_enabled,
                     notification_offset: sd.notification_offset ?? DEFAULT_SETTINGS.notification_offset,
                     calculation_method:  sd.calculation_method  ?? DEFAULT_SETTINGS.calculation_method,
                     madhab:              sd.madhab              ?? DEFAULT_SETTINGS.madhab,
-                };
-                setCommitted(loaded);
-                setDraft(loaded);
+
+                    quran_reminder_enabled:  sd.quran_reminder_enabled  ?? DEFAULT_SETTINGS.quran_reminder_enabled,
+                    hadith_reminder_enabled: sd.hadith_reminder_enabled ?? DEFAULT_SETTINGS.hadith_reminder_enabled,
+                    lesson_reminder_enabled: sd.lesson_reminder_enabled ?? DEFAULT_SETTINGS.lesson_reminder_enabled,
+                    dua_reminder_enabled:    sd.dua_reminder_enabled    ?? DEFAULT_SETTINGS.dua_reminder_enabled,
+                });
             }
         } catch (err) { console.warn('Settings load:', err.message); }
         finally { setDataLoading(false); }
     };
 
-    const patch = (key, val) => setDraft(prev => ({ ...prev, [key]: val }));
+    // Saves a single changed preference immediately — no separate "Save" step.
+    const patch = async (key, val) => {
+        const previous = settings;
+        const updated  = { ...settings, [key]: val };
+        setSettings(updated);
 
-    const saveSettings = async () => {
+        const daily = DAILY_REMINDERS.find(d => d.key === key);
+        const needsPermission = val && (key === 'reminder_enabled' || daily);
+
+        if (needsPermission && !notifPermGranted) {
+            const granted = await requestNotificationPermission();
+            if (!granted) {
+                Alert.alert('Permission Required', 'Enable notifications in your device Settings.');
+                setSettings(previous);
+                return;
+            }
+            setNotifPermGranted(true);
+        }
+
         setSaving(true);
         try {
             const device_id = await getDeviceId();
-            if (!IS_EXPO_GO && Notifications && draft.reminder_enabled && !notifPermGranted) {
-                const { status } = await Notifications.requestPermissionsAsync();
-                if (status !== 'granted') {
-                    Alert.alert('Permission Required', 'Enable notifications in your device Settings.');
-                    patch('reminder_enabled', false);
-                    setSaving(false);
-                    return;
-                }
-                setNotifPermGranted(true);
-            }
             const { error } = await supabase
                 .from('user_settings')
-                .upsert({ device_id, ...draft }, { onConflict: 'device_id' })
+                .upsert({ device_id, ...updated }, { onConflict: 'device_id' })
                 .select().single();
             if (error) throw error;
-            if (!IS_EXPO_GO && Notifications && !draft.reminder_enabled) {
-                const all = await Notifications.getAllScheduledNotificationsAsync();
-                await Promise.all(
-                    all.filter(n => n.content.data?.type === 'prayer_reminder')
-                        .map(n => Notifications.cancelScheduledNotificationAsync(n.identifier))
-                );
+
+            if (['reminder_enabled', 'notification_offset', 'calculation_method', 'madhab'].includes(key)) {
+                // Reschedules from current location + prayer times when
+                // reminder_enabled is true; cancels outright when false.
+                // This is what actually turns reminders on — the old code
+                // only ever cancelled them here and relied on a cross-screen
+                // refresh signal that never reached prayer-tracker.jsx.
+                await refreshPrayerNotifications(updated);
             }
-            setCommitted({ ...draft });
+
+            if (daily) {
+                // schedule(hour, minute, enabled) — cancels + reschedules on
+                // ON, just cancels on OFF. Doesn't block save on failure.
+                await daily.schedule(daily.hour, daily.minute, val);
+            }
+
             setSavedPulse(true);
-            setTimeout(() => setSavedPulse(false), 2400);
+            clearTimeout(pulseTimer.current);
+            pulseTimer.current = setTimeout(() => setSavedPulse(false), 1800);
             router.setParams({ settingsRefresh: String(Date.now()) });
         } catch (err) {
+            setSettings(previous); // revert on failure
             Alert.alert('Error', err.message || 'Failed to save');
-        } finally { setSaving(false); }
+        } finally {
+            setSaving(false);
+        }
     };
 
     const handleReset = () => {
@@ -280,6 +680,7 @@ export default function SettingsScreen() {
                         try {
                             await Promise.all([
                                 supabase.from('bookmarks').delete().eq('device_id', device_id),
+                                supabase.from('quran_bookmarks').delete().eq('device_id', device_id),
                                 supabase.from('lesson_progress').delete().eq('device_id', device_id),
                                 supabase.from('prayer_logs').delete().eq('device_id', device_id),
                             ]);
@@ -294,6 +695,31 @@ export default function SettingsScreen() {
         );
     };
 
+    // TEMP — dev-only. Fires one notification of the given test type ~1s
+    // from now (immediate triggers are unreliable on some Android builds).
+    const fireTestNotification = async (item) => {
+        try {
+            const granted = await requestNotificationPermission();
+            if (!granted) {
+                Alert.alert('Permission Required', 'Enable notifications in your device Settings.');
+                return;
+            }
+            await Notifications.scheduleNotificationAsync({
+                content: {
+                    title: item.title,
+                    body: item.body,
+                    sound: 'default',
+                    ...(Platform.OS === 'android' ? { channelId: item.channel } : {}),
+                    data: item.data,
+                },
+                trigger: { type: 'timeInterval', seconds: 1, repeats: false },
+            });
+        } catch (e) {
+            console.error('[Test Notification]', e);
+            Alert.alert('Error', e.message || 'Failed to send test notification');
+        }
+    };
+
     const handleShare = async () => {
         try {
             await Share.share({ message: 'I\'ve been using this app for daily Islamic guidance — check it out!' +
@@ -301,7 +727,7 @@ export default function SettingsScreen() {
         } catch { /* dismissed */ }
     };
 
-    const totalSaved = savedHadiths + savedDuas + savedLessons;
+    const totalSaved = savedQuran + savedHadiths + savedDuas + savedLessons;
     const completionPct = savedLessons > 0
         ? Math.min(Math.round((doneLessons / savedLessons) * 100), 100)
         : 0;
@@ -352,6 +778,12 @@ export default function SettingsScreen() {
                 <SectionLabel label="SAVED LIBRARY" />
                 <Card style={st.mb28}>
                     <BookmarkGroup
+                        icon="reader-outline"  label="Quran"
+                        count={savedQuran}     color={C.purple}
+                        onPress={() => router.push('/quran/saved')}
+                    />
+                    <Sep />
+                    <BookmarkGroup
                         icon="book-outline"    label="Hadiths"
                         count={savedHadiths}   color={C.gold}
                         onPress={() => router.push('/hadith/saved-hadiths')}
@@ -373,7 +805,7 @@ export default function SettingsScreen() {
                 {/* ══ PRAYER REMINDERS ══ */}
                 <SectionLabel label="PRAYER REMINDERS" />
 
-                {!notifPermGranted && !IS_EXPO_GO && (
+                {!notifPermGranted && (
                     <TouchableOpacity style={st.warnBanner} onPress={() => Linking.openSettings()} activeOpacity={0.8}>
                         <Ionicons name="notifications-off-outline" size={14} color={C.orange} />
                         <Text style={st.warnText}>Notifications disabled — tap to open Settings</Text>
@@ -383,23 +815,45 @@ export default function SettingsScreen() {
 
                 <Card style={st.mb28}>
                     <Row
-                        icon={draft.reminder_enabled ? 'notifications' : 'notifications-off-outline'}
-                        iconColor={draft.reminder_enabled ? C.gold : C.muted}
-                        iconBg={draft.reminder_enabled ? C.goldDim : 'rgba(255,255,255,0.04)'}
+                        icon={settings.reminder_enabled ? 'notifications' : 'notifications-off-outline'}
+                        iconColor={settings.reminder_enabled ? C.gold : C.muted}
+                        iconBg={settings.reminder_enabled ? C.goldDim : 'rgba(255,255,255,0.04)'}
                         label="Prayer Reminders"
-                        sub={draft.reminder_enabled ? 'Active for all 5 prayers' : 'All notifications off'}
+                        sub={settings.reminder_enabled ? 'Active for all 5 prayers' : 'All notifications off'}
                         showChevron={false}
                         rightEl={
                             <Switch
-                                value={draft.reminder_enabled}
+                                value={settings.reminder_enabled}
                                 onValueChange={v => patch('reminder_enabled', v)}
                                 trackColor={{ false: 'rgba(255,255,255,0.08)', true: C.goldMid }}
-                                thumbColor={draft.reminder_enabled ? C.gold : C.mutedMid}
+                                thumbColor={settings.reminder_enabled ? C.gold : C.mutedMid}
                                 ios_backgroundColor="rgba(255,255,255,0.08)"
                             />
                         }
                     />
-                    {draft.reminder_enabled && (
+                    <Row
+                        icon="flash-outline"
+                        label="Send test notification (5s)"
+                        onPress={async () => {
+                            try {
+                                await Notifications.scheduleNotificationAsync({
+                                    content: {
+                                        title: 'Test',
+                                        body: 'If you see this, local notifications work.',
+                                        sound: 'default',
+                                    },
+                                    trigger: {
+                                        type: 'timeInterval',
+                                        seconds: 5,
+                                        repeats: false,
+                                    },
+                                });
+                            } catch (e) {
+                                console.error('[Test Notification]', e);
+                            }
+                        }}
+                    />
+                    {settings.reminder_enabled && (
                         <>
                             <Sep />
                             <View style={st.offsetWrap}>
@@ -407,13 +861,88 @@ export default function SettingsScreen() {
                                 <View style={st.chipGrid}>
                                     {NOTIF_OFFSETS.map(o => (
                                         <Chip key={o.value} label={o.label}
-                                              active={draft.notification_offset === o.value}
+                                              active={settings.notification_offset === o.value}
                                               onPress={() => patch('notification_offset', o.value)} />
                                     ))}
                                 </View>
                             </View>
                         </>
                     )}
+                </Card>
+
+                {/* ══ TEMP: TEST NOTIFICATIONS — remove before release ══ */}
+                <SectionLabel label="TEST NOTIFICATIONS (DEV)" color={C.orange} />
+                <Card style={st.mb28}>
+                    {TEST_NOTIFICATIONS.map((item, i) => (
+                        <View key={item.key}>
+                            {i > 0 && <Sep />}
+                            <Row
+                                icon={item.icon}
+                                iconColor={item.color}
+                                iconBg={`${item.color}22`}
+                                label={`Test: ${item.label}`}
+                                sub="Fires in ~1s, same content as the real one"
+                                showChevron={false}
+                                onPress={() => fireTestNotification(item)}
+                                rightEl={
+                                    <Ionicons name="flash-outline" size={16} color={item.color} style={{ opacity: 0.75 }} />
+                                }
+                            />
+                        </View>
+                    ))}
+                </Card>
+
+                {/* ══ DAILY ISLAMIC REMINDERS ══ */}
+                <SectionLabel label="DAILY ISLAMIC REMINDERS" />
+                <Card style={st.mb28}>
+                    {DAILY_REMINDERS.map((d, i) => (
+                        <View key={d.key}>
+                            {i > 0 && <Sep />}
+                            <Row
+                                icon={d.icon}
+                                iconColor={settings[d.key] ? d.color : C.muted}
+                                iconBg={settings[d.key] ? `${d.color}26` : 'rgba(255,255,255,0.04)'}
+                                label={d.label}
+                                sub={settings[d.key] ? `Every day · ${d.timeLabel}` : 'Off'}
+                                showChevron={false}
+                                rightEl={
+                                    <Switch
+                                        value={settings[d.key]}
+                                        onValueChange={v => patch(d.key, v)}
+                                        trackColor={{ false: 'rgba(255,255,255,0.08)', true: `${d.color}55` }}
+                                        thumbColor={settings[d.key] ? d.color : C.mutedMid}
+                                        ios_backgroundColor="rgba(255,255,255,0.08)"
+                                    />
+                                }
+                            />
+                        </View>
+                    ))}
+                </Card>
+
+                {/* ══ QURAN AUDIO ══ */}
+                <SectionLabel label="QURAN AUDIO" />
+                <Card style={st.mb28}>
+                    <Row
+                        icon="mic-outline"
+                        iconColor={C.gold}
+                        iconBg={C.goldDim}
+                        label="Default Reciter"
+                        sub={
+                            defaultReciter?.name ??
+                            'Mishary Rashid Alafasy'
+                        }
+                        onPress={openReciterModal}
+                        rightEl={
+                            <View style={st.defaultReciterRight}>
+                                <Ionicons
+                                    name="chevron-forward"
+                                    size={14}
+                                    color={C.muted}
+                                    style={{ opacity: 0.65 }}
+                                />
+                            </View>
+                        }
+                    />
                 </Card>
 
                 {/* ══ PRAYER CALCULATION ══ */}
@@ -426,11 +955,11 @@ export default function SettingsScreen() {
                         </View>
                         <View style={st.calcSummaryBody}>
                             <Text style={st.rowLabel}>Calculation Method</Text>
-                            <Text style={st.rowSub}>{CALC_METHODS.find(m => m.id === draft.calculation_method)?.label}</Text>
+                            <Text style={st.rowSub}>{CALC_METHODS.find(m => m.id === settings.calculation_method)?.label}</Text>
                         </View>
                         <View style={st.calcPill}>
                             <Text style={st.calcPillText}>
-                                {CALC_METHODS.find(m => m.id === draft.calculation_method)?.short}
+                                {CALC_METHODS.find(m => m.id === settings.calculation_method)?.short}
                             </Text>
                         </View>
                     </View>
@@ -440,7 +969,7 @@ export default function SettingsScreen() {
                         <View style={st.chipGrid}>
                             {CALC_METHODS.map(m => (
                                 <Chip key={m.id} label={m.short}
-                                      active={draft.calculation_method === m.id}
+                                      active={settings.calculation_method === m.id}
                                       onPress={() => patch('calculation_method', m.id)} />
                             ))}
                         </View>
@@ -449,37 +978,21 @@ export default function SettingsScreen() {
                         <View style={st.chipGrid}>
                             {MADHABS.map(m => (
                                 <Chip key={m.id} label={m.label} sub={m.sub}
-                                      active={draft.madhab === m.id}
+                                      active={settings.madhab === m.id}
                                       onPress={() => patch('madhab', m.id)} />
                             ))}
                         </View>
                     </View>
                 </Card>
 
-                {/* ── Save row (only when dirty) ── */}
-                {isDirty && (
-                    <View style={st.saveRow}>
-                        <TouchableOpacity
-                            style={[st.saveBtn, saving && { opacity: 0.6 }]}
-                            onPress={saveSettings} disabled={saving} activeOpacity={0.85}
-                        >
-                            {saving
-                                ? <ActivityIndicator color={C.bg} size="small" />
-                                : <>
-                                    <Ionicons name="checkmark-circle-outline" size={17} color={C.bg} />
-                                    <Text style={st.saveBtnText}>Save Changes</Text>
-                                </>
-                            }
-                        </TouchableOpacity>
-                        <TouchableOpacity style={st.discardBtn} onPress={() => setDraft({ ...committed })}>
-                            <Text style={st.discardText}>Discard</Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
-                {savedPulse && !isDirty && (
+                {/* ── Save confirmation — appears briefly after each change ── */}
+                {(saving || savedPulse) && (
                     <View style={st.savedPulse}>
-                        <Ionicons name="checkmark-circle" size={13} color={C.green} />
-                        <Text style={st.savedPulseText}>Settings saved</Text>
+                        {saving
+                            ? <ActivityIndicator color={C.green} size="small" />
+                            : <Ionicons name="checkmark-circle" size={13} color={C.green} />
+                        }
+                        <Text style={st.savedPulseText}>{saving ? 'Saving…' : 'Preference saved'}</Text>
                     </View>
                 )}
 
@@ -508,6 +1021,15 @@ export default function SettingsScreen() {
                     <Text style={st.footerVer}>v{APP_VERSION}</Text>
                 </View>
             </ScrollView>
+
+            <ReciterModal
+                visible={showReciterModal}
+                reciters={reciters}
+                selected={defaultReciter}
+                loading={recitersLoading}
+                onSelect={selectDefaultReciter}
+                onClose={() => setShowReciterModal(false)}
+            />
 
             {dataLoading && (
                 <View style={st.overlay}>
@@ -598,14 +1120,15 @@ const st = StyleSheet.create({
     calcLblSub:      { fontSize: 8, opacity: 0.6, letterSpacing: 1 },
     calcSep:         { height: 1, backgroundColor: C.border, marginVertical: 16 },
 
-    // Save
-    saveRow:       { flexDirection: 'row', gap: 10, marginBottom: 16 },
-    saveBtn:       { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: C.gold, paddingVertical: 14, borderRadius: 14 },
-    saveBtnText:   { color: C.bg, fontWeight: '800', fontSize: 14, letterSpacing: 0.2 },
-    discardBtn:    { paddingHorizontal: 18, paddingVertical: 14, borderRadius: 14, borderWidth: 1, borderColor: C.border, backgroundColor: C.surface, alignItems: 'center', justifyContent: 'center' },
-    discardText:   { fontSize: 13, color: C.muted, fontWeight: '600' },
+    // Save confirmation (auto-save pulse)
     savedPulse:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 16 },
     savedPulseText:{ fontSize: 12, color: C.green, fontWeight: '600' },
+
+    // Default reciter
+    defaultReciterRight: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
 
     // Warn
     warnBanner: {
@@ -645,5 +1168,128 @@ const st = StyleSheet.create({
         ...StyleSheet.absoluteFillObject,
         justifyContent: 'center', alignItems: 'center',
         backgroundColor: 'rgba(0,0,0,0.6)',
+    },
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Default reciter modal styles
+// ─────────────────────────────────────────────────────────────────────────────
+const reciterModal = StyleSheet.create({
+    overlay: {
+        flex: 1,
+        justifyContent: 'flex-end',
+        backgroundColor: 'rgba(0,0,0,0.62)',
+    },
+    sheet: {
+        maxHeight: '82%',
+        backgroundColor: C.surface,
+        borderTopLeftRadius: 28,
+        borderTopRightRadius: 28,
+        paddingHorizontal: 18,
+        paddingTop: 10,
+        paddingBottom: 18,
+        borderTopWidth: 1,
+        borderColor: C.borderGold,
+    },
+    handle: {
+        width: 40,
+        height: 4,
+        borderRadius: 2,
+        backgroundColor: C.muted,
+        alignSelf: 'center',
+        marginBottom: 16,
+    },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 16,
+        paddingHorizontal: 2,
+    },
+    title: {
+        color: C.text,
+        fontSize: 18,
+        fontWeight: '800',
+    },
+    subtitle: {
+        color: C.mutedMid,
+        fontSize: 11,
+        marginTop: 4,
+    },
+    close: {
+        width: 36,
+        height: 36,
+        borderRadius: 12,
+        backgroundColor: C.surfaceAlt,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: C.border,
+    },
+    center: {
+        minHeight: 150,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 20,
+    },
+    loadingText: {
+        color: C.mutedMid,
+        fontSize: 12,
+        marginTop: 10,
+    },
+    emptyTitle: {
+        color: C.textDim,
+        fontSize: 13,
+        fontWeight: '700',
+        marginTop: 10,
+    },
+    emptyText: {
+        color: C.muted,
+        fontSize: 11,
+        marginTop: 5,
+        textAlign: 'center',
+    },
+    row: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+        paddingVertical: 12,
+        paddingHorizontal: 12,
+        borderRadius: 14,
+        backgroundColor: C.surfaceAlt,
+        borderWidth: 1,
+        borderColor: C.border,
+        marginBottom: 8,
+    },
+    rowActive: {
+        backgroundColor: C.gold,
+        borderColor: C.gold,
+    },
+    iconWrap: {
+        width: 36,
+        height: 36,
+        borderRadius: 11,
+        backgroundColor: C.goldDim,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    iconWrapActive: {
+        backgroundColor: 'rgba(8,14,23,0.12)',
+    },
+    rowName: {
+        color: C.text,
+        fontSize: 13,
+        fontWeight: '700',
+    },
+    rowNameActive: {
+        color: C.bg,
+    },
+    rowMeta: {
+        color: C.mutedMid,
+        fontSize: 10,
+        marginTop: 3,
+    },
+    rowMetaActive: {
+        color: 'rgba(8,14,23,0.58)',
     },
 });

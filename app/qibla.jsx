@@ -1,27 +1,14 @@
 /**
- * qibla.jsx  —  Production-grade Qibla Compass
+ * qibla.jsx — Native/offline Qibla Compass
  *
- * ── Crash fixes (all 8 from diagnostic) ─────────────────────────────────────
- *  ✅ 1. Sensor starts ONLY after qibla is fetched  (useEffect on qibla state)
- *  ✅ 2. Full sensor data guard  (null / undefined / NaN / zero-vector)
- *  ✅ 3. Update interval 150ms — was 80ms, which overloaded Android UI thread
- *  ✅ 4. isMounted ref — no setState calls after unmount
- *  ✅ 5. Magnetometer.isAvailableAsync() checked before subscribing
- *  ✅ 6. try/catch wraps every sensor listener body
- *  ✅ 7. isNaN / isFinite guards before every animated value write
- *  ✅ 8. Compass subtree only mounts when qibla !== null (render guard)
- *
- * ── Engine upgrades ──────────────────────────────────────────────────────────
- *  🔥 Kalman filter  — replaces naive EMA; far more stable under vibration
- *  🔥 Gyroscope fusion  — complementary filter blends gyro + magnetometer;
- *     gyro smooths fast motion, magnetometer corrects long-term drift
- *  🔥 Animated.Value.setValue() instead of Animated.timing queues;
- *     eliminates the "12 pending animations" overload that crashed on Android
+ * Qibla bearing is calculated locally from the user's coordinates to the Kaaba.
+ * Device orientation comes from expo-location's native heading API, preferring
+ * trueHeading and falling back to magnetic heading when true north is unavailable.
  */
 
 import {
     View, Text, StyleSheet, Animated, TouchableOpacity,
-    StatusBar, Dimensions,
+    StatusBar, Dimensions, Linking, Easing,
 } from 'react-native';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -29,7 +16,15 @@ import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
-import { Magnetometer, Gyroscope } from 'expo-sensors';
+import {
+    initializeLocation,
+    detectLocation,
+} from '../src/utils/location';
+import {
+    calculateQiblaBearing,
+    calculateDistanceKm,
+    normAngle,
+} from '../src/utils/qibla';
 
 const { width } = Dimensions.get('window');
 const COMPASS_SIZE = Math.min(width * 0.72, 300);
@@ -58,52 +53,9 @@ const C = {
 };
 
 // ── Constants ─────────────────────────────────────────────────────────────────
-const SENSOR_INTERVAL_MS = 150;   // 6.6 Hz — safe ceiling for all Android devices
-const FUSION_ALPHA       = 0.95;  // gyro weight in complementary filter
-
-// ─────────────────────────────────────────────────────────────────────────────
-// KALMAN FILTER  (1-D, angle-aware)
-//
-// Replaces the naive EMA smoothAngle() from the original code.
-// Key improvement: the Kalman gain k adapts — it trusts the sensor more
-// when uncertainty p is high (e.g. after a big movement) and trusts the
-// model more when uncertainty is low (stable device).
-//
-//   Q = process noise   — how fast the true angle can change  (0.01 = slow)
-//   R = measurement noise — how noisy the raw sensor is       (0.5 = moderate)
-// ─────────────────────────────────────────────────────────────────────────────
-function createKalman(Q = 0.01, R = 0.5) {
-    let x           = 0;
-    let p           = 1;
-    let initialized = false;
-
-    return {
-        update(raw) {
-            if (!initialized) { x = raw; initialized = true; return x; }
-
-            // Minimal angular delta (handles 0/360 wrap)
-            let d = raw - x;
-            if (d >  180) d -= 360;
-            if (d < -180) d += 360;
-
-            const pPred = p + Q;          // predict covariance
-            const k     = pPred / (pPred + R);  // Kalman gain
-            x = normAngle(x + k * d);     // correct estimate
-            p = (1 - k) * pPred;          // update covariance
-            return x;
-        },
-        reset(v = 0) { x = v; p = 1; initialized = false; },
-        get value()   { return x; },
-    };
-}
-
 // ─────────────────────────────────────────────────────────────────────────────
 // ANGLE MATH
 // ─────────────────────────────────────────────────────────────────────────────
-function normAngle(a) {
-    return ((a % 360) + 360) % 360;
-}
-
 function angleDelta(target, current) {
     let d = normAngle(target) - normAngle(current);
     if (d >  180) d -= 360;
@@ -111,13 +63,23 @@ function angleDelta(target, current) {
     return d;
 }
 
-// Returns null for bad data rather than crashing (fix #2)
-function magnetometerToHeading(data) {
-    if (
-        data == null || !isFinite(data.x) || !isFinite(data.y) ||
-        (data.x === 0 && data.y === 0)
-    ) return null;
-    return normAngle(-Math.atan2(data.y, data.x) * (180 / Math.PI) + 90);
+// expo-location reports -1 for a heading axis the platform can't supply
+// (most commonly trueHeading when there's no valid true-north fix yet).
+// Treat that sentinel — and any other non-finite value — as "unavailable"
+// rather than a real 0–360 bearing.
+function normalizeHeading(value) {
+    if (!Number.isFinite(value) || value < 0) return null;
+    return normAngle(value);
+}
+
+// Exponential smoothing across the compass's 0°/360° wraparound. A plain
+// `prev + (next - prev) * alpha` breaks near north (e.g. 359° → 1° would
+// briefly spin the arrow almost all the way around), so the blend has to
+// happen along the shortest angular path instead.
+function smoothHeading(prev, next, alpha = 0.2) {
+    if (prev == null || !Number.isFinite(prev)) return next;
+    const delta = angleDelta(next, prev);
+    return normAngle(prev + delta * alpha);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -150,7 +112,8 @@ const TICKS = Array.from({ length: TICK_COUNT }, (_, i) => {
 // ─────────────────────────────────────────────────────────────────────────────
 function AccuracyBadge({ accuracy }) {
     if (accuracy == null) return null;
-    const good = accuracy < 15;
+    const good = accuracy >= 3;
+    const label = accuracy >= 3 ? 'High' : accuracy === 2 ? 'Medium' : accuracy === 1 ? 'Low' : 'Calibrate';
     return (
         <View style={[styles.accuracyBadge, {
             backgroundColor: good ? C.greenSubtle : C.redSubtle,
@@ -158,7 +121,7 @@ function AccuracyBadge({ accuracy }) {
         }]}>
             <View style={[styles.accuracyDot, { backgroundColor: good ? C.green : C.red }]} />
             <Text style={[styles.accuracyText, { color: good ? C.green : C.red }]}>
-                {good ? `±${Math.round(accuracy)}°` : 'Calibrate'}
+                {label}
             </Text>
         </View>
     );
@@ -175,199 +138,226 @@ export default function QiblaScreen() {
     const [rotation,        setRotation]        = useState(0);
     const [accuracy,        setAccuracy]        = useState(null);
     const [locError,        setLocError]        = useState(false);
-    const [apiError,        setApiError]        = useState(false);
+    const [servicesDisabled,setServicesDisabled] = useState(false);
+    const [qiblaError,      setQiblaError]      = useState(false);
     const [loading,         setLoading]         = useState(true);
     const [sensorMissing,   setSensorMissing]   = useState(false);
     const [showCalibration, setShowCalibration] = useState(false);
+    const [locationLabel,   setLocationLabel]   = useState(null);
+    const [distanceKm,      setDistanceKm]      = useState(null);
 
     // ── Refs ─────────────────────────────────────────────────────────────
     const isMounted       = useRef(false);
-    const qiblaRef        = useRef(null);    // writable mirror of qibla state
-    const magSub          = useRef(null);
-    const gyroSub         = useRef(null);
-    const sensorsActive   = useRef(false);
+    const headingSub      = useRef(null);
+    const qiblaRef        = useRef(null);
+    const smoothedHeading = useRef(null);
+    const lastTrueHeading = useRef(null);
+    // Continuous (non-wrapped) rotation totals. Animated.timing interpolates
+    // linearly between values, so animating straight from a wrapped 0–360
+    // number (e.g. 359° → 1°) would spin the dial almost all the way
+    // backward instead of the 2° forward turn it actually is. Keeping a
+    // running total that only ever moves by the shortest angular step lets
+    // the tween always take the short way round.
+    const rotateUnwrapped = useRef(0);
+    const ringUnwrapped   = useRef(0);
 
-    // Kalman filters — seeded fresh on each focus
-    const kfHeading       = useRef(createKalman(0.01, 0.5));
-    const kfRotation      = useRef(createKalman(0.01, 0.5));
-
-    // Gyroscope integration
-    const gyroAngle       = useRef(0);
-    const lastGyroTs      = useRef(null);
-    const fusedAngle      = useRef(0);
-
-    // Animated values — driven with setValue() to prevent timing queue buildup
+    // Animated values for the arrow and tick ring. Each heading update
+    // starts a short Animated.timing tween toward the new angle (see
+    // startHeading) rather than snapping with setValue, which is what
+    // makes the rotation feel continuous instead of stepping between
+    // sensor samples. A new .start() call simply retargets the tween from
+    // wherever it currently is, so this stays cheap even at a fast
+    // sensor update rate.
     const rotateAnim  = useRef(new Animated.Value(0)).current;
     const ringRotAnim = useRef(new Animated.Value(0)).current;
     const pulseAnim   = useRef(new Animated.Value(1)).current;
     const fadeAnim    = useRef(new Animated.Value(0)).current;
     const alignedRef  = useRef(false);
 
-    // ── Keep qiblaRef in sync with state ─────────────────────────────────
-    useEffect(() => { qiblaRef.current = qibla; }, [qibla]);
+    const [headingSource, setHeadingSource] = useState('true');
+
+    useEffect(() => {
+        qiblaRef.current = qibla;
+    }, [qibla]);
 
     // ─────────────────────────────────────────────────────────────────────
-    // FETCH QIBLA
+    // FETCH QIBLA — entirely local after location is known
     // ─────────────────────────────────────────────────────────────────────
-    const fetchQibla = useCallback(async () => {
+    const fetchQibla = useCallback(async (forceLocationRefresh = false) => {
         if (!isMounted.current) return;
         setLoading(true);
         setLocError(false);
-        setApiError(false);
+        setServicesDisabled(false);
+        setQiblaError(false);
+        setSensorMissing(false);
 
         try {
-            const { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                if (isMounted.current) setLocError(true);
-                return;
-            }
+            const location = forceLocationRefresh
+                ? await detectLocation()
+                : await initializeLocation();
 
-            const loc = await Location.getCurrentPositionAsync({
-                accuracy: Location.Accuracy.Balanced,
-            });
             if (!isMounted.current) return;
 
-            const { latitude, longitude } = loc.coords;
-            const res  = await fetch(`https://api.aladhan.com/v1/qibla/${latitude}/${longitude}`);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const json = await res.json();
-
-            const direction = json?.data?.direction;
-            if (typeof direction !== 'number' || !isFinite(direction)) {
-                throw new Error('Unexpected API shape');
+            const { latitude, longitude, city } = location;
+            if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+                throw new Error('LOCATION_UNAVAILABLE');
             }
-            if (!isMounted.current) return;
 
-            // Seed filters at the actual Qibla so the first frame is correct
-            kfHeading.current.reset(0);
-            kfRotation.current.reset(direction);
-            fusedAngle.current = 0;
+            const bearing = calculateQiblaBearing(latitude, longitude);
+            const distance = calculateDistanceKm(latitude, longitude);
 
-            setQibla(direction);  // ← triggers startSensors via useEffect below
+            if (city) setLocationLabel(city);
+            setDistanceKm(Math.round(distance));
+            setQibla(bearing);
 
-            Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true }).start();
+            // Reset the heading state. The native heading stream will populate
+            // the actual device orientation immediately after this.
+            smoothedHeading.current = null;
+            lastTrueHeading.current = null;
+            rotateUnwrapped.current = bearing;
+            ringUnwrapped.current = 0;
+            setHeading(0);
+            setRotation(bearing);
+            rotateAnim.setValue(bearing);
+            ringRotAnim.setValue(0);
+            setHeadingSource('true');
 
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 500,
+                useNativeDriver: true,
+            }).start();
         } catch (e) {
-            console.error('[Qibla] fetch error:', e.message);
-            if (isMounted.current) setApiError(true);
+            if (!isMounted.current) return;
+
+            if (e.message === 'LOCATION_PERMISSION_DENIED') {
+                console.warn('[Qibla] location permission denied');
+                setLocError(true);
+            } else if (e.message === 'LOCATION_SERVICES_DISABLED') {
+                console.warn('[Qibla] location services disabled');
+                setServicesDisabled(true);
+            } else {
+                // Any other failure (e.g. a bad import/undefined helper) means
+                // the local calculation itself blew up — not a network issue.
+                console.error('[Qibla] location/calculation error:', e.message);
+                setQiblaError(true);
+            }
         } finally {
             if (isMounted.current) setLoading(false);
         }
+    }, [fadeAnim, ringRotAnim, rotateAnim]);
+
+    // ─────────────────────────────────────────────────────────────────────
+    // STOP NATIVE HEADING SENSOR
+    // ─────────────────────────────────────────────────────────────────────
+    const stopHeading = useCallback(() => {
+        try { headingSub.current?.remove(); } catch {}
+        headingSub.current = null;
     }, []);
 
     // ─────────────────────────────────────────────────────────────────────
-    // STOP SENSORS
-    // ─────────────────────────────────────────────────────────────────────
-    const stopSensors = useCallback(() => {
-        magSub.current?.remove();
-        gyroSub.current?.remove();
-        magSub.current      = null;
-        gyroSub.current     = null;
-        sensorsActive.current = false;
-    }, []);
-
-    // ─────────────────────────────────────────────────────────────────────
-    // START SENSORS
+    // START NATIVE HEADING
     //
-    // FIX #1: This is intentionally NOT called from useFocusEffect.
-    // It is called from a useEffect that fires only when qibla !== null,
-    // guaranteeing qiblaRef.current is set before any callback runs.
+    // expo-location's heading API uses the platform compass implementation and
+    // exposes both magnetic and true-north headings. We prefer trueHeading so
+    // the heading uses the same north reference as our Qibla calculation.
     // ─────────────────────────────────────────────────────────────────────
-    const startSensors = useCallback(async () => {
-        if (sensorsActive.current || !isMounted.current) return;
+    const startHeading = useCallback(async () => {
+        if (!isMounted.current || headingSub.current) return;
 
-        // FIX #5: check availability first
-        const magOk  = await Magnetometer.isAvailableAsync().catch(() => false);
-        if (!magOk) {
-            if (isMounted.current) setSensorMissing(true);
-            return;
-        }
-        const gyroOk = await Gyroscope.isAvailableAsync().catch(() => false);
+        try {
+            const subscription = await Location.watchHeadingAsync(
+                (data) => {
+                    try {
+                        if (!isMounted.current || !data) return;
 
-        sensorsActive.current = true;
-        Magnetometer.setUpdateInterval(SENSOR_INTERVAL_MS);  // FIX #3
+                        const trueHeading = normalizeHeading(data.trueHeading);
+                        const magneticHeading = normalizeHeading(data.magHeading);
 
-        // ── Magnetometer ─────────────────────────────────────────────────
-        magSub.current = Magnetometer.addListener((data) => {
-            try {    // FIX #6
-                // FIX #2: validate raw data
-                const rawH = magnetometerToHeading(data);
-                if (rawH == null) return;
+                        // trueHeading is -1 when the platform cannot provide a
+                        // true-north value. Fall back to magnetic heading rather
+                        // than leaving the user without a working compass.
+                        const nextHeading = trueHeading ?? magneticHeading;
+                        if (nextHeading == null) return;
 
-                // Complementary filter — blend gyro prediction + magnetometer
-                const fused = gyroOk
-                    ? normAngle(FUSION_ALPHA * fusedAngle.current + (1 - FUSION_ALPHA) * rawH)
-                    : rawH;
-                fusedAngle.current = fused;
+                        const smoothed = smoothHeading(
+                            smoothedHeading.current,
+                            nextHeading,
+                            0.24
+                        );
+                        if (!Number.isFinite(smoothed)) return;
 
-                // Kalman on heading
-                const smoothH = kfHeading.current.update(fused);
-                if (!isFinite(smoothH)) return;  // FIX #7
+                        smoothedHeading.current = smoothed;
+                        lastTrueHeading.current = trueHeading;
 
-                // FIX #1 continued: qiblaRef is guaranteed non-null here
-                const q = qiblaRef.current;
-                if (q == null) return;
+                        const q = qiblaRef.current;
+                        if (!Number.isFinite(q)) return;
 
-                // Kalman on rotation (arrow angle)
-                const rawRot  = normAngle(q - smoothH);
-                const smoothR = kfRotation.current.update(rawRot);
-                if (!isFinite(smoothR)) return;  // FIX #7
+                        let relative = q - smoothed;
+                        if (relative > 180) relative -= 360;
+                        if (relative < -180) relative += 360;
+                        relative = normAngle(relative);
 
-                // FIX #4: check mounted before setState
-                if (!isMounted.current) return;
-                setHeading(smoothH);
-                setRotation(smoothR);
+                        setHeading(smoothed);
+                        setRotation(relative);
 
-                // FIX #3: setValue() instead of Animated.timing() —
-                // no animation queue, no pileup, renders at next frame only
-                rotateAnim.setValue(smoothR);
-                ringRotAnim.setValue(-smoothH);
+                        // Advance the unwrapped totals by the shortest angular
+                        // step, then tween to them so the arrow/ring glide
+                        // between sensor samples instead of snapping.
+                        rotateUnwrapped.current += angleDelta(relative, normAngle(rotateUnwrapped.current));
+                        ringUnwrapped.current += angleDelta(normAngle(-smoothed), normAngle(ringUnwrapped.current));
 
-                // Accuracy from field magnitude
-                const mag = Math.sqrt(
-                    (data.x ?? 0) ** 2 + (data.y ?? 0) ** 2 + (data.z ?? 0) ** 2
-                );
-                if (isFinite(mag)) {
-                    setAccuracy(Math.min(Math.abs(mag - 45) * 1.2, 45));
-                    setShowCalibration(mag < 20 || mag > 90);
+                        Animated.timing(rotateAnim, {
+                            toValue: rotateUnwrapped.current,
+                            duration: 180,
+                            easing: Easing.out(Easing.quad),
+                            useNativeDriver: true,
+                        }).start();
+                        Animated.timing(ringRotAnim, {
+                            toValue: ringUnwrapped.current,
+                            duration: 180,
+                            easing: Easing.out(Easing.quad),
+                            useNativeDriver: true,
+                        }).start();
+
+                        setHeadingSource(trueHeading != null ? 'true' : 'magnetic');
+
+                        // Expo exposes 0/1/2/3 calibration levels. Keep the
+                        // user-facing badge conservative: only call it good at
+                        // high accuracy.
+                        const accuracyLevel = Number(data.accuracy);
+                        if (Number.isFinite(accuracyLevel)) {
+                            setAccuracy(accuracyLevel);
+                            setShowCalibration(accuracyLevel < 2);
+                        }
+                    } catch (e) {
+                        console.warn('[Qibla] heading callback:', e.message);
+                    }
+                },
+                (reason) => {
+                    console.warn('[Qibla] heading error:', reason);
+                    if (isMounted.current) setSensorMissing(true);
                 }
+            );
 
-            } catch (e) {
-                console.log('[Qibla] mag listener error:', e.message);  // FIX #6
+            if (!isMounted.current) {
+                subscription?.remove();
+                return;
             }
-        });
-
-        // ── Gyroscope (fusion source — provides smooth fast-motion data) ──
-        if (gyroOk) {
-            Gyroscope.setUpdateInterval(SENSOR_INTERVAL_MS);
-            gyroSub.current = Gyroscope.addListener((data) => {
-                try {
-                    if (!data || !isFinite(data.z)) return;
-                    const now = Date.now();
-                    const dt  = lastGyroTs.current
-                        ? Math.min((now - lastGyroTs.current) / 1000, 0.1)
-                        : SENSOR_INTERVAL_MS / 1000;
-                    lastGyroTs.current = now;
-
-                    // Integrate angular velocity → heading delta
-                    gyroAngle.current = normAngle(
-                        gyroAngle.current + data.z * (180 / Math.PI) * dt
-                    );
-                    // Update the fusion accumulator — next mag tick will blend this in
-                    fusedAngle.current = normAngle(
-                        FUSION_ALPHA * gyroAngle.current + (1 - FUSION_ALPHA) * fusedAngle.current
-                    );
-                } catch (e) {
-                    console.log('[Qibla] gyro listener error:', e.message);
-                }
-            });
+            headingSub.current = subscription;
+        } catch (e) {
+            console.error('[Qibla] heading subscription failed:', e.message);
+            if (isMounted.current) setSensorMissing(true);
         }
-    }, []);
+    }, [ringRotAnim, rotateAnim]);
 
-    // FIX #1: sensor starts only when qibla is ready
+    // Start the native compass only after a valid Qibla bearing exists.
     useEffect(() => {
-        if (qibla !== null) startSensors();
-    }, [qibla]);
+        if (qibla !== null && !loading && !sensorMissing) {
+            startHeading();
+        }
+        return () => stopHeading();
+    }, [qibla, loading, sensorMissing, startHeading, stopHeading]);
 
     // ─────────────────────────────────────────────────────────────────────
     // LIFECYCLE
@@ -375,23 +365,20 @@ export default function QiblaScreen() {
     useFocusEffect(
         useCallback(() => {
             isMounted.current = true;
-            fetchQibla();
+            fetchQibla(false);
 
             return () => {
                 isMounted.current = false;
-                stopSensors();
-                // Reset all state so next focus is clean
-                kfHeading.current.reset(0);
-                kfRotation.current.reset(0);
-                fusedAngle.current  = 0;
-                gyroAngle.current   = 0;
-                lastGyroTs.current  = null;
+                stopHeading();
+                smoothedHeading.current = null;
+                lastTrueHeading.current = null;
                 fadeAnim.setValue(0);
                 setQibla(null);
                 setAccuracy(null);
                 setShowCalibration(false);
+                setSensorMissing(false);
             };
-        }, [fetchQibla, stopSensors])
+        }, [fetchQibla, stopHeading, fadeAnim])
     );
 
     // ── Aligned pulse ─────────────────────────────────────────────────────
@@ -414,10 +401,12 @@ export default function QiblaScreen() {
     const arrowRotate = rotateAnim.interpolate({
         inputRange:  [0, 360],
         outputRange: ['0deg', '360deg'],
+        extrapolate: 'extend',
     });
     const ringRotate = ringRotAnim.interpolate({
         inputRange:  [-360, 0, 360],
         outputRange: ['-360deg', '0deg', '360deg'],
+        extrapolate: 'extend',
     });
 
     const isAligned = Math.abs(angleDelta(rotation, 0)) < 8;
@@ -441,9 +430,23 @@ export default function QiblaScreen() {
                 <View style={styles.headerCenter}>
                     <Text style={styles.headerEyebrow}>COMPASS</Text>
                     <Text style={styles.headerTitle}>Qibla Direction</Text>
+                    {locationLabel ? (
+                        <View style={styles.locRow}>
+                            <View style={styles.locDot} />
+                            <Text style={styles.locText} numberOfLines={1}>{locationLabel}</Text>
+                        </View>
+                    ) : null}
                 </View>
                 <View style={[styles.headerSide, styles.headerSideRight]}>
                     <AccuracyBadge accuracy={accuracy} />
+                    <TouchableOpacity
+                        style={styles.refreshBtn}
+                        onPress={() => fetchQibla(true)}
+                        disabled={loading}
+                        activeOpacity={0.7}
+                    >
+                        <Ionicons name="locate-outline" size={16} color={C.gold} />
+                    </TouchableOpacity>
                 </View>
             </View>
 
@@ -457,7 +460,7 @@ export default function QiblaScreen() {
             {sensorMissing && (
                 <View style={[styles.banner, { backgroundColor: C.redSubtle, borderBottomColor: C.redBorder }]}>
                     <Ionicons name="close-circle-outline" size={14} color={C.red} />
-                    <Text style={[styles.bannerText, { color: C.red }]}>Compass sensor not available on this device</Text>
+                    <Text style={[styles.bannerText, { color: C.red }]}>Device compass heading is not available</Text>
                 </View>
             )}
 
@@ -471,20 +474,32 @@ export default function QiblaScreen() {
                     </View>
                 )}
 
-                {(locError || apiError) && !loading && (
+                {(locError || servicesDisabled || qiblaError) && !loading && (
                     <View style={styles.errorWrap}>
                         <Ionicons name="location-outline" size={32} color={C.muted} />
                         <Text style={styles.errorTitle}>
-                            {locError ? 'Location access denied' : 'Could not reach server'}
+                            {locError
+                                ? 'Location access denied'
+                                : servicesDisabled
+                                    ? 'Location services are off'
+                                    : 'Unable to calculate Qibla'}
                         </Text>
                         <Text style={styles.errorSub}>
                             {locError
-                                ? 'Enable location permission and try again'
-                                : 'Check your connection and tap Retry'}
+                                ? 'Enable location permission in Settings, then retry'
+                                : servicesDisabled
+                                    ? 'Turn on location services for this device, then retry'
+                                    : 'We could not determine your Qibla direction. Please retry.'}
                         </Text>
-                        <TouchableOpacity style={styles.retryBtn} onPress={fetchQibla}>
-                            <Text style={styles.retryText}>Retry</Text>
-                        </TouchableOpacity>
+                        {(locError || servicesDisabled) ? (
+                            <TouchableOpacity style={styles.retryBtn} onPress={() => Linking.openSettings()}>
+                                <Text style={styles.retryText}>Open Settings</Text>
+                            </TouchableOpacity>
+                        ) : (
+                            <TouchableOpacity style={styles.retryBtn} onPress={() => fetchQibla(true)}>
+                                <Text style={styles.retryText}>Retry</Text>
+                            </TouchableOpacity>
+                        )}
                     </View>
                 )}
 
@@ -495,7 +510,7 @@ export default function QiblaScreen() {
                   * target → NaN in interpolation → crash on Android.
                   * Keeping it out of the tree entirely is the safest fix.
                   */}
-                {qibla !== null && !loading && !locError && !apiError && (
+                {qibla !== null && !loading && !locError && !servicesDisabled && !qiblaError && (
                     <Animated.View style={{ opacity: fadeAnim }}>
 
                         {/* Glow ring */}
@@ -608,7 +623,7 @@ export default function QiblaScreen() {
                     ) : (
                         <View style={styles.degreeRow}>
                             <Text style={styles.degreeNum}>{Math.round(qibla)}°</Text>
-                            <Text style={styles.degreeLabel}> from North</Text>
+                            <Text style={styles.degreeLabel}> from True North</Text>
                         </View>
                     )}
 
@@ -625,13 +640,17 @@ export default function QiblaScreen() {
                     )}
 
                     <Text style={styles.instructionText}>Rotate until the arrow points straight up ↑</Text>
+                    <Text style={styles.sourceText}>{headingSource === 'true' ? 'True-north heading' : 'Magnetic heading — calibrate for best accuracy'}</Text>
+                    {distanceKm ? (
+                        <Text style={styles.distanceText}>📍 {distanceKm.toLocaleString()} km from Mecca</Text>
+                    ) : null}
                 </View>
             )}
 
             {/* ── AYAH FOOTER ── */}
             <View style={[styles.ayahFooter, { paddingBottom: insets.bottom + 16 }]}>
                 <Text style={styles.ayahArabic}>فَوَلِّ وَجْهَكَ شَطْرَ الْمَسْجِدِ الْحَرَامِ</Text>
-                <Text style={styles.ayahTrans}>"Turn your face toward the Sacred Mosque"</Text>
+                <Text style={styles.ayahTrans}>"Turn your face towards the Sacred Mosque"</Text>
                 <Text style={styles.ayahRef}>— Quran 2:149</Text>
             </View>
         </View>
@@ -650,7 +669,12 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1, borderBottomColor: C.border,
     },
     headerSide:      { width: 72, alignItems: 'flex-start', justifyContent: 'center' },
-    headerSideRight: { alignItems: 'flex-end' },
+    headerSideRight: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 6 },
+    refreshBtn: {
+        width: 28, height: 28, borderRadius: 8,
+        backgroundColor: C.goldSubtle, borderWidth: 1, borderColor: C.borderGold,
+        alignItems: 'center', justifyContent: 'center',
+    },
     backBtn: {
         width: 36, height: 36, borderRadius: 10,
         backgroundColor: C.surface, borderWidth: 1, borderColor: C.border,
@@ -659,6 +683,9 @@ const styles = StyleSheet.create({
     headerCenter:  { flex: 1, alignItems: 'center' },
     headerEyebrow: { fontSize: 8, color: C.gold, letterSpacing: 3, fontWeight: '700', opacity: 0.6 },
     headerTitle:   { fontSize: 15, fontWeight: '700', color: C.text, letterSpacing: 0.2 },
+    locRow:        { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 },
+    locDot:        { width: 5, height: 5, borderRadius: 2.5, backgroundColor: C.green },
+    locText:       { fontSize: 10, color: C.mutedMid, letterSpacing: 0.2 },
 
     accuracyBadge: {
         flexDirection: 'row', alignItems: 'center', gap: 4,
@@ -751,6 +778,8 @@ const styles = StyleSheet.create({
     offsetRow:       { flexDirection: 'row', alignItems: 'center', gap: 5 },
     offsetText:      { fontSize: 11, color: C.mutedMid, letterSpacing: 0.3 },
     instructionText: { fontSize: 11, color: C.muted, letterSpacing: 0.3, textAlign: 'center' },
+    sourceText:      { fontSize: 9, color: C.muted, letterSpacing: 0.2, textAlign: 'center' },
+    distanceText:    { fontSize: 11, color: C.mutedMid, letterSpacing: 0.2, textAlign: 'center', marginTop: 2 },
 
     ayahFooter: {
         paddingHorizontal: 24, paddingTop: 12,

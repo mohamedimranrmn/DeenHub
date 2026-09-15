@@ -970,13 +970,43 @@ const ReciterSheet = ({ visible, currentReciter, onSelect, onClose }) => {
 
     useEffect(() => {
         if (!visible) return;
-        setLoading(true);
-        import('../../src/services/quranApi').then(({ getReciters }) =>
-            getReciters()
-                .then(json => { const list = json?.data?.reciters ?? json?.data ?? []; setReciters(Array.isArray(list) ? list : []); })
-                .catch(() => {})
-                .finally(() => setLoading(false))
-        );
+
+        let cancelled = false;
+
+        const loadReciters = async () => {
+            setLoading(true);
+            try {
+                const { getReciters } = await import('../../src/services/quranApi');
+                const json = await getReciters();
+
+                console.log(
+                    '[Player Reciters] API response:',
+                    JSON.stringify(json, null, 2)
+                );
+
+                // Quran Foundation proxy returns: { reciters: [...] }
+                // Keep compatibility with older wrapped responses as well.
+                const list =
+                    json?.reciters ??
+                    json?.data?.reciters ??
+                    (Array.isArray(json?.data) ? json.data : []);
+
+                if (!cancelled) {
+                    setReciters(Array.isArray(list) ? list : []);
+                }
+            } catch (e) {
+                console.error('[Player Reciters] Failed to load:', e);
+                if (!cancelled) setReciters([]);
+            } finally {
+                if (!cancelled) setLoading(false);
+            }
+        };
+
+        loadReciters();
+
+        return () => {
+            cancelled = true;
+        };
     }, [visible]);
 
     return (
@@ -1001,8 +1031,17 @@ const ReciterSheet = ({ visible, currentReciter, onSelect, onClose }) => {
                                         <TouchableOpacity key={r.id ?? i} style={[rs.row, isSel && rs.rowA]} onPress={() => onSelect(r)}>
                                             <Ionicons name={isSel ? 'mic' : 'mic-outline'} size={16} color={isSel ? DARK : GOLD} />
                                             <View style={{ flex: 1 }}>
-                                                <Text style={[rs.rowName, isSel && rs.rowNameA]}>{r.name}</Text>
-                                                {r.style ? <Text style={[rs.rowMeta, isSel && rs.rowMetaA]}>{r.style}</Text> : null}
+                                                <Text style={[rs.rowName, isSel && rs.rowNameA]} numberOfLines={1}>
+                                                    {r.name ?? r.translated_name?.name ?? `Reciter ${r.id}`}
+                                                </Text>
+                                                {!!(r.style?.name || r.style?.translated_name?.name || r.qirat?.name) && (
+                                                    <Text style={[rs.rowMeta, isSel && rs.rowMetaA]} numberOfLines={1}>
+                                                        {[
+                                                            r.style?.name ?? r.style?.translated_name?.name,
+                                                            r.qirat?.name,
+                                                        ].filter(Boolean).join(' · ')}
+                                                    </Text>
+                                                )}
                                             </View>
                                             {isSel && <Ionicons name="checkmark-circle" size={20} color={DARK} />}
                                         </TouchableOpacity>
@@ -1076,22 +1115,31 @@ export default function PlayerScreen() {
     }, []);
 
     const handleReciterSelect = useCallback(async (r) => {
+        if (!r?.id) {
+            console.warn('[Quran Player] Invalid reciter:', r);
+            return;
+        }
+
         const obj = {
-            id: r.id,
-            name: r.name,
+            id: Number(r.id),
+            name: r.name ?? r.translated_name?.name ?? `Reciter ${r.id}`,
             style: r.style ?? null,
             language: r.language ?? null,
-            relativePath: r.relativePath ?? r.relative_path ?? null,
-            quranComId: r.quranComId ?? null,
+            qirat: r.qirat ?? null,
+            source: 'quran-foundation',
         };
 
+        console.log('[Quran Player] Selected reciter:', obj);
+
         try {
+            // AudioStore.changeReciter() handles the existing native player,
+            // restores the current Surah/Ayah and preserves play/pause state.
             await AudioStore.changeReciter(obj);
         } catch (e) {
-            console.error('[Player] change reciter:', e);
-        } finally {
-            setShowReciter(false);
+            console.error('[Quran Player] reciter change:', e);
         }
+
+        setShowReciter(false);
     }, []);
 
     const goToSurah   = () => { if (surahId) router.push(`/quran/surah/${surahId}`); else router.back(); };

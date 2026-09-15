@@ -26,39 +26,55 @@ const C = {
     borderGold:'rgba(201,168,76,0.10)',
 };
 
+// Matches a dua whose PRIMARY category is this one, OR whose `tags`
+// array includes it — a dua can legitimately belong to more than one
+// category (e.g. a Bismillah dua fits both "general" and "eating_drinking")
+// without being stored as duplicate rows.
+function matchesCategory(query, decodedKey) {
+    return query.or(`category.eq.${decodedKey},tags.cs.{${decodedKey}}`);
+}
+
 function DuaCard({ item, onPress }) {
-    // Show Arabic if present, fall back to title; translation as preview
-    const headline = item.arabic
-        ? null  // render Arabic separately
-        : (item.title || '—');
-    const preview  = item.translation
-        ? item.translation.slice(0, 150)
-        : (item.title?.slice(0, 150) || '—');
+    const preview = item.translation
+        ? item.translation.slice(0, 160)
+        : (item.title?.slice(0, 160) || '—');
 
     return (
-        <TouchableOpacity onPress={onPress} style={s.card} activeOpacity={0.72}>
-            {/* Top row: index label + optional title pill */}
-            <View style={s.cardMeta}>
-                {item.title ? (
-                    <Text style={s.cardTitle} numberOfLines={1}>{item.title}</Text>
-                ) : (
-                    <Text style={s.cardNumber}>#{item.id}</Text>
-                )}
-                <Ionicons name="chevron-forward" size={12} color={C.muted} style={{ marginLeft: 'auto' }} />
+        <TouchableOpacity onPress={onPress} style={s.card} activeOpacity={0.75}>
+            {/* Gold left accent bar */}
+            <View style={s.cardAccent} />
+
+            <View style={s.cardInner}>
+                {/* Top row: title pill + chevron */}
+                <View style={s.cardTopRow}>
+                    {item.title ? (
+                        <View style={s.titlePill}>
+                            <Text style={s.titlePillText} numberOfLines={1}>{item.title}</Text>
+                        </View>
+                    ) : (
+                        <View style={s.titlePill}>
+                            <Text style={s.titlePillText}>#{item.id}</Text>
+                        </View>
+                    )}
+                    <Ionicons name="chevron-forward" size={13} color={C.muted} style={s.chevron} />
+                </View>
+
+                {/* Arabic headline */}
+                {item.arabic ? (
+                    <Text style={s.arabic} numberOfLines={2}>{item.arabic}</Text>
+                ) : null}
+
+                {/* Translation preview */}
+                <Text style={s.preview} numberOfLines={3}>{preview}</Text>
+
+                {/* Reference footer */}
+                {item.reference ? (
+                    <View style={s.cardFooter}>
+                        <Ionicons name="book-outline" size={11} color={C.muted} />
+                        <Text style={s.refTag} numberOfLines={1}>{item.reference}</Text>
+                    </View>
+                ) : null}
             </View>
-
-            {/* Arabic headline */}
-            {item.arabic ? (
-                <Text style={s.arabic} numberOfLines={2}>{item.arabic}</Text>
-            ) : null}
-
-            {/* Translation preview */}
-            <Text style={s.preview} numberOfLines={3}>{preview}</Text>
-
-            {/* Reference */}
-            {item.reference ? (
-                <Text style={s.refTag} numberOfLines={1}>{item.reference}</Text>
-            ) : null}
         </TouchableOpacity>
     );
 }
@@ -83,10 +99,10 @@ export default function DuaCategoryScreen() {
     // ── Fetch total count once ─────────────────────────────────────────────
     useEffect(() => {
         const fetchCount = async () => {
-            const { count } = await supabase
-                .from('duas')
-                .select('*', { count: 'exact', head: true })
-                .eq('category', decodedKey);
+            const { count } = await matchesCategory(
+                supabase.from('duas').select('*', { count: 'exact', head: true }),
+                decodedKey
+            );
             if (count !== null) setTotalCount(count);
         };
         fetchCount();
@@ -106,10 +122,12 @@ export default function DuaCategoryScreen() {
         }
 
         try {
-            let query = supabase
-                .from('duas')
-                .select('id, arabic, translation, title, reference')
-                .eq('category', decodedKey)
+            let query = matchesCategory(
+                supabase
+                    .from('duas')
+                    .select('id, arabic, translation, title, reference'),
+                decodedKey
+            )
                 .order('id', { ascending: true })
                 .limit(PAGE_SIZE);
 
@@ -251,9 +269,6 @@ export default function DuaCategoryScreen() {
                     windowSize={10}
                     initialNumToRender={15}
                     updateCellsBatchingPeriod={50}
-                    ItemSeparatorComponent={() => (
-                        <View style={{ height: 1, backgroundColor: C.border, marginHorizontal: 4 }} />
-                    )}
                 />
             )}
         </View>
@@ -274,37 +289,53 @@ const s = StyleSheet.create({
     arabicAccent:{ fontSize: 12, color: C.gold, opacity: 0.65, letterSpacing: 0.8, lineHeight: 16, marginBottom: 1 },
     navTitle:    { color: C.text, fontSize: 15, fontWeight: '600', letterSpacing: 0.3 },
 
-    list:           { paddingHorizontal: 0 },
-    listHeader:     { paddingHorizontal: 20, paddingVertical: 12 },
+    list:           { paddingHorizontal: 14, paddingTop: 4, gap: 10 },
+    listHeader:     { paddingHorizontal: 6, paddingVertical: 10 },
     listHeaderText: { fontSize: 11, color: C.muted, letterSpacing: 0.6, textTransform: 'uppercase' },
 
-    // ── Premium card — full width, no left bar ──
+    // ── Premium dua card ─────────────────────────────────────
     card: {
         backgroundColor: C.card,
-        paddingHorizontal: 20,
-        paddingVertical: 16,
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: C.borderGold,
+        flexDirection: 'row',
+        overflow: 'hidden',
     },
-    cardMeta: {
+    cardAccent: {
+        width: 3,
+        backgroundColor: C.gold,
+        opacity: 0.55,
+    },
+    cardInner: {
+        flex: 1,
+        paddingHorizontal: 16,
+        paddingVertical: 15,
+    },
+    cardTopRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 8,
+        marginBottom: 10,
         gap: 8,
     },
-    cardTitle: {
-        fontSize: 10,
-        color: C.gold,
-        fontWeight: '700',
-        letterSpacing: 0.8,
-        textTransform: 'uppercase',
+    titlePill: {
+        backgroundColor: C.goldLight,
+        borderRadius: 6,
+        paddingHorizontal: 8,
+        paddingVertical: 3,
+        borderWidth: 1,
+        borderColor: C.goldMed,
         flex: 1,
     },
-    cardNumber: {
+    titlePillText: {
         fontSize: 10,
         color: C.gold,
         fontWeight: '700',
-        letterSpacing: 0.8,
+        letterSpacing: 0.6,
         textTransform: 'uppercase',
     },
+    chevron: { flexShrink: 0 },
+
     arabic: {
         fontSize: 18,
         color: C.text,
@@ -315,14 +346,20 @@ const s = StyleSheet.create({
     preview: {
         color: C.textDim,
         fontSize: 14,
-        lineHeight: 22,
+        lineHeight: 23,
         letterSpacing: 0.1,
-        marginBottom: 10,
+        marginBottom: 12,
+    },
+    cardFooter: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 5,
     },
     refTag: {
-        fontSize: 10,
+        fontSize: 11,
         color: C.muted,
-        letterSpacing: 0.3,
+        letterSpacing: 0.2,
+        flex: 1,
     },
 
     footerLoader: { paddingVertical: 24, alignItems: 'center' },

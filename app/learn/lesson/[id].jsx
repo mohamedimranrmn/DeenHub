@@ -338,7 +338,7 @@ export default function LessonDetailScreen() {
                     <View style={styles.card}>
                         <View style={styles.cardTitleRow}>
                             <View style={styles.cardAccent} />
-                            <Text style={styles.cardTitle}>Introduction</Text>
+                            <Text style={styles.cardTitle}>Lesson</Text>
                         </View>
                         <Text style={styles.bodyText}>{lesson.content}</Text>
                     </View>

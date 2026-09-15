@@ -5,6 +5,10 @@ import { useEffect, useState } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { initDeviceId } from '@/src/utils/device';
 import { useFonts } from 'expo-font';
+import {
+    initializeNotificationNavigation,
+    handleInitialNotification,
+} from '@/src/utils/notifications';
 
 export default function RootLayout() {
     const [ready, setReady] = useState(false);
@@ -12,6 +16,12 @@ export default function RootLayout() {
     const [fontsLoaded] = useFonts({
         Uthmanic: require('@/assets/fonts/UthmanicHafs.otf'),
     });
+
+    useEffect(() => {
+        const unsubscribe = initializeNotificationNavigation();
+        handleInitialNotification();
+        return unsubscribe;
+    }, []);
 
     useEffect(() => {
         const init = async () => {

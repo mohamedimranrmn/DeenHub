@@ -381,4 +381,4 @@ export function getGroupedPresets() {
  * TARGET_OPTIONS — the set of quick-pick repetition counts shown as chips
  * in the AddDhikrScreen target selector.
  */
-export const TARGET_OPTIONS = [11, 33, 99, 100, 200, 500, 1000];
+export const TARGET_OPTIONS = [11, 33, 99, 1000];

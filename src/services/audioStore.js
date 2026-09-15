@@ -443,22 +443,41 @@ const replaceSource = async (url, generation, autoPlay) => {
 
 const seekAyahInternal = async (num, shouldPlay = true) => {
     if (!_player || !_state.surahId) return false;
-    const start = timingForAyah(num);
 
-    if (start == null) {
-        console.warn(`[AudioStore] No timing for ${_state.surahId}:${num}`);
+    const timing = timingForAyah(num);
+
+    if (!timing) {
+        console.warn(
+            `[AudioStore] No timing for ${_state.surahId}:${num}`
+        );
+        return false;
+    }
+
+    const start = Number(timing.startSec);
+
+    if (!Number.isFinite(start)) {
+        console.warn(
+            `[AudioStore] Invalid start time for ${_state.surahId}:${num}`,
+            timing
+        );
         return false;
     }
 
     _player.seekTo(start);
+
     setState({
         playingAyah: num,
+        playingWord: wordAtTime(num, start * 1000),
         positionMs: start * 1000,
         isLoading: false,
     });
+
     persistLastRead(_state.surahId, num);
 
-    if (shouldPlay) _player.play();
+    if (shouldPlay) {
+        _player.play();
+    }
+
     return true;
 };
 

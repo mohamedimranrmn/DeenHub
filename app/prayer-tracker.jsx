@@ -1,26 +1,42 @@
 import {
     View, Text, TouchableOpacity, StyleSheet,
-    ScrollView, StatusBar, Animated, Dimensions, Platform,
-    AppState,
+    ScrollView, StatusBar, Animated, Dimensions,
+    AppState, Linking, Modal,
 } from 'react-native';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
-import { useLocalSearchParams, router } from 'expo-router';
+import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import * as Location from 'expo-location';
 import * as Haptics from 'expo-haptics';
 import Constants from 'expo-constants';
-import { Coordinates, CalculationMethod, PrayerTimes, Madhab } from 'adhan';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import supabase from '../src/services/supabase';
 import { getDeviceId } from '../src/utils/device';
+import { getPrayerActiveDates } from '../src/services/prayerLogs';
+import { todayLocalStr, toLocalDateStr, computeCurrentStreak, computeLongestStreak } from '../src/utils/streaks';
+import {
+    getCachedLocation,
+    detectLocation,
+    initializeLocation,
+    getCoordsFromCity,
+    openLocationSettings,
+} from '../src/utils/location';
+import { calculateQiblaBearing } from '../src/utils/qibla';
+import {
+    fetchTimesFromAPI,
+    TIMES_CACHE_KEY,
+    refreshPrayerNotifications,
+} from '../src/utils/prayerTimes';
+// Local (on-device, non-push) notifications work fine in Expo Go — only
+// remote push is blocked there from SDK 53. Prayer reminders are scheduled
+// locally from client-side location + prayer-time data, so no gating needed.
+// All notification scheduling/permission/channel logic now lives centrally
+// in src/utils/notifications.js — see that file rather than duplicating
+// this logic here. fetchTimesFromAPI/TIMES_CACHE_KEY now live in
+// src/utils/prayerTimes.js so Settings can trigger the same pipeline
+// without this screen needing to be mounted.
 
-const IS_EXPO_GO = Constants.appOwnership === 'expo';
-
-let Notifications = null;
-if (!IS_EXPO_GO) {
-    Notifications = require('expo-notifications');
-}
 
 const { width, height } = Dimensions.get('window');
 const IS_TALL = height > 800;
@@ -69,18 +85,8 @@ const PRAYERS = [
     { key: 'isha',    label: 'Isha',    arabic: 'العِشَاء',  period: 'Night',     rakat: '4' },
 ];
 
-if (!IS_EXPO_GO) {
-    Notifications.setNotificationHandler({
-        handleNotification: async () => ({
-            shouldShowAlert: true,
-            shouldPlaySound: true,
-            shouldSetBadge: false,
-        }),
-    });
-}
-
 function getTodayStr() {
-    return new Date().toISOString().slice(0, 10);
+    return todayLocalStr();
 }
 
 function getGregorianDate() {
@@ -146,82 +152,8 @@ function dayLabel(dateStr) {
     return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()];
 }
 
-async function requestNotifPermission() {
-    if (IS_EXPO_GO) return false;
-    const { status: existing } = await Notifications.getPermissionsAsync();
-    if (existing === 'granted') return true;
-    const { status } = await Notifications.requestPermissionsAsync();
-    return status === 'granted';
-}
-
-async function schedulePrayerNotifications(prayerTimes, settings = {}) {
-    if (IS_EXPO_GO) return;
-    if (!settings.reminder_enabled) {
-        const all = await Notifications.getAllScheduledNotificationsAsync();
-        await Promise.all(
-            all.filter(n => n.content.data?.type === 'prayer_reminder')
-                .map(n => Notifications.cancelScheduledNotificationAsync(n.identifier))
-        );
-        return;
-    }
-    const granted = await requestNotifPermission();
-    if (!granted) return;
-
-    const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-    await Promise.all(
-        scheduled.filter(n => n.content.data?.type === 'prayer_reminder')
-            .map(n => Notifications.cancelScheduledNotificationAsync(n.identifier))
-    );
-
-    const offset = settings.notification_offset ?? 0;
-
-    for (const prayer of PRAYERS) {
-        const timeStr = prayerTimes[prayer.key];
-        if (!timeStr) continue;
-        const [hh, mm] = timeStr.split(':').map(Number);
-        const totalMins = hh * 60 + mm - offset;
-        const adjHh = Math.floor(((totalMins % 1440) + 1440) % 1440 / 60);
-        const adjMm = ((totalMins % 1440) + 1440) % 1440 % 60;
-
-        await Notifications.scheduleNotificationAsync({
-            content: {
-                title: `${prayer.label} · ${prayer.arabic}`,
-                body: offset > 0
-                    ? `${prayer.label} begins in ${offset} minutes`
-                    : `Time for ${prayer.label} — ${prayer.rakat} rak'at`,
-                data: { type: 'prayer_reminder', prayer: prayer.key },
-                sound: true,
-            },
-            trigger: {
-                type: 'daily',
-                hour: adjHh,
-                minute: adjMm,
-            },
-        });
-    }
-}
-
-async function getCityFromCoords(lat, lon) {
-    try {
-        const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,
-            { headers: { 'User-Agent': 'PrayerTrackerApp/1.0' } }
-        );
-        const json = await res.json();
-        const addr = json.address || {};
-        return addr.city || addr.town || addr.village || addr.county || null;
-    } catch { return null; }
-}
-
-async function getCoordsFromCity(city) {
-    const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json&limit=1`,
-        { headers: { 'User-Agent': 'PrayerTrackerApp/1.0' } }
-    );
-    const json = await res.json();
-    if (json.length > 0) return { latitude: parseFloat(json[0].lat), longitude: parseFloat(json[0].lon) };
-    return null;
-}
+// TIMES_CACHE_KEY and fetchTimesFromAPI now live in src/utils/prayerTimes.js
+// (imported above) so Settings can drive the same caching pipeline.
 
 // ── Angle helpers ─────────────────────────────────────────────────────────────
 function normAngle(a) { return ((a % 360) + 360) % 360; }
@@ -273,37 +205,56 @@ function QiblaCard({ latitude, longitude }) {
     }, [loading]);
 
     useEffect(() => {
-        if (latitude && longitude) fetchQibla();
+        if (typeof latitude === 'number' && typeof longitude === 'number') {
+            fetchQibla();
+        }
     }, [latitude, longitude]);
 
     const fetchQibla = async () => {
+        if (typeof latitude !== 'number' || typeof longitude !== 'number') {
+            setError(true);
+            return;
+        }
+
         setLoading(true);
         setError(false);
+
         try {
-            // Aladhan — reliable, no key, correct shape: { data: { direction: number } }
-            const res  = await fetch(`https://api.aladhan.com/v1/qibla/${latitude}/${longitude}`);
-            if (!res.ok) throw new Error('HTTP error');
-            const json = await res.json();
-            const deg  = json?.data?.direction;
-            if (typeof deg !== 'number') throw new Error('bad shape');
+            // Qibla bearing is deterministic from the user's coordinates.
+            // No network/API request is needed.
+            const bearing = calculateQiblaBearing(latitude, longitude);
+            if (!Number.isFinite(bearing)) throw new Error('Invalid Qibla bearing');
 
-            const rounded = Math.round(deg);
-            setDirection(rounded);
+            setDirection(Math.round(bearing));
 
-            // Spring the arrow into position — feels physical
             Animated.spring(arrowAnim, {
-                toValue: rounded, tension: 55, friction: 9, useNativeDriver: true,
+                toValue: bearing,
+                tension: 55,
+                friction: 9,
+                useNativeDriver: true,
             }).start();
 
-            Animated.timing(fadeAnim, { toValue: 1, duration: 500, useNativeDriver: true }).start();
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 500,
+                useNativeDriver: true,
+            }).start();
 
-            // Entrance pulse on kaaba
             Animated.sequence([
-                Animated.timing(pulseAnim,  { toValue: 1.25, duration: 220, useNativeDriver: true }),
-                Animated.spring(pulseAnim,  { toValue: 1, tension: 180, friction: 6, useNativeDriver: true }),
+                Animated.timing(pulseAnim, {
+                    toValue: 1.25,
+                    duration: 220,
+                    useNativeDriver: true,
+                }),
+                Animated.spring(pulseAnim, {
+                    toValue: 1,
+                    tension: 180,
+                    friction: 6,
+                    useNativeDriver: true,
+                }),
             ]).start();
-
-        } catch {
+        } catch (e) {
+            console.error('[Qibla] Local calculation failed:', e.message);
             setError(true);
         } finally {
             setLoading(false);
@@ -729,10 +680,8 @@ function WeekBar({ day, isToday }) {
 export default function PrayerTracker() {
     const insets = useSafeAreaInsets();
     const today  = getTodayStr();
-    const { settingsRefresh } = useLocalSearchParams();
 
     const [log, setLog]             = useState({});
-    const [rowId, setRowId]         = useState(null);
     const [streak, setStreak]       = useState({ current: 0, longest: 0 });
     const [weekData, setWeekData]   = useState([]);
     const [saving, setSaving]       = useState(false);
@@ -741,11 +690,14 @@ export default function PrayerTracker() {
     const [prayerTimes, setPrayerTimes]     = useState({});
     const [timesLoading, setTimesLoading]   = useState(false);
     const [timesError, setTimesError]       = useState(null);
-    const [locationLabel, setLocationLabel] = useState(null);
-    const [coords, setCoords]               = useState(null);
+    const [locationLabel, setLocationLabel]       = useState(null);
+    const [coords, setCoords]                     = useState(null);
+    const [locationRefreshing, setLocationRefreshing] = useState(false);
+    const [needsLocationPermission, setNeedsLocationPermission] = useState(false);
+    const [needsLocationServicesEnabled, setNeedsLocationServicesEnabled] = useState(false);
+    const [locationModalVisible, setLocationModalVisible] = useState(false);
     const [nextPrayer, setNextPrayer]       = useState(null);
     const [tick, setTick]                   = useState(0);
-    const [settingsVersion, setSettingsVersion] = useState(0);
 
     const completedCount = PRAYERS.filter(p => log[p.key]).length;
     const allDone        = completedCount === PRAYERS.length;
@@ -761,6 +713,9 @@ export default function PrayerTracker() {
         }
     }, [prayerTimes, tick]);
 
+    // Safe to keep: after the fetchPrayerTimes rewrite below, this never calls
+    // GPS again — it only re-reads the cached location and refreshes today's
+    // times (e.g. so the screen updates itself around midnight).
     useEffect(() => {
         const sub = AppState.addEventListener('change', async (state) => {
             if (state === 'active') {
@@ -768,6 +723,35 @@ export default function PrayerTracker() {
             }
         });
         return () => sub.remove();
+    }, []);
+
+    // Deliberate startup check: surface a "location is required" prompt as
+    // soon as the screen mounts, rather than waiting for the prayer-times
+    // fetch below to fail first. initializeLocation() is cache-first, so on
+    // every visit after the first this just returns the cached location
+    // immediately and never opens the modal.
+    useEffect(() => {
+        let cancelled = false;
+
+        const initializeAppLocation = async () => {
+            try {
+                await initializeLocation();
+                if (!cancelled) setLocationModalVisible(false);
+            } catch (e) {
+                if (cancelled) return;
+                console.log('[Prayer] startup location check:', e?.message);
+                if (e?.message === 'LOCATION_SERVICES_DISABLED') {
+                    setNeedsLocationServicesEnabled(true);
+                    setLocationModalVisible(true);
+                } else if (e?.message === 'LOCATION_PERMISSION_DENIED') {
+                    setNeedsLocationPermission(true);
+                    setLocationModalVisible(true);
+                }
+            }
+        };
+
+        initializeAppLocation();
+        return () => { cancelled = true; };
     }, []);
 
     useFocusEffect(
@@ -779,19 +763,21 @@ export default function PrayerTracker() {
     const loadAll = () =>
         Promise.all([loadLog(), loadStreak(), loadWeek(), fetchPrayerTimes(true)]);
 
-    useEffect(() => {
-        if (settingsVersion > 0) fetchPrayerTimes(true);
-    }, [settingsVersion]);
-
-    useEffect(() => {
-        if (settingsRefresh) {
-            setSettingsVersion(v => v + 1);
-        }
-    }, [settingsRefresh]);
-
-    const fetchPrayerTimes = async (showLoading = true) => {
+    /**
+     * showLoading          — show the header "Detecting location…" / spinner state.
+     * forceLocationRefresh — true only for the explicit Auto-detect / Refresh
+     *                        button. Every other caller (focus, AppState,
+     *                        settings change) leaves this false, so location
+     *                        is read from cache and GPS is never touched.
+     *                        Notification scheduling is only triggered by an
+     *                        explicit location refresh.
+     */
+    const fetchPrayerTimes = async (showLoading = true, forceLocationRefresh = false) => {
         if (showLoading) setTimesLoading(true);
+        if (forceLocationRefresh) setLocationRefreshing(true);
         setTimesError(null);
+        setNeedsLocationPermission(false);
+        setNeedsLocationServicesEnabled(false);
 
         try {
             const device_id = await getDeviceId();
@@ -804,67 +790,77 @@ export default function PrayerTracker() {
             const madhabSetting = settings?.madhab ?? 'Shafi';
             const methodId      = settings?.calculation_method ?? 'MWL';
 
-            let latitude = null, longitude = null;
+            // ── Resolve location ──────────────────────────────────────────
+            let location = null;
 
-            if (settings?.manual_city) {
-                const c = await getCoordsFromCity(settings.manual_city);
-                if (c) { latitude = c.latitude; longitude = c.longitude; }
-            }
-
-            if (latitude === null) {
-                const { status } = await Location.requestForegroundPermissionsAsync();
-                if (status === 'granted') {
-                    const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-                    latitude  = loc.coords.latitude;
-                    longitude = loc.coords.longitude;
-                    const city = await getCityFromCoords(latitude, longitude);
-                    if (city) setLocationLabel(city);
+            // A manually-selected city wins unless the user explicitly asked
+            // to auto-detect — we never silently override a manual choice.
+            if (settings?.manual_city && !forceLocationRefresh) {
+                const manual = await getCoordsFromCity(settings.manual_city);
+                if (manual) {
+                    location = { latitude: manual.latitude, longitude: manual.longitude, city: settings.manual_city, source: 'manual' };
                 }
             }
 
-            if (latitude === null) throw new Error('Location unavailable');
+            if (!location) {
+                location = forceLocationRefresh
+                    ? await detectLocation()      // explicit refresh — GPS every time
+                    : await initializeLocation();  // cache-first — GPS only if nothing saved yet
+            }
 
-            // Save coords for Qibla card
-            setCoords({ latitude, longitude });
+            setCoords({ latitude: location.latitude, longitude: location.longitude });
+            setLocationLabel(location.city ?? `${location.latitude.toFixed(3)}, ${location.longitude.toFixed(3)}`);
 
-            const coordinates = new Coordinates(latitude, longitude);
-            const methodMap = {
-                MWL: CalculationMethod.MuslimWorldLeague(),
-                ISNA: CalculationMethod.NorthAmerica(),
-                Egypt: CalculationMethod.Egyptian(),
-                Makkah: CalculationMethod.UmmAlQura(),
-                Karachi: CalculationMethod.Karachi(),
-                Tehran: CalculationMethod.Tehran(),
-                Jafari: CalculationMethod.Tehran(),
-            };
-            const params = methodMap[methodId] ?? CalculationMethod.MuslimWorldLeague();
-            params.madhab = madhabSetting === 'Hanafi' ? Madhab.Hanafi : Madhab.Shafi;
-
-            const date  = new Date();
-            const times = new PrayerTimes(coordinates, date, params);
-
-            const fmt = (d) => {
-                if (!d) return null;
-                const h = d.getHours().toString().padStart(2, '0');
-                const m = d.getMinutes().toString().padStart(2, '0');
-                return `${h}:${m}`;
-            };
-
-            const result = {
-                fajr:    fmt(times.fajr),
-                dhuhr:   fmt(times.dhuhr),
-                asr:     fmt(times.asr),
-                maghrib: fmt(times.maghrib),
-                isha:    fmt(times.isha),
-            };
+            // ── Fetch times from UmmahAPI (cached same-day same-place) ───────
+            const result = await fetchTimesFromAPI(location.latitude, location.longitude, methodId, madhabSetting);
 
             setPrayerTimes(result);
-            await schedulePrayerNotifications(result, settings ?? {});
+
+            // Prayer Tracker only schedules reminders after an explicit
+            // location refresh. Normal screen focus/AppState refreshes are
+            // display-only and therefore cannot cancel a valid schedule.
+            if (forceLocationRefresh && settings?.reminder_enabled === true) {
+                await refreshPrayerNotifications(settings);
+            }
 
         } catch (e) {
-            setTimesError('Could not load prayer times. Check location settings.');
+            console.log('[Prayer] fetchPrayerTimes error:', e.message);
+
+            if (e.message === 'LOCATION_PERMISSION_DENIED') {
+                setNeedsLocationPermission(true);
+                setLocationModalVisible(true);
+                setTimesError('Location permission is needed for accurate prayer times and Qibla.');
+                return;
+            }
+            if (e.message === 'LOCATION_SERVICES_DISABLED') {
+                setNeedsLocationServicesEnabled(true);
+                setLocationModalVisible(true);
+                setTimesError('Location services are turned off. Enable them to detect your location.');
+                return;
+            }
+
+            // Try to show cached times if available so the screen isn't blank
+            try {
+                const cached = await AsyncStorage.getItem(TIMES_CACHE_KEY);
+                if (cached) {
+                    const { times } = JSON.parse(cached);
+                    if (times?.fajr) {
+                        setPrayerTimes(times);
+                        setTimesError('Showing cached times. Location unavailable.');
+                        return;
+                    }
+                }
+            } catch {}
+
+            console.error('[Prayer] Unexpected prayer-time error:', e);
+            setTimesError(
+                e?.message?.includes('UmmahAPI') || e?.message?.includes('HTTP')
+                    ? 'Unable to fetch prayer times. Please check your internet connection.'
+                    : 'Unable to load prayer times. Please try again.'
+            );
         } finally {
             setTimesLoading(false);
+            setLocationRefreshing(false);
         }
     };
 
@@ -879,11 +875,9 @@ export default function PrayerTracker() {
                 .maybeSingle();
 
             if (data) {
-                setRowId(data.id);
                 const { fajr, dhuhr, asr, maghrib, isha } = data;
                 setLog({ fajr, dhuhr, asr, maghrib, isha });
             } else {
-                setRowId(null);
                 setLog({});
             }
         } catch (e) { console.error('loadLog:', e.message); }
@@ -891,13 +885,11 @@ export default function PrayerTracker() {
 
     const loadStreak = async () => {
         try {
-            const device_id = await getDeviceId();
-            const { data } = await supabase
-                .from('streaks')
-                .select('*')
-                .eq('device_id', device_id)
-                .maybeSingle();
-            if (data) setStreak({ current: data.current, longest: data.longest });
+            const activeDates = await getPrayerActiveDates();
+            setStreak({
+                current: computeCurrentStreak(activeDates),
+                longest: computeLongestStreak(activeDates),
+            });
         } catch (e) { console.error('loadStreak:', e.message); }
     };
 
@@ -908,7 +900,7 @@ export default function PrayerTracker() {
             for (let i = 6; i >= 0; i--) {
                 const d = new Date();
                 d.setDate(d.getDate() - i);
-                days.push(d.toISOString().slice(0, 10));
+                days.push(toLocalDateStr(d));
             }
             const { data } = await supabase
                 .from('prayer_logs')
@@ -929,53 +921,30 @@ export default function PrayerTracker() {
         if (saving) return;
         setSaving(true);
         setError(null);
-        const newLog = { ...log, [key]: !log[key] };
+        const prevLog = log;
+        const newLog  = { ...log, [key]: !log[key] };
         setLog(newLog);
 
         try {
             const device_id = await getDeviceId();
             const payload = { device_id, date: today, ...newLog };
 
-            if (rowId) {
-                const { error: upErr } = await supabase.from('prayer_logs').update(payload).eq('id', rowId);
-                if (upErr) throw upErr;
-            } else {
-                const { data: inserted, error: insErr } = await supabase
-                    .from('prayer_logs').insert(payload).select('id').single();
-                if (insErr) throw insErr;
-                setRowId(inserted.id);
-            }
+            const { error: upsertErr } = await supabase
+                .from('prayer_logs')
+                .upsert(payload, { onConflict: 'device_id,date' });
+            if (upsertErr) throw upsertErr;
 
-            if (PRAYERS.every(p => newLog[p.key])) await updateStreak();
-            await loadWeek();
+            // Streak is derived live from prayer_logs, not hand-incremented —
+            // this also means unchecking a prayer correctly lowers the streak
+            // again instead of it only ever being able to go up.
+            await Promise.all([loadStreak(), loadWeek()]);
         } catch (e) {
             console.error('togglePrayer:', e.message);
-            setLog(log);
+            setLog(prevLog);
             setError('Failed to save. Check connection.');
         } finally {
             setSaving(false);
         }
-    };
-
-    const updateStreak = async () => {
-        try {
-            const device_id = await getDeviceId();
-            const { data: existing } = await supabase
-                .from('streaks').select('*').eq('device_id', device_id).maybeSingle();
-
-            if (existing?.last_updated === today) return;
-
-            const gapDays = existing?.last_updated
-                ? Math.round((new Date(today + 'T12:00:00') - new Date(existing.last_updated + 'T12:00:00')) / 86400000)
-                : 99;
-            let newCurrent = gapDays <= 2 ? (existing?.current ?? 0) + 1 : 1;
-            const newLongest = Math.max(existing?.longest ?? 0, newCurrent);
-
-            await supabase.from('streaks').upsert({
-                device_id, current: newCurrent, longest: newLongest, last_updated: today,
-            });
-            setStreak({ current: newCurrent, longest: newLongest });
-        } catch (e) { console.error('updateStreak:', e.message); }
     };
 
     const hijriDate = getHijriDate();
@@ -1017,18 +986,36 @@ export default function PrayerTracker() {
                         <Text style={styles.headerEyebrow}>SALAH TRACKER</Text>
                         {hijriDate && <Text style={styles.hijri}>{hijriDate}</Text>}
                         <Text style={styles.greg}>{gregDate}</Text>
-                        {locationLabel && (
+                        {locationLabel && !locationRefreshing && (
                             <View style={styles.locationRow}>
                                 <View style={styles.locationDot} />
                                 <Text style={styles.locationText}>{locationLabel}</Text>
                             </View>
                         )}
-                        {timesLoading && (
+                        {(timesLoading || locationRefreshing) && (
                             <View style={styles.locationRow}>
                                 <View style={[styles.locationDot, { backgroundColor: C.gold }]} />
-                                <Text style={[styles.locationText, { color: C.gold }]}>Detecting location…</Text>
+                                <Text style={[styles.locationText, { color: C.gold }]}>
+                                    {locationRefreshing ? 'Detecting location…' : 'Loading…'}
+                                </Text>
                             </View>
                         )}
+
+                        {/* Explicit location control — location is otherwise read once
+                            from cache and never re-requested on its own. */}
+                        <View style={styles.locationActions}>
+                            <TouchableOpacity
+                                style={styles.locationButton}
+                                onPress={() => fetchPrayerTimes(true, true)}
+                                disabled={locationRefreshing}
+                                activeOpacity={0.75}
+                            >
+                                <Ionicons name="locate-outline" size={12} color={C.gold} />
+                                <Text style={styles.locationButtonText}>
+                                    {locationRefreshing ? 'Updating…' : 'Auto-detect / Refresh'}
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
 
                     {/* Progress circle */}
@@ -1056,9 +1043,42 @@ export default function PrayerTracker() {
 
                 {/* ── ERROR BANNERS ─────────────────────────── */}
                 {timesError && (
-                    <View style={[styles.alertBanner, { borderColor: C.redMed, backgroundColor: C.redSubtle }]}>
-                        <View style={[styles.alertAccent, { backgroundColor: C.red }]} />
-                        <Text style={[styles.alertText, { color: C.red }]}>{timesError}</Text>
+                    <View style={[styles.alertBanner, { borderColor: C.redMed, backgroundColor: C.redSubtle, flexDirection: 'column', alignItems: 'stretch' }]}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <View style={[styles.alertAccent, { backgroundColor: C.red }]} />
+                            <Text style={[styles.alertText, { color: C.red }]}>{timesError}</Text>
+                        </View>
+                        {needsLocationPermission ? (
+                            <TouchableOpacity
+                                style={[styles.locationButton, { marginTop: 8, alignSelf: 'flex-start', marginLeft: 15 }]}
+                                onPress={() => Linking.openSettings()}
+                                activeOpacity={0.75}
+                            >
+                                <Ionicons name="settings-outline" size={12} color={C.gold} />
+                                <Text style={styles.locationButtonText}>Open Settings</Text>
+                            </TouchableOpacity>
+                        ) : needsLocationServicesEnabled ? (
+                            <TouchableOpacity
+                                style={[styles.locationButton, { marginTop: 8, alignSelf: 'flex-start', marginLeft: 15 }]}
+                                onPress={async () => {
+                                    await openLocationSettings();
+                                    fetchPrayerTimes(true, true);
+                                }}
+                                activeOpacity={0.75}
+                            >
+                                <Ionicons name="navigate-outline" size={12} color={C.gold} />
+                                <Text style={styles.locationButtonText}>Turn On Location</Text>
+                            </TouchableOpacity>
+                        ) : (
+                            <TouchableOpacity
+                                style={[styles.locationButton, { marginTop: 8, alignSelf: 'flex-start', marginLeft: 15 }]}
+                                onPress={() => fetchPrayerTimes(true, true)}
+                                activeOpacity={0.75}
+                            >
+                                <Ionicons name="refresh-outline" size={12} color={C.gold} />
+                                <Text style={styles.locationButtonText}>Retry</Text>
+                            </TouchableOpacity>
+                        )}
                     </View>
                 )}
                 {error && (
@@ -1111,12 +1131,157 @@ export default function PrayerTracker() {
                 />
 
             </ScrollView>
+
+            {/* ── LOCATION REQUIRED MODAL ──────────────────────────────── */}
+            <Modal
+                visible={locationModalVisible}
+                transparent
+                animationType="fade"
+                statusBarTranslucent
+                onRequestClose={() => setLocationModalVisible(false)}
+            >
+                <View style={styles.locationModalOverlay}>
+                    <View style={styles.locationModalCard}>
+                        <View style={styles.locationModalIcon}>
+                            <Ionicons name="location" size={26} color={C.gold} />
+                        </View>
+
+                        <Text style={styles.locationModalTitle}>Location Required</Text>
+
+                        <Text style={styles.locationModalText}>
+                            Islamic Knowledge Hub uses your device location
+                            to provide accurate prayer times and Qibla direction.
+                        </Text>
+
+                        <Text style={styles.locationModalHint}>
+                            {needsLocationServicesEnabled
+                                ? 'Please turn on Location Services to continue.'
+                                : 'Please allow location access to continue.'}
+                        </Text>
+
+                        <TouchableOpacity
+                            style={styles.locationModalButton}
+                            onPress={async () => {
+                                try {
+                                    if (needsLocationPermission) {
+                                        Linking.openSettings();
+                                    } else {
+                                        await openLocationSettings();
+                                    }
+                                    // Give the OS a moment, then check again.
+                                    setTimeout(async () => {
+                                        try {
+                                            await initializeLocation();
+                                            setLocationModalVisible(false);
+                                            await fetchPrayerTimes(true);
+                                        } catch (e) {
+                                            console.log('[Prayer] location still unavailable:', e?.message);
+                                        }
+                                    }, 800);
+                                } catch {}
+                            }}
+                            activeOpacity={0.8}
+                        >
+                            <Ionicons name="settings-outline" size={16} color={C.bg} />
+                            <Text style={styles.locationModalButtonText}>
+                                {needsLocationPermission ? 'Open Settings' : 'Turn On Location'}
+                            </Text>
+                        </TouchableOpacity>
+
+                        {/* Not in the original spec, added deliberately: a way out.
+                            A modal the user can't dismiss without granting location
+                            traps anyone who wants to look around the app first —
+                            the inline banner still explains what's missing after
+                            this closes. */}
+                        <TouchableOpacity
+                            style={styles.locationModalDismiss}
+                            onPress={() => setLocationModalVisible(false)}
+                            activeOpacity={0.7}
+                        >
+                            <Text style={styles.locationModalDismissText}>Not now</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 }
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
+    locationModalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.72)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 24,
+    },
+    locationModalCard: {
+        width: '100%',
+        maxWidth: 380,
+        backgroundColor: C.surface,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: C.borderGold,
+        padding: 24,
+        alignItems: 'center',
+    },
+    locationModalIcon: {
+        width: 58,
+        height: 58,
+        borderRadius: 29,
+        backgroundColor: C.goldSubtle,
+        borderWidth: 1,
+        borderColor: C.borderGold,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 16,
+    },
+    locationModalTitle: {
+        fontSize: 20,
+        fontWeight: '700',
+        color: C.text,
+        marginBottom: 10,
+        textAlign: 'center',
+    },
+    locationModalText: {
+        fontSize: 13,
+        color: C.textDim,
+        lineHeight: 20,
+        textAlign: 'center',
+        marginBottom: 10,
+    },
+    locationModalHint: {
+        fontSize: 12,
+        color: C.mutedMid,
+        lineHeight: 18,
+        textAlign: 'center',
+        marginBottom: 20,
+    },
+    locationModalButton: {
+        width: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
+        backgroundColor: C.gold,
+        borderRadius: 12,
+        paddingVertical: 13,
+    },
+    locationModalButtonText: {
+        fontSize: 13,
+        fontWeight: '700',
+        color: C.bg,
+    },
+    locationModalDismiss: {
+        marginTop: 14,
+        paddingVertical: 4,
+    },
+    locationModalDismissText: {
+        fontSize: 12,
+        color: C.mutedMid,
+        textDecorationLine: 'underline',
+    },
     root:   { flex: 1, backgroundColor: C.bg },
     scroll: { paddingHorizontal: 16, paddingTop: 14 },
 
@@ -1145,6 +1310,13 @@ const styles = StyleSheet.create({
     locationRow:    { flexDirection: 'row', alignItems: 'center', gap: 6 },
     locationDot:    { width: 5, height: 5, borderRadius: 2.5, backgroundColor: C.green },
     locationText:   { fontSize: 11, color: C.mutedMid, letterSpacing: 0.2 },
+    locationActions: { flexDirection: 'row', marginTop: 7 },
+    locationButton: {
+        flexDirection: 'row', alignItems: 'center', gap: 5,
+        paddingVertical: 5, paddingHorizontal: 8, borderRadius: 7,
+        backgroundColor: C.goldSubtle, borderWidth: 1, borderColor: C.borderGold,
+    },
+    locationButtonText: { fontSize: 10, color: C.gold, fontWeight: '600' },
 
     progressWrap:    { alignItems: 'center' },
     progressCircle:  {

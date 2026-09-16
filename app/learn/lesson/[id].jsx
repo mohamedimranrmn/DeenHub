@@ -49,7 +49,7 @@ export default function LessonDetailScreen() {
     const loadAll = async () => {
         try {
             setLoading(true);
-            const device_id = getDeviceId();
+            const device_id = await getDeviceId();
 
             // 1. Fetch the anchor lesson to get its topic_id
             const { data: anchor } = await supabase
@@ -176,7 +176,7 @@ export default function LessonDetailScreen() {
     const toggleSave = async () => {
         if (saving || !lesson) return;
         setSaving(true);
-        const device_id = getDeviceId();
+        const device_id = await getDeviceId();
 
         try {
             if (saved) {
@@ -208,7 +208,7 @@ export default function LessonDetailScreen() {
         setMarking(true);
         setCompletedMap(m => ({ ...m, [lesson.id]: true }));
 
-        const device_id = getDeviceId();
+        const device_id = await getDeviceId();
 
         try {
             await supabase.from('lesson_progress').upsert({

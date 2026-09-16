@@ -41,7 +41,7 @@ export default function LessonListScreen() {
         try {
             // 🔒 Safe device ID access
             try {
-                device_id = getDeviceId();
+                device_id = await getDeviceId();
             } catch {
                 console.warn('Device ID not ready yet');
                 return;
@@ -55,7 +55,7 @@ export default function LessonListScreen() {
                 .from('topics')
                 .select('name')
                 .eq('id', topicId)
-                .single();
+                .maybeSingle();
 
             if (topicError) throw topicError;
             setTopicName(topic?.name || 'Lessons');
@@ -303,4 +303,3 @@ const styles = StyleSheet.create({
     emptyTitle: { fontSize: 16, color: TEXT },
     emptyDesc: { fontSize: 13, color: MUTED },
 });
-

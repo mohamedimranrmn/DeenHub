@@ -243,12 +243,27 @@ export default function QuranScreen() {
 
     const persistLastRead = useCallback(async (number, ayah = null) => {
         try {
-            const surah = allSurahs.current.find(su => su.number === number);
-            const name  = surah?.name_english
-                ?? (lastRead?.number === number ? lastRead?.name : null)
+            const surah = allSurahs.current.find(
+                su => Number(su.number) === Number(number)
+            );
+
+            const name = surah?.name_english
+                ?? (Number(lastRead?.number) === Number(number)
+                    ? lastRead?.name
+                    : null)
                 ?? `Surah ${number}`;
-            const next = { number, name, ayah: ayah ?? null };
-            await AsyncStorage.setItem('last_read_surah', JSON.stringify(next));
+
+            const next = {
+                number: Number(number),
+                name,
+                ayah: ayah ? Number(ayah) : null,
+            };
+
+            await AsyncStorage.setItem(
+                'last_read_surah',
+                JSON.stringify(next)
+            );
+
             setLastRead(next);
         } catch (_) {}
     }, [lastRead]);
@@ -357,13 +372,14 @@ export default function QuranScreen() {
                         {lastRead && (
                             <TouchableOpacity
                                 style={s.lastReadCard}
-                                onPress={async () => {
-                                    router.push(`/quran/surah/${lastRead.number}`);
-                                    setTimeout(async () => {
-                                        const savedAyah = lastRead.ayah ?? null;
-                                        await AudioStore.playSurahById(lastRead.number, savedAyah);
-                                        router.push('/quran/player');
-                                    }, 350);
+                                onPress={() => {
+                                    router.push({
+                                        pathname: `/quran/surah/${lastRead.number}`,
+                                        params: {
+                                            notificationAyah: lastRead.ayah ? String(lastRead.ayah) : undefined,
+                                            autoPlay: lastRead.ayah ? '1' : undefined,
+                                        },
+                                    });
                                 }}
                                 activeOpacity={0.8}
                             >

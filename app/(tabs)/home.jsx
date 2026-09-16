@@ -26,6 +26,7 @@ import Constants from 'expo-constants';
 import { LinearGradient } from 'expo-linear-gradient';
 import supabase from '../../src/services/supabase';
 import { quranQuotes } from '../../src/constants/quranQuotes';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const IS_EXPO_GO = Constants.appOwnership === 'expo';
 let Notifications = null;
@@ -282,20 +283,89 @@ export default function HomeScreen() {
         setLoading(false);
     };
 
+    const HADITH_DAY_CACHE_KEY = 'hadith_of_day_v1';
+
+    const getLocalDateKey = () => {
+        const d = new Date();
+
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    };
+
     const loadHadithOfDay = async () => {
         try {
-            const now       = new Date();
-            const start     = new Date(now.getFullYear(), 0, 0);
-            const dayOfYear = Math.floor((now - start) / 86400000);
-            const { count } = await supabase.from('hadiths').select('*', { count: 'exact', head: true });
-            if (!count) return;
-            const { data } = await supabase
+            const dateKey = getLocalDateKey();
+
+            // -----------------------------------------
+            // 1. Use today's cached Hadith if available
+            // -----------------------------------------
+            const cached = await AsyncStorage.getItem(
+                HADITH_DAY_CACHE_KEY
+            );
+
+            if (cached) {
+                const parsed = JSON.parse(cached);
+
+                if (
+                    parsed?.date === dateKey &&
+                    parsed?.hadith
+                ) {
+                    setHadithOfDay(parsed.hadith);
+                    return;
+                }
+            }
+
+            // -----------------------------------------
+            // 2. Fetch only a small deterministic batch
+            // -----------------------------------------
+            const { data, error } = await supabase
                 .from('hadiths')
-                .select('id, translation, arabic, book, hadith_number, grade')
-                .range(dayOfYear % count, dayOfYear % count)
-                .single();
-            if (data) setHadithOfDay(data);
-        } catch (err) { console.log('Hadith of day:', err); }
+                .select(
+                    'id, translation, arabic, book, hadith_number, grade'
+                )
+                .order('id', { ascending: true })
+                .limit(100);
+
+            if (error) {
+                throw error;
+            }
+
+            if (!data?.length) {
+                console.warn('[Hadith of Day] No hadiths found');
+                return;
+            }
+
+            // -----------------------------------------
+            // 3. Pick today's Hadith deterministically
+            // -----------------------------------------
+            const [year, month, day] =
+                dateKey.split('-').map(Number);
+
+            const dayNumber = Math.floor(
+                Date.UTC(year, month - 1, day) / 86400000
+            );
+
+            const index =
+                ((dayNumber % data.length) + data.length) %
+                data.length;
+
+            const hadith = data[index];
+
+            // -----------------------------------------
+            // 4. Cache it for the rest of today
+            // -----------------------------------------
+            await AsyncStorage.setItem(
+                HADITH_DAY_CACHE_KEY,
+                JSON.stringify({
+                    date: dateKey,
+                    hadith,
+                })
+            );
+
+            setHadithOfDay(hadith);
+
+        } catch (err) {
+            console.error('[Hadith of Day]', err);
+        }
     };
 
     const handleRefresh = async () => {

@@ -1,9 +1,10 @@
 import {
     View, Text, TouchableOpacity, StyleSheet,
     Alert, ActivityIndicator, ScrollView, StatusBar,
-    Switch, Linking, Share, Platform, Modal,
+    Switch, Linking, Share, Modal,
+    Animated, LayoutAnimation, UIManager, Platform,
 } from 'react-native';
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,22 +13,32 @@ import supabase from '../../src/services/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { getDeviceId } from '../../src/utils/device';
 import Constants from 'expo-constants';
-import * as Notifications from 'expo-notifications';
 import {
     NOTIFICATION_TYPES,
     NOTIFICATION_CHANNELS,
     getNotificationPermission,
     requestNotificationPermission,
-    scheduleQuranReminder,
-    scheduleHadithReminder,
-    scheduleLessonReminder,
-    scheduleDuaReminder,
+    getNotificationPreferences,
+    saveNotificationPreferences,
+    refreshContentNotifications,
 } from '../../src/utils/notifications';
 import { refreshPrayerNotifications } from '../../src/utils/prayerTimes';
 import { getReciters } from '../../src/services/quranApi';
 import AudioStore from '../../src/services/audioStore';
 
 const APP_VERSION = Constants.expoConfig?.version ?? '1.0.0';
+
+// Smooth, native-driven expand/collapse (e.g. a Daily Deen row opening its
+// time picker) instead of the content just popping in — purely visual,
+// no effect on when/what state changes.
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+const EASE = LayoutAnimation.create(
+    220,
+    LayoutAnimation.Types.easeInEaseOut,
+    LayoutAnimation.Properties.opacity
+);
 
 // ── Design tokens ─────────────────────────────────────────────────────────────
 const C = {
@@ -72,9 +83,9 @@ const MADHABS = [
 
 const NOTIF_OFFSETS = [
     { value: 0,  label: 'At prayer time' },
-    { value: 5,  label: '5 min before'   },
-    { value: 10, label: '10 min before'  },
-    { value: 15, label: '15 min before'  },
+    { value: 5,  label: '5 min before' },
+    { value: 10, label: '10 min before' },
+    { value: 15, label: '15 min before' },
 ];
 
 const DEFAULT_SETTINGS = {
@@ -82,103 +93,397 @@ const DEFAULT_SETTINGS = {
     notification_offset: 0,
     calculation_method:  '3',
     madhab:              'Shafi',
-
-    // Daily content reminders — fixed default times for v1. Each is
-    // independently toggleable; times aren't user-configurable yet.
     quran_reminder_enabled:  false,
     hadith_reminder_enabled: false,
     lesson_reminder_enabled: false,
     dua_reminder_enabled:    false,
 };
 
-// Quran Foundation chapter-reciter default.
-// QF chapter-reciter ID 7 is Mishary Rashid Alafasy (Murattal).
+const DEFAULT_NOTIFICATION_PREFS = {
+    prayer_enabled: true,
+    prayer_offset: 0,
+    jumuah_enabled: true,
+    jumuah_offset: 30,
+    quran_enabled: false,
+    quran_hour: 20,
+    quran_minute: 0,
+    hadith_enabled: false,
+    hadith_hour: 9,
+    hadith_minute: 0,
+    lesson_enabled: false,
+    lesson_hour: 19,
+    lesson_minute: 0,
+    dua_enabled: false,
+    dua_hour: 6,
+    dua_minute: 30,
+};
+
 const DEFAULT_RECITER_ID = 7;
 
-// Fixed schedule for the v1 daily content reminders (see notifications.js
-// scheduleQuranReminder/scheduleHadithReminder/scheduleLessonReminder/scheduleDuaReminder).
-const DAILY_REMINDERS = [
-    {
-        key:      'quran_reminder_enabled',
-        type:     NOTIFICATION_TYPES.QURAN,
-        schedule: scheduleQuranReminder,
-        icon:     'reader-outline',
-        color:    C.purple,
-        label:    'Quran',
-        hour: 20, minute: 0, timeLabel: '8:00 PM',
-    },
-    {
-        key:      'hadith_reminder_enabled',
-        type:     NOTIFICATION_TYPES.HADITH,
-        schedule: scheduleHadithReminder,
-        icon:     'book-outline',
-        color:    C.gold,
-        label:    'Hadith',
-        hour: 9, minute: 0, timeLabel: '9:00 AM',
-    },
-    {
-        key:      'lesson_reminder_enabled',
-        type:     NOTIFICATION_TYPES.LESSON,
-        schedule: scheduleLessonReminder,
-        icon:     'school-outline',
-        color:    C.green,
-        label:    'Lesson',
-        hour: 19, minute: 0, timeLabel: '7:00 PM',
-    },
-    {
-        key:      'dua_reminder_enabled',
-        type:     NOTIFICATION_TYPES.DUA,
-        schedule: scheduleDuaReminder,
-        icon:     'hand-right-outline',
-        color:    C.blue,
-        label:    'Dua',
-        hour: 6, minute: 30, timeLabel: '6:30 AM',
-    },
+const NOTIFICATION_CATEGORIES = [
+    { key: 'prayer', icon: 'notifications-outline', color: C.gold, label: 'Prayer Reminders' },
+    { key: 'jumuah', icon: 'moon-outline', color: C.gold, label: "Jumu'ah" },
+    { key: 'quran', icon: 'reader-outline', color: C.purple, label: 'Quran' },
+    { key: 'lesson', icon: 'school-outline', color: C.green, label: 'Learning' },
+    { key: 'hadith', icon: 'book-outline', color: C.gold, label: 'Hadith' },
+    { key: 'dua', icon: 'hand-right-outline', color: C.blue, label: 'Dua' },
 ];
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TEMP — dev-only test notifications. Fires each notification type on demand
-// with the same title/body/data shape as the real scheduled ones, so tapping
-// a test notification also exercises deep-link routing. Remove this block
-// (and the "TEST NOTIFICATIONS" section below) before shipping.
-// ─────────────────────────────────────────────────────────────────────────────
-const TEST_NOTIFICATIONS = [
-    {
-        key: 'prayer', label: 'Prayer (Fajr)', icon: 'moon-outline', color: C.gold,
-        title: '🌅 Fajr · الفَجْر',
-        body: "It is time for Fajr. 2 rak'at.",
-        channel: NOTIFICATION_CHANNELS.PRAYER,
-        data: { type: NOTIFICATION_TYPES.PRAYER, prayer: 'fajr', route: '/prayer-tracker' },
-    },
-    {
-        key: 'quran', label: 'Quran', icon: 'reader-outline', color: C.purple,
-        title: '📖 Daily Quran',
-        body: 'Take a few moments today to listen to the Quran.',
-        channel: NOTIFICATION_CHANNELS.QURAN,
-        data: { type: NOTIFICATION_TYPES.QURAN, route: '/quran' },
-    },
-    {
-        key: 'hadith', label: 'Hadith', icon: 'book-outline', color: C.gold,
-        title: '📜 Daily Hadith',
-        body: 'Take a moment to read today’s Hadith.',
-        channel: NOTIFICATION_CHANNELS.HADITH,
-        data: { type: NOTIFICATION_TYPES.HADITH, route: '/(tabs)/hadith' },
-    },
-    {
-        key: 'lesson', label: 'Lesson', icon: 'school-outline', color: C.green,
-        title: '🎓 Daily Lesson',
-        body: 'Continue learning about your deen today.',
-        channel: NOTIFICATION_CHANNELS.LESSON,
-        data: { type: NOTIFICATION_TYPES.LESSON, route: '/(tabs)/learn' },
-    },
-    {
-        key: 'dua', label: 'Dua', icon: 'hand-right-outline', color: C.blue,
-        title: '🤲 Daily Dua',
-        body: 'Take a moment to remember Allah with today’s dua.',
-        channel: NOTIFICATION_CHANNELS.DUA,
-        data: { type: NOTIFICATION_TYPES.DUA, route: '/explore' },
-    },
+const DAILY_DEEN_ITEMS = [
+    { key: 'quran', prefix: 'quran', icon: 'reader-outline', color: C.purple, label: 'Quran', sub: 'Resume your listening or receive a daily Surah suggestion.' },
+    { key: 'lesson', prefix: 'lesson', icon: 'school-outline', color: C.green, label: 'Learning', sub: 'Continue your next unfinished lesson.' },
+    { key: 'hadith', prefix: 'hadith', icon: 'book-outline', color: C.gold, label: 'Hadith', sub: 'A daily reflection from your Hadith library.' },
+    { key: 'dua', prefix: 'dua', icon: 'hand-right-outline', color: C.blue, label: 'Dua', sub: 'A daily moment of remembrance.' },
 ];
+
+function formatTime(hour, minute) {
+    const h = Number(hour) % 24;
+    const suffix = h >= 12 ? 'PM' : 'AM';
+    const display = h % 12 || 12;
+    return `${display}:${String(minute).padStart(2, '0')} ${suffix}`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Scrollable AM/PM + hour + minute time picker (wheel style)
+// ─────────────────────────────────────────────────────────────────────────────
+const WHEEL_ITEM_H = 40;
+const WHEEL_VISIBLE = 5;
+const WHEEL_PAD = Math.floor(WHEEL_VISIBLE / 2);
+
+const WHEEL_HOURS = Array.from({ length: 12 }, (_, i) => i + 1);      // 1..12
+const WHEEL_MINUTES = Array.from({ length: 60 }, (_, i) => i);        // 0..59
+const WHEEL_PERIODS = ['AM', 'PM'];
+
+function to12Hour(hour24) {
+    const h = Number(hour24) % 12;
+    return h === 0 ? 12 : h;
+}
+function isPMHour(hour24) {
+    return Number(hour24) % 24 >= 12;
+}
+function to24Hour(hour12, period) {
+    let h = Number(hour12) % 12;
+    if (period === 'PM') h += 12;
+    return h;
+}
+
+// One scrollable column (hour, minute, or AM/PM). Snaps to the nearest row
+// and reports the settled index — this is what makes it "scroll to set"
+// instead of tapping a fixed preset.
+function WheelColumn({ data, index, onSettle, renderLabel, width }) {
+    const scrollRef = useRef(null);
+    const settled = useRef(index);
+    const didMount = useRef(false);
+    // Drives per-row scale/opacity as the list scrolls, so rows visibly grow
+    // and brighten as they approach the center line in real time — instead
+    // of the old behaviour where nothing looked "live" until the scroll
+    // fully stopped and the settled index came back from the parent.
+    const scrollY = useRef(new Animated.Value(index * WHEEL_ITEM_H)).current;
+
+    useEffect(() => {
+        if (!didMount.current) { didMount.current = true; return; }
+        // Only force-scroll when the value changed from OUTSIDE this column
+        // (e.g. modal reopened with a different saved time). Once the user
+        // is scrolling this column itself, we never fight their gesture.
+        if (index !== settled.current) {
+            settled.current = index;
+            scrollRef.current?.scrollTo({ y: index * WHEEL_ITEM_H, animated: false });
+        }
+    }, [index]);
+
+    const commit = (rawIndex) => {
+        const clamped = Math.max(0, Math.min(data.length - 1, rawIndex));
+        settled.current = clamped;
+        scrollRef.current?.scrollTo({ y: clamped * WHEEL_ITEM_H, animated: true });
+        if (clamped !== index) onSettle(clamped);
+    };
+
+    const handleEnd = (e) => {
+        const y = e.nativeEvent.contentOffset.y;
+        commit(Math.round(y / WHEEL_ITEM_H));
+    };
+
+    const handleScroll = Animated.event(
+        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+        { useNativeDriver: true }
+    );
+
+    return (
+        <View style={[wheel.column, { width }]}>
+            <Animated.ScrollView
+                ref={scrollRef}
+                showsVerticalScrollIndicator={false}
+                snapToInterval={WHEEL_ITEM_H}
+                decelerationRate="fast"
+                bounces={false}
+                overScrollMode="never"
+                nestedScrollEnabled
+                scrollEventThrottle={16}
+                onScroll={handleScroll}
+                contentContainerStyle={{ paddingVertical: WHEEL_ITEM_H * WHEEL_PAD }}
+                contentOffset={{ x: 0, y: index * WHEEL_ITEM_H }}
+                onMomentumScrollEnd={handleEnd}
+                onScrollEndDrag={(e) => {
+                    // Some Android devices don't always fire momentum end on a
+                    // slow, deliberate drag — this keeps the snap feeling
+                    // instant rather than occasionally "stuck" mid-scroll.
+                    if (!e.nativeEvent.velocity || Math.abs(e.nativeEvent.velocity.y) < 0.02) {
+                        handleEnd(e);
+                    }
+                }}
+            >
+                {data.map((item, i) => {
+                    const active = i === index;
+                    const center = i * WHEEL_ITEM_H;
+                    const inputRange = [
+                        center - WHEEL_ITEM_H * 2,
+                        center - WHEEL_ITEM_H,
+                        center,
+                        center + WHEEL_ITEM_H,
+                        center + WHEEL_ITEM_H * 2,
+                    ];
+                    const scale = scrollY.interpolate({
+                        inputRange,
+                        outputRange: [0.78, 0.92, 1.22, 0.92, 0.78],
+                        extrapolate: 'clamp',
+                    });
+                    const opacity = scrollY.interpolate({
+                        inputRange,
+                        outputRange: [0.32, 0.55, 1, 0.55, 0.32],
+                        extrapolate: 'clamp',
+                    });
+                    return (
+                        <TouchableOpacity
+                            key={i}
+                            activeOpacity={0.6}
+                            style={wheel.item}
+                            onPress={() => commit(i)}
+                        >
+                            <Animated.Text
+                                style={[
+                                    wheel.itemText,
+                                    active && wheel.itemTextActive,
+                                    { transform: [{ scale }], opacity },
+                                ]}
+                            >
+                                {renderLabel ? renderLabel(item) : item}
+                            </Animated.Text>
+                        </TouchableOpacity>
+                    );
+                })}
+            </Animated.ScrollView>
+        </View>
+    );
+}
+
+// Full picker: hour wheel · minute wheel · AM/PM wheel, all scrollable,
+// with a live "8:05 PM"-style summary above and a fixed center highlight bar.
+function TimeWheelPicker({ hour24, minute, color, onChange }) {
+    const hourIndex = to12Hour(hour24) - 1;
+    const minuteIndex = Math.min(59, Math.max(0, Number(minute) || 0));
+    const periodIndex = isPMHour(hour24) ? 1 : 0;
+
+    const commitHour = (i) => onChange(to24Hour(WHEEL_HOURS[i], WHEEL_PERIODS[periodIndex]), minute);
+    const commitMinute = (i) => onChange(hour24, WHEEL_MINUTES[i]);
+    const commitPeriod = (i) => onChange(to24Hour(to12Hour(hour24), WHEEL_PERIODS[i]), minute);
+
+    // Crossfade the "8:05 PM"-style summary on change instead of a hard cut —
+    // purely cosmetic, the underlying value/logic is untouched.
+    const summaryOpacity = useRef(new Animated.Value(1)).current;
+    const timeLabel = formatTime(hour24, minute);
+    useEffect(() => {
+        summaryOpacity.setValue(0.35);
+        Animated.timing(summaryOpacity, {
+            toValue: 1,
+            duration: 160,
+            useNativeDriver: true,
+        }).start();
+    }, [timeLabel]);
+
+    return (
+        <View>
+            <Animated.Text style={[wheel.summary, { color, opacity: summaryOpacity }]}>
+                {timeLabel}
+            </Animated.Text>
+            <View style={wheel.wrap}>
+                <View pointerEvents="none" style={wheel.highlight} />
+                <WheelColumn data={WHEEL_HOURS} index={hourIndex} onSettle={commitHour} width={52} />
+                <Text style={wheel.colon}>:</Text>
+                <WheelColumn
+                    data={WHEEL_MINUTES}
+                    index={minuteIndex}
+                    onSettle={commitMinute}
+                    width={52}
+                    renderLabel={(m) => String(m).padStart(2, '0')}
+                />
+                <View style={wheel.periodGap} />
+                <WheelColumn data={WHEEL_PERIODS} index={periodIndex} onSettle={commitPeriod} width={58} />
+            </View>
+        </View>
+    );
+}
+
+// Save button with an instant press-in "give" — the tap registers visually
+// right away, rather than the UI feeling inert until the async save resolves.
+function SavePreferencesButton({ saving, onPress }) {
+    const scale = useRef(new Animated.Value(1)).current;
+    const pressIn = () => Animated.spring(scale, { toValue: 0.96, useNativeDriver: true, speed: 40, bounciness: 6 }).start();
+    const pressOut = () => Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 40, bounciness: 6 }).start();
+
+    return (
+        <Animated.View style={{ transform: [{ scale }] }}>
+            <TouchableOpacity
+                style={[notifModal.saveButton, saving && notifModal.saveButtonDisabled]}
+                onPress={onPress}
+                onPressIn={pressIn}
+                onPressOut={pressOut}
+                disabled={saving}
+                activeOpacity={0.82}
+            >
+                {saving ? (
+                    <>
+                        <ActivityIndicator size="small" color={C.bg} />
+                        <Text style={notifModal.saveText}>Saving…</Text>
+                    </>
+                ) : (
+                    <>
+                        <Ionicons name="checkmark" size={18} color={C.bg} />
+                        <Text style={notifModal.saveText}>Save preferences</Text>
+                    </>
+                )}
+            </TouchableOpacity>
+        </Animated.View>
+    );
+}
+
+function NotificationSettingsModal({
+                                       visible,
+                                       mode,
+                                       prefs,
+                                       settings,
+                                       saving,
+                                       onClose,
+                                       onSave,
+                                   }) {
+    const [draft, setDraft] = useState({ ...DEFAULT_NOTIFICATION_PREFS, ...prefs });
+    const backdropOpacity = useRef(new Animated.Value(0)).current;
+
+    useFocusEffect(useCallback(() => {
+        if (visible) {
+            setDraft({ ...DEFAULT_NOTIFICATION_PREFS, ...prefs });
+        }
+    }, [visible, prefs]));
+
+    useEffect(() => {
+        Animated.timing(backdropOpacity, {
+            toValue: visible ? 1 : 0,
+            duration: visible ? 220 : 160,
+            useNativeDriver: true,
+        }).start();
+    }, [visible]);
+
+    const isPrayer = mode === 'prayer';
+
+    // Toggling a switch reveals/hides a card's inner content (offset chips or
+    // the time picker) — animate that reveal instead of letting it pop in.
+    const set = (key, value) => {
+        LayoutAnimation.configureNext(EASE);
+        setDraft(prev => ({ ...prev, [key]: value }));
+    };
+    const setTime = (prefix, hour, minute) => setDraft(prev => ({
+        ...prev,
+        [`${prefix}_hour`]: hour,
+        [`${prefix}_minute`]: minute,
+    }));
+
+    return (
+        <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+            <View style={notifModal.overlay}>
+                <Animated.View
+                    pointerEvents="none"
+                    style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.68)', opacity: backdropOpacity }]}
+                />
+                <TouchableOpacity style={StyleSheet.absoluteFill} activeOpacity={1} onPress={onClose} />
+                <View style={notifModal.sheet}>
+                    <View style={notifModal.handle} />
+                    <View style={notifModal.header}>
+                        <View>
+                            <Text style={notifModal.title}>{isPrayer ? 'Prayer Reminders' : 'Daily Deen'}</Text>
+                            <Text style={notifModal.subtitle}>
+                                {isPrayer
+                                    ? "Daily prayers and Jumu'ah."
+                                    : 'Quran, Hadith, Learning and Dua.'}
+                            </Text>
+                        </View>
+                        <TouchableOpacity style={notifModal.close} onPress={onClose}>
+                            <Ionicons name="close" size={20} color={C.textDim} />
+                        </TouchableOpacity>
+                    </View>
+
+                    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 18 }}>
+                        {isPrayer ? (
+                            <>
+                                <View style={notifModal.card}>
+                                    <View style={notifModal.row}>
+                                        <View style={[notifModal.icon, { backgroundColor: C.goldDim }]}><Ionicons name="notifications-outline" size={17} color={C.gold} /></View>
+                                        <View style={notifModal.body}><Text style={notifModal.rowTitle}>Daily prayers</Text><Text style={notifModal.rowSub}>All five prayer times</Text></View>
+                                        <Switch value={draft.prayer_enabled} onValueChange={v => set('prayer_enabled', v)} trackColor={{ false: C.border, true: C.goldMid }} thumbColor={draft.prayer_enabled ? C.gold : C.mutedMid} />
+                                    </View>
+                                    {draft.prayer_enabled && (
+                                        <View style={notifModal.inner}>
+                                            <Text style={notifModal.smallLabel}>REMIND ME</Text>
+                                            <View style={notifModal.chips}>{NOTIF_OFFSETS.map(o => <Chip key={o.value} label={o.label} active={draft.prayer_offset === o.value} onPress={() => set('prayer_offset', o.value)} />)}</View>
+                                        </View>
+                                    )}
+                                </View>
+
+                                <View style={notifModal.card}>
+                                    <View style={notifModal.row}>
+                                        <View style={[notifModal.icon, { backgroundColor: C.goldDim }]}><Ionicons name="moon-outline" size={17} color={C.gold} /></View>
+                                        <View style={notifModal.body}><Text style={notifModal.rowTitle}>Jumu'ah</Text><Text style={notifModal.rowSub}>Friday · before Dhuhr</Text></View>
+                                        <Switch value={draft.jumuah_enabled} onValueChange={v => set('jumuah_enabled', v)} trackColor={{ false: C.border, true: C.goldMid }} thumbColor={draft.jumuah_enabled ? C.gold : C.mutedMid} />
+                                    </View>
+                                    {draft.jumuah_enabled && <View style={notifModal.inner}>
+                                        <Text style={notifModal.smallLabel}>REMIND ME</Text>
+                                        <View style={notifModal.chips}>{[15,30,60].map(v => <Chip key={v} label={`${v} min before`} active={draft.jumuah_offset === v} onPress={() => set('jumuah_offset', v)} />)}</View>
+                                    </View>}
+                                </View>
+                            </>
+                        ) : (
+                            <>
+                                {DAILY_DEEN_ITEMS.map((item) => {
+                                    const enabled = draft[`${item.prefix}_enabled`];
+                                    return (
+                                        <View style={notifModal.card} key={item.key}>
+                                            <View style={notifModal.row}>
+                                                <View style={[notifModal.icon, { backgroundColor: `${item.color}18` }]}><Ionicons name={item.icon} size={17} color={enabled ? item.color : C.muted} /></View>
+                                                <View style={notifModal.body}><Text style={notifModal.rowTitle}>{item.label}</Text><Text style={notifModal.rowSub}>{item.sub}</Text></View>
+                                                <Switch value={enabled} onValueChange={v => set(`${item.prefix}_enabled`, v)} trackColor={{ false: C.border, true: `${item.color}55` }} thumbColor={enabled ? item.color : C.mutedMid} />
+                                            </View>
+                                            {enabled && (
+                                                <View style={notifModal.inner}>
+                                                    <Text style={notifModal.smallLabel}>DELIVERY TIME</Text>
+                                                    <TimeWheelPicker
+                                                        hour24={draft[`${item.prefix}_hour`]}
+                                                        minute={draft[`${item.prefix}_minute`]}
+                                                        color={item.color}
+                                                        onChange={(h, m) => setTime(item.prefix, h, m)}
+                                                    />
+                                                </View>
+                                            )}
+                                        </View>
+                                    );
+                                })}
+                            </>
+                        )}
+                    </ScrollView>
+
+                    <SavePreferencesButton saving={saving} onPress={() => onSave(draft)} />
+                </View>
+            </View>
+        </Modal>
+    );
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Reusable primitives
@@ -400,6 +705,9 @@ export default function SettingsScreen() {
     const [saving,           setSaving]           = useState(false);
     const [savedPulse,       setSavedPulse]       = useState(false);
     const [notifPermGranted, setNotifPermGranted] = useState(true);
+    const [notificationPrefs, setNotificationPrefs] = useState({ ...DEFAULT_NOTIFICATION_PREFS });
+    // null → closed, 'prayer' → Prayer + Jumu'ah, 'daily' → Quran + Hadith + Learning + Dua
+    const [notificationModal, setNotificationModal] = useState(null);
 
     const [defaultReciter, setDefaultReciter] = useState(null);
     const [reciters, setReciters] = useState([]);
@@ -420,7 +728,20 @@ export default function SettingsScreen() {
         loadAll();
         loadDefaultReciter();
         checkNotifPerm();
+        loadNotificationPrefs();
     }, []));
+
+    const loadNotificationPrefs = async () => {
+        try {
+            const saved = await getNotificationPreferences();
+            setNotificationPrefs({
+                ...DEFAULT_NOTIFICATION_PREFS,
+                ...(saved || {}),
+            });
+        } catch (e) {
+            console.warn('[Settings] Notification preferences load:', e?.message);
+        }
+    };
 
     const checkNotifPerm = async () => {
         const granted = await getNotificationPermission();
@@ -609,25 +930,10 @@ export default function SettingsScreen() {
         finally { setDataLoading(false); }
     };
 
-    // Saves a single changed preference immediately — no separate "Save" step.
-    const patch = async (key, val) => {
+    const savePrayerPreference = async (enabled, offset = settings.notification_offset) => {
         const previous = settings;
-        const updated  = { ...settings, [key]: val };
+        const updated = { ...settings, reminder_enabled: enabled, notification_offset: offset };
         setSettings(updated);
-
-        const daily = DAILY_REMINDERS.find(d => d.key === key);
-        const needsPermission = val && (key === 'reminder_enabled' || daily);
-
-        if (needsPermission && !notifPermGranted) {
-            const granted = await requestNotificationPermission();
-            if (!granted) {
-                Alert.alert('Permission Required', 'Enable notifications in your device Settings.');
-                setSettings(previous);
-                return;
-            }
-            setNotifPermGranted(true);
-        }
-
         setSaving(true);
         try {
             const device_id = await getDeviceId();
@@ -636,29 +942,137 @@ export default function SettingsScreen() {
                 .upsert({ device_id, ...updated }, { onConflict: 'device_id' })
                 .select().single();
             if (error) throw error;
-
-            if (['reminder_enabled', 'notification_offset', 'calculation_method', 'madhab'].includes(key)) {
-                // Reschedules from current location + prayer times when
-                // reminder_enabled is true; cancels outright when false.
-                // This is what actually turns reminders on — the old code
-                // only ever cancelled them here and relied on a cross-screen
-                // refresh signal that never reached prayer-tracker.jsx.
-                await refreshPrayerNotifications(updated);
-            }
-
-            if (daily) {
-                // schedule(hour, minute, enabled) — cancels + reschedules on
-                // ON, just cancels on OFF. Doesn't block save on failure.
-                await daily.schedule(daily.hour, daily.minute, val);
-            }
-
+            await refreshPrayerNotifications(updated);
             setSavedPulse(true);
             clearTimeout(pulseTimer.current);
             pulseTimer.current = setTimeout(() => setSavedPulse(false), 1800);
-            router.setParams({ settingsRefresh: String(Date.now()) });
         } catch (err) {
-            setSettings(previous); // revert on failure
+            setSettings(previous);
+            Alert.alert('Error', err.message || 'Failed to save prayer preferences');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const patch = async (key, val) => {
+        if (key === 'reminder_enabled' || key === 'notification_offset') {
+            if ((key === 'reminder_enabled' && val) && !notifPermGranted) {
+                const granted = await requestNotificationPermission();
+                if (!granted) {
+                    Alert.alert('Permission Required', 'Enable notifications in your device Settings.');
+                    return;
+                }
+                setNotifPermGranted(true);
+            }
+            await savePrayerPreference(
+                key === 'reminder_enabled' ? val : settings.reminder_enabled,
+                key === 'notification_offset' ? val : settings.notification_offset
+            );
+            return;
+        }
+
+        const previous = settings;
+        const updated = { ...settings, [key]: val };
+        setSettings(updated);
+        if (val && !notifPermGranted) {
+            const granted = await requestNotificationPermission();
+            if (!granted) { setSettings(previous); return; }
+            setNotifPermGranted(true);
+        }
+        setSaving(true);
+        try {
+            const device_id = await getDeviceId();
+            const { error } = await supabase.from('user_settings').upsert({ device_id, ...updated }, { onConflict: 'device_id' }).select().single();
+            if (error) throw error;
+            setSavedPulse(true);
+            clearTimeout(pulseTimer.current);
+            pulseTimer.current = setTimeout(() => setSavedPulse(false), 1800);
+        } catch (err) {
+            setSettings(previous);
             Alert.alert('Error', err.message || 'Failed to save');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const openNotifications = async (mode = 'prayer') => {
+        try {
+            const saved = await getNotificationPreferences();
+
+            const merged = {
+                ...DEFAULT_NOTIFICATION_PREFS,
+                prayer_enabled: settings.reminder_enabled,
+                prayer_offset: settings.notification_offset,
+                quran_enabled: settings.quran_reminder_enabled,
+                hadith_enabled: settings.hadith_reminder_enabled,
+                lesson_enabled: settings.lesson_reminder_enabled,
+                dua_enabled: settings.dua_reminder_enabled,
+                ...(saved || {}),
+            };
+
+            setNotificationPrefs(merged);
+            setNotificationModal(mode);
+        } catch (e) {
+            console.warn('[Settings] Failed opening notifications:', e?.message);
+            setNotificationPrefs({ ...DEFAULT_NOTIFICATION_PREFS });
+            setNotificationModal(mode);
+        }
+    };
+
+    const saveNotificationPrefs = async (draft) => {
+        if (saving) return;
+
+        const anyEnabled =
+            draft.prayer_enabled ||
+            draft.jumuah_enabled ||
+            draft.quran_enabled ||
+            draft.hadith_enabled ||
+            draft.lesson_enabled ||
+            draft.dua_enabled;
+
+        setSaving(true);
+
+        try {
+            if (!notifPermGranted && anyEnabled) {
+                const granted = await requestNotificationPermission();
+                if (!granted) {
+                    Alert.alert('Permission Required', 'Enable notifications in your device Settings.');
+                    return;
+                }
+                setNotifPermGranted(true);
+            }
+
+            const previous = settings;
+            const updated = {
+                ...settings,
+                reminder_enabled: draft.prayer_enabled,
+                notification_offset: draft.prayer_offset,
+                quran_reminder_enabled: draft.quran_enabled,
+                hadith_reminder_enabled: draft.hadith_enabled,
+                lesson_reminder_enabled: draft.lesson_enabled,
+                dua_reminder_enabled: draft.dua_enabled,
+            };
+
+            const device_id = await getDeviceId();
+            const { error } = await supabase.from('user_settings').upsert({ device_id, ...updated }, { onConflict: 'device_id' }).select().single();
+            if (error) throw error;
+
+            await saveNotificationPreferences(draft);
+
+            setSettings(updated);
+            setNotificationPrefs(draft);
+
+            // Prayer scheduling remains centralized/serialized in prayerTimes + notifications.
+            await refreshPrayerNotifications(updated);
+            await refreshContentNotifications(draft, updated);
+
+            setNotificationModal(null);
+            setSavedPulse(true);
+            clearTimeout(pulseTimer.current);
+            pulseTimer.current = setTimeout(() => setSavedPulse(false), 1800);
+        } catch (err) {
+            console.error('[Settings] Notification save failed:', err);
+            Alert.alert('Error', err?.message ?? 'Failed to save notification preferences.');
         } finally {
             setSaving(false);
         }
@@ -693,31 +1107,6 @@ export default function SettingsScreen() {
                 },
             ]
         );
-    };
-
-    // TEMP — dev-only. Fires one notification of the given test type ~1s
-    // from now (immediate triggers are unreliable on some Android builds).
-    const fireTestNotification = async (item) => {
-        try {
-            const granted = await requestNotificationPermission();
-            if (!granted) {
-                Alert.alert('Permission Required', 'Enable notifications in your device Settings.');
-                return;
-            }
-            await Notifications.scheduleNotificationAsync({
-                content: {
-                    title: item.title,
-                    body: item.body,
-                    sound: 'default',
-                    ...(Platform.OS === 'android' ? { channelId: item.channel } : {}),
-                    data: item.data,
-                },
-                trigger: { type: 'timeInterval', seconds: 1, repeats: false },
-            });
-        } catch (e) {
-            console.error('[Test Notification]', e);
-            Alert.alert('Error', e.message || 'Failed to send test notification');
-        }
     };
 
     const handleShare = async () => {
@@ -802,121 +1191,33 @@ export default function SettingsScreen() {
                     />
                 </Card>
 
-                {/* ══ PRAYER REMINDERS ══ */}
-                <SectionLabel label="PRAYER REMINDERS" />
-
+                {/* ══ NOTIFICATIONS ══ */}
+                <SectionLabel label="NOTIFICATIONS" />
                 {!notifPermGranted && (
                     <TouchableOpacity style={st.warnBanner} onPress={() => Linking.openSettings()} activeOpacity={0.8}>
                         <Ionicons name="notifications-off-outline" size={14} color={C.orange} />
-                        <Text style={st.warnText}>Notifications disabled — tap to open Settings</Text>
+                        <Text style={st.warnText}>Notifications are disabled — tap to enable them</Text>
                         <Ionicons name="chevron-forward" size={12} color={C.orange} style={{ opacity: 0.55 }} />
                     </TouchableOpacity>
                 )}
-
                 <Card style={st.mb28}>
                     <Row
-                        icon={settings.reminder_enabled ? 'notifications' : 'notifications-off-outline'}
-                        iconColor={settings.reminder_enabled ? C.gold : C.muted}
-                        iconBg={settings.reminder_enabled ? C.goldDim : 'rgba(255,255,255,0.04)'}
+                        icon="notifications-outline"
+                        iconColor={C.gold}
+                        iconBg={C.goldDim}
                         label="Prayer Reminders"
-                        sub={settings.reminder_enabled ? 'Active for all 5 prayers' : 'All notifications off'}
-                        showChevron={false}
-                        rightEl={
-                            <Switch
-                                value={settings.reminder_enabled}
-                                onValueChange={v => patch('reminder_enabled', v)}
-                                trackColor={{ false: 'rgba(255,255,255,0.08)', true: C.goldMid }}
-                                thumbColor={settings.reminder_enabled ? C.gold : C.mutedMid}
-                                ios_backgroundColor="rgba(255,255,255,0.08)"
-                            />
-                        }
+                        sub="Five daily prayers and Jumu'ah"
+                        onPress={() => openNotifications('prayer')}
                     />
+                    <Sep />
                     <Row
-                        icon="flash-outline"
-                        label="Send test notification (5s)"
-                        onPress={async () => {
-                            try {
-                                await Notifications.scheduleNotificationAsync({
-                                    content: {
-                                        title: 'Test',
-                                        body: 'If you see this, local notifications work.',
-                                        sound: 'default',
-                                    },
-                                    trigger: {
-                                        type: 'timeInterval',
-                                        seconds: 5,
-                                        repeats: false,
-                                    },
-                                });
-                            } catch (e) {
-                                console.error('[Test Notification]', e);
-                            }
-                        }}
+                        icon="sparkles-outline"
+                        iconColor={C.purple}
+                        iconBg="rgba(179,157,219,0.12)"
+                        label="Daily Deen"
+                        sub="Quran, Hadith, Learning and Dua"
+                        onPress={() => openNotifications('daily')}
                     />
-                    {settings.reminder_enabled && (
-                        <>
-                            <Sep />
-                            <View style={st.offsetWrap}>
-                                <Text style={st.offsetTitle}>NOTIFY ME</Text>
-                                <View style={st.chipGrid}>
-                                    {NOTIF_OFFSETS.map(o => (
-                                        <Chip key={o.value} label={o.label}
-                                              active={settings.notification_offset === o.value}
-                                              onPress={() => patch('notification_offset', o.value)} />
-                                    ))}
-                                </View>
-                            </View>
-                        </>
-                    )}
-                </Card>
-
-                {/* ══ TEMP: TEST NOTIFICATIONS — remove before release ══ */}
-                <SectionLabel label="TEST NOTIFICATIONS (DEV)" color={C.orange} />
-                <Card style={st.mb28}>
-                    {TEST_NOTIFICATIONS.map((item, i) => (
-                        <View key={item.key}>
-                            {i > 0 && <Sep />}
-                            <Row
-                                icon={item.icon}
-                                iconColor={item.color}
-                                iconBg={`${item.color}22`}
-                                label={`Test: ${item.label}`}
-                                sub="Fires in ~1s, same content as the real one"
-                                showChevron={false}
-                                onPress={() => fireTestNotification(item)}
-                                rightEl={
-                                    <Ionicons name="flash-outline" size={16} color={item.color} style={{ opacity: 0.75 }} />
-                                }
-                            />
-                        </View>
-                    ))}
-                </Card>
-
-                {/* ══ DAILY ISLAMIC REMINDERS ══ */}
-                <SectionLabel label="DAILY ISLAMIC REMINDERS" />
-                <Card style={st.mb28}>
-                    {DAILY_REMINDERS.map((d, i) => (
-                        <View key={d.key}>
-                            {i > 0 && <Sep />}
-                            <Row
-                                icon={d.icon}
-                                iconColor={settings[d.key] ? d.color : C.muted}
-                                iconBg={settings[d.key] ? `${d.color}26` : 'rgba(255,255,255,0.04)'}
-                                label={d.label}
-                                sub={settings[d.key] ? `Every day · ${d.timeLabel}` : 'Off'}
-                                showChevron={false}
-                                rightEl={
-                                    <Switch
-                                        value={settings[d.key]}
-                                        onValueChange={v => patch(d.key, v)}
-                                        trackColor={{ false: 'rgba(255,255,255,0.08)', true: `${d.color}55` }}
-                                        thumbColor={settings[d.key] ? d.color : C.mutedMid}
-                                        ios_backgroundColor="rgba(255,255,255,0.08)"
-                                    />
-                                }
-                            />
-                        </View>
-                    ))}
                 </Card>
 
                 {/* ══ QURAN AUDIO ══ */}
@@ -1012,7 +1313,7 @@ export default function SettingsScreen() {
                     <Sep />
                     <Row icon="globe-outline" label="Visit Website"
                          sub="Learn more about this project"
-                         onPress={() => Linking.openURL('https://drive.google.com/drive/folders/1BqxHInvsO23pBbqMaaqINaKGvjEnT-iq?usp=sharing')} />
+                         onPress={() => Linking.openURL('https://claude.ai/artifact/1TkGcPTFwNa7t1LYxg3HzY')} />
                 </Card>
                 {/* ══ FOOTER ══ */}
                 <View style={st.footer}>
@@ -1021,6 +1322,30 @@ export default function SettingsScreen() {
                     <Text style={st.footerVer}>v{APP_VERSION}</Text>
                 </View>
             </ScrollView>
+
+            <NotificationSettingsModal
+                visible={notificationModal === 'prayer'}
+                mode="prayer"
+                prefs={notificationPrefs}
+                settings={settings}
+                saving={saving}
+                onSave={saveNotificationPrefs}
+                onClose={() => {
+                    if (!saving) setNotificationModal(null);
+                }}
+            />
+
+            <NotificationSettingsModal
+                visible={notificationModal === 'daily'}
+                mode="daily"
+                prefs={notificationPrefs}
+                settings={settings}
+                saving={saving}
+                onSave={saveNotificationPrefs}
+                onClose={() => {
+                    if (!saving) setNotificationModal(null);
+                }}
+            />
 
             <ReciterModal
                 visible={showReciterModal}
@@ -1130,6 +1455,11 @@ const st = StyleSheet.create({
         alignItems: 'center',
     },
 
+    notifSummary: { flexDirection: 'row', alignItems: 'center', gap: 11, padding: 13 },
+    notifSummaryIcon: { width: 32, height: 32, borderRadius: 9, backgroundColor: C.goldDim, alignItems: 'center', justifyContent: 'center' },
+    notifSummaryTitle: { color: C.text, fontSize: 12, fontWeight: '700', marginBottom: 2 },
+    notifSummaryText: { color: C.mutedMid, fontSize: 10.5 },
+
     // Warn
     warnBanner: {
         flexDirection: 'row', alignItems: 'center', gap: 9,
@@ -1169,6 +1499,73 @@ const st = StyleSheet.create({
         justifyContent: 'center', alignItems: 'center',
         backgroundColor: 'rgba(0,0,0,0.6)',
     },
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Notification settings modal styles
+// ─────────────────────────────────────────────────────────────────────────────
+const notifModal = StyleSheet.create({
+    overlay: { flex: 1, justifyContent: 'flex-end' },
+    sheet: { maxHeight: '88%', backgroundColor: C.surface, borderTopLeftRadius: 28, borderTopRightRadius: 28, paddingHorizontal: 18, paddingTop: 10, paddingBottom: 12, borderTopWidth: 1, borderColor: C.borderGold },
+    handle: { width: 40, height: 4, borderRadius: 2, backgroundColor: C.muted, alignSelf: 'center', marginBottom: 16 },
+    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 },
+    title: { color: C.text, fontSize: 20, fontWeight: '800' },
+    subtitle: { color: C.mutedMid, fontSize: 11, marginTop: 4, maxWidth: 280 },
+    close: { width: 36, height: 36, borderRadius: 12, backgroundColor: C.surfaceAlt, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: C.border },
+    permissionNote: { flexDirection: 'row', alignItems: 'center', gap: 9, backgroundColor: C.greenDim, borderRadius: 12, padding: 11, marginBottom: 12 },
+    permissionText: { flex: 1, color: C.mutedMid, fontSize: 11, lineHeight: 16 },
+
+    // Tab bar — separates Prayer from Dua/Hadith/Quran/Lessons as two distinct control centres
+    tabBar: { flexDirection: 'row', gap: 8, backgroundColor: C.surfaceAlt, borderRadius: 14, borderWidth: 1, borderColor: C.border, padding: 4, marginBottom: 14 },
+    tabBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 9, borderRadius: 11 },
+    tabBtnActive: { backgroundColor: C.gold },
+    tabText: { color: C.mutedMid, fontSize: 11, fontWeight: '700', textAlign: 'center' },
+    tabTextActive: { color: C.bg },
+
+    groupLabel: { fontSize: 9, color: C.gold, letterSpacing: 2.5, fontWeight: '800', opacity: 0.72, marginBottom: 9, marginTop: 8 },
+    card: { backgroundColor: C.surfaceAlt, borderRadius: 16, borderWidth: 1, borderColor: C.border, marginBottom: 10, overflow: 'hidden' },
+    row: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 13 },
+    icon: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+    body: { flex: 1 },
+    rowTitle: { color: C.text, fontSize: 13, fontWeight: '650', marginBottom: 2 },
+    rowSub: { color: C.mutedMid, fontSize: 10.5, lineHeight: 15 },
+    inner: { borderTopWidth: 1, borderTopColor: C.border, padding: 13 },
+    smallLabel: { fontSize: 8.5, color: C.muted, letterSpacing: 2, fontWeight: '800', marginBottom: 9 },
+    chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 },
+    saveButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: C.gold, borderRadius: 14, paddingVertical: 13, marginTop: 8 },
+    saveButtonDisabled: { opacity: 0.62 },
+    saveText: { color: C.bg, fontSize: 13, fontWeight: '800' },
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Wheel time picker styles
+// ─────────────────────────────────────────────────────────────────────────────
+const wheel = StyleSheet.create({
+    summary: { fontSize: 13, fontWeight: '800', textAlign: 'center', marginBottom: 8, letterSpacing: 0.3 },
+    wrap: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: WHEEL_ITEM_H * WHEEL_VISIBLE,
+    },
+    highlight: {
+        position: 'absolute',
+        left: 8,
+        right: 8,
+        top: WHEEL_ITEM_H * WHEEL_PAD,
+        height: WHEEL_ITEM_H,
+        borderRadius: 10,
+        backgroundColor: 'rgba(255,255,255,0.045)',
+        borderTopWidth: 1,
+        borderBottomWidth: 1,
+        borderColor: C.borderGold,
+    },
+    column: { height: WHEEL_ITEM_H * WHEEL_VISIBLE },
+    item: { height: WHEEL_ITEM_H, alignItems: 'center', justifyContent: 'center' },
+    itemText: { fontSize: 15, fontWeight: '500', color: C.mutedMid },
+    itemTextActive: { fontSize: 19, fontWeight: '800', color: C.text },
+    colon: { fontSize: 18, fontWeight: '800', color: C.mutedMid, marginHorizontal: 2 },
+    periodGap: { width: 10 },
 });
 
 // ─────────────────────────────────────────────────────────────────────────────

@@ -265,6 +265,39 @@ export const getReciters = async () => {
 // Fetch complete chapter source
 // ─────────────────────────────────────────────────────────────────────────────
 
+const fetchChapterWithRetry = async (
+    url,
+    attempt = 1
+) => {
+    try {
+        const res = await fetchWithTimeout(
+            url,
+            {},
+            30000
+        );
+
+        return handleResponse(
+            res,
+            'Failed to fetch Quran Foundation chapter audio'
+        );
+    } catch (e) {
+        const isTimeout = e?.name === 'AbortError';
+
+        if (isTimeout && attempt < 2) {
+            return fetchChapterWithRetry(url, attempt + 1);
+        }
+
+        if (isTimeout) {
+            throw new Error(
+                'Quran audio is taking longer than usual to load. Please check your connection and try again.'
+            );
+        }
+
+        throw e;
+    }
+};
+
+
 export const getQuranFoundationChapterAudio = async (
     reciterId,
     chapterNumber
@@ -288,16 +321,7 @@ export const getQuranFoundationChapterAudio = async (
         `${encodeURIComponent(reciterId)}/` +
         `${encodeURIComponent(chapterNumber)}`;
 
-    const res = await fetchWithTimeout(
-        url,
-        {},
-        20000
-    );
-
-    return handleResponse(
-        res,
-        'Failed to fetch Quran Foundation chapter audio'
-    );
+    return fetchChapterWithRetry(url);
 };
 
 

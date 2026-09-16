@@ -209,6 +209,8 @@ const updateLockScreen = () => {
             title: _state.surahName || `Surah ${_state.surahId}`,
             artist: _state.reciter?.name || 'Quran',
             albumTitle: 'Deen Hub',
+            artworkUrl:
+                'https://jswxifehbnvdhjkahden.supabase.co/storage/v1/object/public/DeenHub%20Control%20Centre%20Image/islamic%20bg.jpg',
         }, {
             showSeekBackward: true,
             showSeekForward: true,
@@ -244,13 +246,16 @@ const handlePlayerStatus = (status) => {
     // remains controlled by handleFinishedPlayback / repeat mode.
     if (
         _state.playMode === 'single' &&
-        _state.repeat !== 'ayah' &&
+        _state.repeat === 'none' &&
         status.playing &&
         currentTiming?.endSec != null &&
         positionSec >= Number(currentTiming.endSec) - 0.03
     ) {
         _player?.pause?.();
-        setState({ isPlaying: false, playingWord: null });
+        setState({
+            isPlaying: false,
+            playingWord: null,
+        });
         return;
     }
 
@@ -260,35 +265,57 @@ const handlePlayerStatus = (status) => {
 };
 
 const handleFinishedPlayback = async () => {
-    const { repeat, playMode, surahId } = _state;
-    if (!_player || !surahId) return;
+    if (!_player || !_state.surahId) return;
 
+    const { repeat, playMode, surahId, ayahs } = _state;
+
+    // ─────────────────────────────────────────────
+    // Repeat Surah
+    // ─────────────────────────────────────────────
+    if (repeat === 'surah') {
+        const firstAyah = ayahNum(ayahs?.[0]) ?? 1;
+
+        _player.seekTo(0);
+
+        setState({
+            playingAyah: firstAyah,
+            playingWord: null,
+            positionMs: 0,
+            isPlaying: false,
+            isBuffering: false,
+            isLoading: false,
+        });
+
+        persistLastRead(surahId, firstAyah);
+
+        // Give the native player a moment to process seekTo(0)
+        setTimeout(() => {
+            if (_player && _state.repeat === 'surah') {
+                _player.play();
+                setState({ isPlaying: true });
+            }
+        }, 50);
+
+        return;
+    }
+
+    // ─────────────────────────────────────────────
+    // Single ayah with no repeat
+    // ─────────────────────────────────────────────
     if (playMode === 'single' && repeat === 'none') {
         _player.pause();
-        setState({ isPlaying: false, playingWord: null });
+
+        setState({
+            isPlaying: false,
+            playingWord: null,
+        });
+
         return;
     }
 
-    if (repeat === 'ayah') {
-        const start = timingForAyah(_state.playingAyah);
-        if (start != null) {
-            _player.seekTo(start);
-            _player.play();
-        } else {
-            _player.seekTo(0);
-            _player.play();
-        }
-        return;
-    }
-
-    if (repeat === 'surah') {
-        _player.seekTo(0);
-        setState({ playingAyah: ayahNum(_state.ayahs[0]) ?? 1, positionMs: 0 });
-        persistLastRead(surahId, _state.playingAyah);
-        _player.play();
-        return;
-    }
-
+    // ─────────────────────────────────────────────
+    // Normal playback → next Surah
+    // ─────────────────────────────────────────────
     const nextSurah = _state.shuffleSurahs
         ? 1 + Math.floor(Math.random() * 114)
         : surahId + 1;
@@ -296,7 +323,12 @@ const handleFinishedPlayback = async () => {
     if (nextSurah <= 114) {
         await playSurahByIdInternal(nextSurah, null, true);
     } else {
-        setState({ isPlaying: false, isLoading: false, playingAyah: null, positionMs: 0 });
+        setState({
+            isPlaying: false,
+            isLoading: false,
+            playingAyah: null,
+            positionMs: 0,
+        });
     }
 };
 

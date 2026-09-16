@@ -830,7 +830,7 @@ const ps = StyleSheet.create({
 
 // ── Main Screen ───────────────────────────────────────────────────────────────
 export default function SurahScreen() {
-    const { id }   = useLocalSearchParams();
+    const { id, notificationAyah, autoPlay } = useLocalSearchParams();
     const insets   = useSafeAreaInsets();
 
     const [surah, setSurah]     = useState(null);
@@ -847,6 +847,7 @@ export default function SurahScreen() {
     const [bookmarkedAyahs, setBookmarkedAyahs] = useState(new Set());
 
     const listRef = useRef(null);
+    const notificationStartedRef = useRef(false);
 
     // Subscribe to AudioStore
     useEffect(() => {
@@ -868,17 +869,222 @@ export default function SurahScreen() {
         }, [])
     );
 
-    // ── FIX: scrollToIndex returns void, not a Promise ────────────────────────
-    useEffect(() => {
-        if (audio.playingAyah && audio.surahId == id && ayahs.length) {
-            const idx = ayahs.findIndex(a => ayahNum(a) === audio.playingAyah);
-            if (idx >= 0) {
-                try {
-                    listRef.current?.scrollToIndex({ index: idx, animated: true, viewOffset: 100 });
-                } catch (_) {}
+    // ── Auto-scroll to the currently playing ayah ───────────────────────────────
+    //
+    // FlatList is virtualized. When Continue Reading opens, the saved ayah
+    // can be far outside the initially rendered batch (for example 8:78).
+    // We therefore wait for layout, move approximately toward the target if
+    // it has not been measured, and then retry the exact scroll.
+    //
+    // No getItemLayout is used because ayah cards have variable heights.
+
+    const scrollRetryRef = useRef(null);
+    const scrollTargetRef = useRef(null);
+
+    const clearScrollRetry = useCallback(() => {
+        if (scrollRetryRef.current) {
+            clearTimeout(scrollRetryRef.current);
+            scrollRetryRef.current = null;
+        }
+    }, []);
+
+    const getPlayingAyahIndex = useCallback(() => {
+        if (
+            !audio.playingAyah ||
+            audio.surahId == null ||
+            Number(audio.surahId) !== Number(id) ||
+            !ayahs.length
+        ) {
+            return -1;
+        }
+
+        const target = Number(audio.playingAyah);
+
+        return ayahs.findIndex(
+            item => Number(ayahNum(item)) === target
+        );
+    }, [
+        audio.playingAyah,
+        audio.surahId,
+        id,
+        ayahs,
+    ]);
+
+    const scrollToPlayingAyah = useCallback((attempt = 0) => {
+        const index = getPlayingAyahIndex();
+
+        if (index < 0 || !listRef.current) {
+            return;
+        }
+
+        scrollTargetRef.current = index;
+
+        try {
+            listRef.current.scrollToIndex({
+                index,
+                animated: attempt > 0,
+                viewPosition: 0.18,
+                viewOffset: 0,
+            });
+        } catch (_) {
+            if (attempt < 12) {
+                clearScrollRetry();
+
+                scrollRetryRef.current = setTimeout(() => {
+                    scrollRetryRef.current = null;
+                    scrollToPlayingAyah(attempt + 1);
+                }, 180);
             }
         }
-    }, [audio.playingAyah]);
+    }, [
+        getPlayingAyahIndex,
+        clearScrollRetry,
+    ]);
+
+    // This is the important part for Continue Reading. AudioStore may already
+    // contain ayah 78 when this screen mounts, so watching only
+    // "playingAyah changed" is not sufficient. We also react to ayahs.length
+    // and surahId becoming available.
+    useEffect(() => {
+        const index = getPlayingAyahIndex();
+
+        if (index < 0) return;
+
+        scrollTargetRef.current = index;
+        clearScrollRetry();
+
+        // Multiple layout passes make this reliable on a physical Android
+        // device where the first FlatList render can be delayed.
+        const timers = [100, 300, 600, 1000, 1600].map((delay, attempt) => (
+            setTimeout(() => {
+                if (getPlayingAyahIndex() >= 0) {
+                    scrollToPlayingAyah(attempt);
+                }
+            }, delay)
+        ));
+
+        return () => {
+            timers.forEach(clearTimeout);
+            clearScrollRetry();
+        };
+    }, [
+        audio.playingAyah,
+        audio.surahId,
+        id,
+        ayahs.length,
+        getPlayingAyahIndex,
+        scrollToPlayingAyah,
+        clearScrollRetry,
+    ]);
+
+    // When the content/layout changes, the previously unmeasured target may
+    // now be measurable.
+    const handleListContentSizeChange = useCallback(() => {
+        if (getPlayingAyahIndex() < 0) return;
+
+        clearScrollRetry();
+
+        scrollRetryRef.current = setTimeout(() => {
+            scrollRetryRef.current = null;
+            scrollToPlayingAyah(1);
+        }, 120);
+    }, [
+        getPlayingAyahIndex,
+        scrollToPlayingAyah,
+        clearScrollRetry,
+    ]);
+
+    const handleScrollToIndexFailed = useCallback((info) => {
+        if (info?.index == null) return;
+
+        scrollTargetRef.current = info.index;
+        clearScrollRetry();
+
+        // Ask FlatList to move near the target first. This causes rows around
+        // ayah 78 to be rendered/measured even though they were initially
+        // outside the virtualization window.
+        if (
+            listRef.current &&
+            Number.isFinite(info.averageItemLength) &&
+            info.averageItemLength > 0
+        ) {
+            try {
+                listRef.current.scrollToOffset({
+                    offset: Math.max(
+                        0,
+                        info.averageItemLength * info.index
+                    ),
+                    animated: false,
+                });
+            } catch (_) {}
+        }
+
+        scrollRetryRef.current = setTimeout(() => {
+            scrollRetryRef.current = null;
+
+            const currentIndex = getPlayingAyahIndex();
+
+            if (currentIndex < 0 || !listRef.current) return;
+
+            try {
+                listRef.current.scrollToIndex({
+                    index: currentIndex,
+                    animated: true,
+                    viewPosition: 0.18,
+                    viewOffset: 0,
+                });
+            } catch (_) {
+                scrollToPlayingAyah(2);
+            }
+        }, 300);
+    }, [
+        getPlayingAyahIndex,
+        scrollToPlayingAyah,
+        clearScrollRetry,
+    ]);
+
+    useEffect(() => {
+        return () => {
+            clearScrollRetry();
+            scrollTargetRef.current = null;
+        };
+    }, [clearScrollRetry]);
+
+    // Deep link from a "Continue your Quran" notification: start playback at
+    // the saved ayah once the surah and ayahs have loaded, exactly once.
+    useEffect(() => {
+        if (
+            notificationStartedRef.current ||
+            autoPlay !== '1' ||
+            !notificationAyah ||
+            !surah ||
+            ayahs.length === 0
+        ) {
+            return;
+        }
+
+        const targetAyah = Number(notificationAyah);
+
+        if (!Number.isInteger(targetAyah) || targetAyah < 1) {
+            return;
+        }
+
+        const exists = ayahs.some(item => ayahNum(item) === targetAyah);
+
+        if (!exists) {
+            return;
+        }
+
+        notificationStartedRef.current = true;
+
+        AudioStore.setPlayMode('single');
+
+        AudioStore.playSurah(Number(id), ayahs, null, targetAyah, surah)
+            .catch(error => {
+                notificationStartedRef.current = false;
+                console.error('[Quran] Notification playback failed:', error);
+            });
+    }, [id, notificationAyah, autoPlay, surah, ayahs]);
 
     const loadReciter = async () => {
         try {
@@ -1197,7 +1403,8 @@ export default function SurahScreen() {
                 initialNumToRender={15}
                 maxToRenderPerBatch={10}
                 windowSize={8}
-                onScrollToIndexFailed={() => {}}
+                onContentSizeChange={handleListContentSizeChange}
+                onScrollToIndexFailed={handleScrollToIndexFailed}
             />
 
             <MiniPlayerBar

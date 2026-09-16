@@ -1,12 +1,13 @@
 /**
  * app/quran/player.jsx — Quran Player (Redesigned)
  *
+ * ✅ Loop Surah kept, Ayah loop removed
+ * ✅ Ultra-smooth Surah progress bar: React Native Animated driven, peak-to-move seek gesture inspired by Spotify & Apple Music
  * ✅ 10s forward/back: icon + label stack vertically — zero overlap
  * ✅ Wave bars: independent staggered animations per bar, centered below ayah pill
  * ✅ Seeker: smooth Animated.timing fill, spring thumb, floating scrub bubble
  * ✅ Play button: spring press feedback animation
  * ✅ Skip/seek buttons: separate spring feedback
- * ✅ Ayah progress: clean 3px bar with spring animation + pill counter
  * ✅ Full-screen dark gradient background (no flat colour)
  * ✅ Action strip separated by a hairline border
  * ✅ All modals (Sleep, Info, Reciter) preserved, corners rounded to 30px
@@ -240,7 +241,7 @@ const ap = StyleSheet.create({
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Seeker
+// Seeker (Smoother Animations & Peek-to-Move behavior)
 // ─────────────────────────────────────────────────────────────────────────────
 const THUMB_R = 9;
 const HIT_H   = 48;
@@ -257,6 +258,7 @@ const Seeker = ({ positionMs, durationMs, onSeek }) => {
 
     const pctAnim   = useRef(new Animated.Value(0)).current;
     const scaleAnim = useRef(new Animated.Value(1)).current;
+    const trackScaleY = useRef(new Animated.Value(1)).current;
     const [scrubMs, setScrubMs] = useState(null);
 
     const clamp = (v, lo, hi) => Math.max(lo, Math.min(v, hi));
@@ -265,7 +267,12 @@ const Seeker = ({ positionMs, durationMs, onSeek }) => {
     const playPct = durationMs > 0 ? clamp(positionMs / durationMs, 0, 1) : 0;
     useEffect(() => {
         if (isDragging.current) return;
-        Animated.timing(pctAnim, { toValue: playPct, duration: 300, useNativeDriver: false, easing: Easing.out(Easing.cubic) }).start();
+        Animated.timing(pctAnim, {
+            toValue: playPct,
+            duration: 160,
+            useNativeDriver: false,
+            easing: Easing.out(Easing.quad)
+        }).start();
     }, [playPct]);
 
     const pan = useRef(PanResponder.create({
@@ -278,7 +285,10 @@ const Seeker = ({ positionMs, durationMs, onSeek }) => {
             const f = toFrac(e.nativeEvent.pageX);
             pctAnim.setValue(f);
             setScrubMs(f * durationRef.current);
-            Animated.spring(scaleAnim, { toValue: 1.55, speed: 50, bounciness: 2, useNativeDriver: false }).start();
+            Animated.parallel([
+                Animated.spring(scaleAnim, { toValue: 1.6, friction: 6, tension: 120, useNativeDriver: false }),
+                Animated.timing(trackScaleY, { toValue: 1.8, duration: 150, useNativeDriver: false, easing: Easing.out(Easing.cubic) }),
+            ]).start();
         },
         onPanResponderMove: (e) => {
             const f = toFrac(e.nativeEvent.pageX);
@@ -289,13 +299,19 @@ const Seeker = ({ positionMs, durationMs, onSeek }) => {
             const f = toFrac(e.nativeEvent.pageX);
             isDragging.current = false;
             setScrubMs(null);
-            Animated.spring(scaleAnim, { toValue: 1, speed: 50, bounciness: 2, useNativeDriver: false }).start();
+            Animated.parallel([
+                Animated.spring(scaleAnim, { toValue: 1, friction: 7, tension: 140, useNativeDriver: false }),
+                Animated.timing(trackScaleY, { toValue: 1, duration: 150, useNativeDriver: false, easing: Easing.out(Easing.cubic) }),
+            ]).start();
             if (durationRef.current > 0) onSeek(clamp(f, 0, 1) * durationRef.current);
         },
         onPanResponderTerminate: () => {
             isDragging.current = false;
             setScrubMs(null);
-            Animated.spring(scaleAnim, { toValue: 1, speed: 50, bounciness: 2, useNativeDriver: false }).start();
+            Animated.parallel([
+                Animated.spring(scaleAnim, { toValue: 1, friction: 7, tension: 140, useNativeDriver: false }),
+                Animated.timing(trackScaleY, { toValue: 1, duration: 150, useNativeDriver: false, easing: Easing.out(Easing.cubic) }),
+            ]).start();
         },
     })).current;
 
@@ -314,9 +330,9 @@ const Seeker = ({ positionMs, durationMs, onSeek }) => {
                 ref={r => { if (r) r.measure((_x, _y, _w, _h, px) => { trackXRef.current = px; }); }}
                 {...pan.panHandlers}
             >
-                <View style={sk.track}>
+                <Animated.View style={[sk.track, { transform: [{ scaleY: trackScaleY }] }]}>
                     <Animated.View style={[sk.fill, { width: fillWidth }]} />
-                </View>
+                </Animated.View>
                 <Animated.View style={[sk.thumbWrap, { transform: [{ translateX: thumbX }] }]}>
                     <Animated.View style={[sk.thumb, { transform: [{ scale: scaleAnim }] }]} />
                 </Animated.View>
@@ -341,43 +357,6 @@ const sk = StyleSheet.create({
     labels:     { flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 },
     time:       { color: MUTED, fontSize: 11, fontWeight: '600' },
     timeScrub:  { color: GOLD },
-});
-
-// ─────────────────────────────────────────────────────────────────────────────
-// AyahProgress
-// ─────────────────────────────────────────────────────────────────────────────
-const AyahProgress = ({ ayahs, playingAyah }) => {
-    const total = ayahs.length;
-    if (!total) return null;
-    const idx  = ayahs.findIndex(a => ayahNum(a) === playingAyah);
-    const done = idx < 0 ? 0 : idx + 1;
-    const pct  = done / total;
-    const anim = useRef(new Animated.Value(pct)).current;
-    useEffect(() => {
-        Animated.spring(anim, { toValue: pct, speed: 18, bounciness: 0, useNativeDriver: false }).start();
-    }, [pct]);
-
-    return (
-        <View style={pb.wrap}>
-            <View style={pb.topRow}>
-                <Text style={pb.label}>AYAH PROGRESS</Text>
-                <View style={pb.pill}><Text style={pb.pillText}>{done} / {total}</Text></View>
-            </View>
-            <View style={pb.track}>
-                <Animated.View style={[pb.fill, { width: anim.interpolate({ inputRange: [0,1], outputRange: ['0%','100%'], extrapolate: 'clamp' }) }]} />
-            </View>
-        </View>
-    );
-};
-
-const pb = StyleSheet.create({
-    wrap:     { paddingHorizontal: 28, marginTop: 22 },
-    topRow:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
-    label:    { color: MUTED, fontSize: 9, fontWeight: '800', letterSpacing: 1.6 },
-    pill:     { backgroundColor: GOLD_L, borderRadius: 10, paddingHorizontal: 10, paddingVertical: 3, borderWidth: 1, borderColor: GOLD_M },
-    pillText: { color: GOLD, fontSize: 10, fontWeight: '700' },
-    track:    { height: 3, backgroundColor: 'rgba(255,255,255,0.07)', borderRadius: 2, overflow: 'hidden' },
-    fill:     { height: 3, backgroundColor: GREEN, borderRadius: 2 },
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1101,7 +1080,7 @@ export default function PlayerScreen() {
     }, [speed]);
 
     const cycleRepeat = useCallback(() => {
-        const modes = ['none', 'surah', 'ayah'];
+        const modes = ['none', 'surah'];
         AudioStore.setRepeat(modes[(modes.indexOf(repeat) + 1) % modes.length]);
     }, [repeat]);
 
@@ -1143,7 +1122,7 @@ export default function PlayerScreen() {
     }, []);
 
     const goToSurah   = () => { if (surahId) router.push(`/quran/surah/${surahId}`); else router.back(); };
-    const repeatColor = repeat === 'none' ? MUTED : repeat === 'surah' ? GOLD : GREEN;
+    const repeatColor = repeat === 'surah' ? GOLD : MUTED;
     const sleepLabel  = sleepMin !== 0 ? (sleepMin === -1 ? 'End' : `${sleepMin}m`) : null;
 
     return (
@@ -1189,7 +1168,7 @@ export default function PlayerScreen() {
                 <View style={s.actionStrip}>
                     <ActionBtn icon="book-outline" color={currentAyahObj ? TEXT_D : MUTED} onPress={() => { if (currentAyahObj) setShowInfo(true); }} />
                     <ActionBtn icon="timer-outline" color={sleepMin !== 0 ? GOLD : MUTED} onPress={() => setShowSleep(true)} badge={sleepMin !== 0 ? { label: sleepLabel } : null} />
-                    <ActionBtn icon={repeat === 'none' ? 'repeat-outline' : 'repeat'} color={repeatColor} onPress={cycleRepeat} badge={repeat === 'ayah' ? { label: '1', bg: GREEN, tc: '#fff' } : null} />
+                    <ActionBtn icon={repeat === 'none' ? 'repeat-outline' : 'repeat'} color={repeatColor} onPress={cycleRepeat} />
                     <TouchableOpacity style={s.speedPill} onPress={handleSpeedCycle} activeOpacity={0.7}>
                         <Text style={s.speedText}>{speed}×</Text>
                     </TouchableOpacity>
